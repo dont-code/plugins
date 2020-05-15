@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "projects": {
+    "screen": {
+      "projectType": "library",
+      "root": "libs/screen",
+      "sourceRoot": "libs/screen/src",
+      "prefix": "plugins",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "options": {
+            "tsConfig": "libs/screen/tsconfig.lib.json",
+            "project": "libs/screen/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/screen/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/screen/tsconfig.lib.json",
+              "libs/screen/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/screen/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/screen/jest.config.js",
+            "tsConfig": "libs/screen/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/screen/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
+        }
+      }
+    }
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/angular",
+    "analytics": "2d0f7d7c-317a-4984-8934-a6583d864a70"
+  },
+  "defaultProject": "screen",
+  "schematics": {
+    "@nrwl/angular:application": {
+      "unitTestRunner": "jest",
+      "e2eTestRunner": "cypress"
+    },
+    "@nrwl/angular:library": {
+      "unitTestRunner": "jest"
+    }
+  }
+}
