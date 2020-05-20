@@ -1,5 +1,5 @@
 {
-  "npmScope": "plugins",
+  "npmScope": "dontcode",
   "implicitDependencies": {
     "angular.json": "*",
     "package.json": {
