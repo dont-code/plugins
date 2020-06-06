@@ -26,7 +26,7 @@ export class ScreenPlugin implements Plugin
           },
           "props": {
             "entity": {
-              "$ref": "#/definitions/entity",
+              "type": "string",
               "format": "#/creation/entities"
             }
           },
