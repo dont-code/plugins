@@ -36,7 +36,7 @@ jobs:
       - name: building
         run: npm ci
       - name: building
-        run: npm run nx run screen:build
+        run: npm run nx run screen:build --prod
 #      - uses: actions/upload-artifact@v1
 #        with:
 #          name: distribution
