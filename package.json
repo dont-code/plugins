@@ -38,7 +38,8 @@
     "core-js": "^2.5.4",
     "rxjs": "~6.5.4",
     "zone.js": "^0.10.2",
-    "@kor-ui/kor": "^1.0.10"
+    "@kor-ui/kor": "^1.0.10",
+    "@dontcode/core": "^0.1.5"
   },
   "peerDependencies": {
     "@dontcode/core": "^0.1.5"
