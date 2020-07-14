@@ -41,9 +41,6 @@
     "@kor-ui/kor": "^1.0.10",
     "@dontcode/core": "^0.1.5"
   },
-  "peerDependencies": {
-    "@dontcode/core": "^0.1.5"
-  },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.901.0",
     "@angular-devkit/build-ng-packagr": "~0.901.0",
