@@ -16,7 +16,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@dontcode/core": ["../core/node/dist/libs/core"]
     }
   },
   "exclude": ["node_modules", "tmp"]
