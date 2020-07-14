@@ -1,4 +1,4 @@
-import { DontCode } from "@dontcode/core";
+import { DontCode, DontCodeModel } from "@dontcode/core";
 import Plugin = DontCode.Plugin;
 
 export class ScreenPlugin implements Plugin
@@ -45,7 +45,19 @@ export class ScreenPlugin implements Plugin
           "props": {},
           "replace": false
         }]
-      }]
+      }],
+      "preview-handlers": [
+        {
+          location: {
+            parent: DontCodeModel.APP_SCREENS,
+            id:DontCodeModel.APP_SCREENS_NAME_NODE
+          },
+          class: {
+            name:"ScreenComponent",
+            source:"screen"
+          }
+        }
+      ]
     }
   }
 

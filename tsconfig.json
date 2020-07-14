@@ -16,7 +16,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@plugins/screen": ["libs/screen/src/index.ts"]
+      "@dontcode/core": ["../core/node/dist/libs/core"]
     }
   },
   "exclude": ["node_modules", "tmp"]
