@@ -16,6 +16,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@dontcode/plugin-screen": ["libs/screen/src"]
     }
   },
   "exclude": ["node_modules", "tmp"]

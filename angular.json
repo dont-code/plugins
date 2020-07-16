@@ -44,6 +44,121 @@
           "style": "scss"
         }
       }
+    },
+    "preview-tester": {
+      "projectType": "application",
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "apps/preview-tester",
+      "sourceRoot": "apps/preview-tester/src",
+      "prefix": "preview-tester",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/preview-tester",
+            "index": "apps/preview-tester/src/index.html",
+            "main": "apps/preview-tester/src/main.ts",
+            "polyfills": "apps/preview-tester/src/polyfills.ts",
+            "tsConfig": "apps/preview-tester/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "apps/preview-tester/src/favicon.ico",
+              "apps/preview-tester/src/assets"
+            ],
+            "styles": [
+              "apps/preview-tester/src/styles.scss",
+              "./node_modules/@kor-ui/kor/kor-styles.css"
+            ],
+            "scripts": [],
+            "preserveSymlinks": true
+          },
+          "configurations": {
+            "online": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/preview-tester/src/environments/environment.ts",
+                  "with": "apps/preview-tester/src/environments/environment.online.ts"
+                }
+              ]
+            },
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/preview-tester/src/environments/environment.ts",
+                  "with": "apps/preview-tester/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "preview-tester:build",
+            "port": 4201
+          },
+          "configurations": {
+            "online": {
+              "browserTarget": "preview-tester:build:online"
+            },
+            "production": {
+              "browserTarget": "preview-tester:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "preview-tester:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/preview-tester/tsconfig.app.json",
+              "apps/preview-tester/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/preview-tester/**"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/preview-tester/jest.config.js",
+            "tsConfig": "apps/preview-tester/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "apps/preview-tester/src/test-setup.ts"
+          }
+        }
+      }
     }
   },
   "cli": {
