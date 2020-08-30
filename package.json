@@ -48,8 +48,8 @@
     "@fortawesome/free-regular-svg-icons": "^5.13.0",
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "broadcast-channel": "^3.1.0",
-    "@kor-ui/kor": "^1.0.10",
-    "@dontcode/core": "^0.1.6"
+    "@kor-ui/kor": "^1.2.13",
+    "@dontcode/core": "^0.1.9"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.901.0",

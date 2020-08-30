@@ -50,7 +50,10 @@ export class ScreenPlugin implements Plugin
         {
           location: {
             parent: DontCodeModel.APP_SCREENS,
-            id:DontCodeModel.APP_SCREENS_NAME_NODE
+            id:"type",
+            values:[
+              "list"
+            ]
           },
           class: {
             name:"ScreenComponent",
