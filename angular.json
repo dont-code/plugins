@@ -26,16 +26,14 @@
               "libs/screen/tsconfig.lib.json",
               "libs/screen/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/screen/**"]
+            "exclude": ["**/node_modules/**", "!libs/screen/**/*"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/screen/jest.config.js",
-            "tsConfig": "libs/screen/tsconfig.spec.json",
-            "passWithNoTests": true,
-            "setupFile": "libs/screen/src/test-setup.ts"
+            "passWithNoTests": true
           }
         }
       },
@@ -143,20 +141,57 @@
               "apps/preview-tester/tsconfig.app.json",
               "apps/preview-tester/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/preview-tester/**"
-            ]
+            "exclude": ["**/node_modules/**", "!apps/preview-tester/**/*"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "apps/preview-tester/jest.config.js",
-            "tsConfig": "apps/preview-tester/tsconfig.spec.json",
-            "passWithNoTests": true,
-            "setupFile": "apps/preview-tester/src/test-setup.ts"
+            "passWithNoTests": true
           }
+        }
+      }
+    },
+    "basic": {
+      "projectType": "library",
+      "root": "libs/basic",
+      "sourceRoot": "libs/basic/src",
+      "prefix": "dontcode",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "options": {
+            "tsConfig": "libs/basic/tsconfig.lib.json",
+            "project": "libs/basic/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/basic/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/basic/tsconfig.lib.json",
+              "libs/basic/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/basic/**/*"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/basic/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
         }
       }
     }
