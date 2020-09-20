@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { CommandProviderInterface, PreviewHandler } from "@dontcode/core";
+import { CommandProviderInterface, DontCodeModelPointer, PreviewHandler } from "@dontcode/core";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 
@@ -17,12 +17,12 @@ export class ScreenComponent implements OnInit, OnDestroy, PreviewHandler {
   ngOnInit(): void {
   }
 
-  initCommandFlow(provider: CommandProviderInterface, position: string, schemaPosition: string) {
+  initCommandFlow(provider: CommandProviderInterface, pointer: DontCodeModelPointer) {
 //    console.log("InitCommandFlow");
-    provider.receiveCommands(position).pipe(
+    provider.receiveCommands(pointer.position).pipe(
       takeUntil(this.unsubscriber)
     ).subscribe(change => {
-      console.log("Getting updates from ", position, " with value ", change.value);
+      console.log("Getting updates from ", pointer.position, " with value ", change.value);
     });
   }
 
