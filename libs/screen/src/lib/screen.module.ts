@@ -11,7 +11,7 @@ import { ScreenComponent } from './preview/screen/screen.component';
 })
 export class ScreenModule {
   constructor() {
-    console.log("Hey I'm there");
+    console.log("Screen Plugin registering");
     dtcde.registerPlugin(new ScreenPlugin ());
   }
 }
