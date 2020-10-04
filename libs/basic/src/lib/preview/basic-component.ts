@@ -15,7 +15,7 @@ export abstract class BasicComponent implements OnInit, OnDestroy {
 
   protected forceUnsubscribe(): void {
     // unsubscribe to all observables
-//    console.log("Unsubscribe");
+    console.log("Unsubscribe");
     this.unsubscriber.next();
     this.unsubscriber.complete();
     this.unsubscriber = new Subject();
