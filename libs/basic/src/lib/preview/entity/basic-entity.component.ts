@@ -1,7 +1,8 @@
 import { Component } from "@angular/core";
-import { CommandProviderInterface, DontCodeModelPointer, PreviewHandler } from "@dontcode/core";
-import { takeUntil } from "rxjs/operators";
+import { Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler } from "@dontcode/core";
+import { map, takeUntil } from "rxjs/operators";
 import { BasicComponent } from "../basic-component";
+import { combineLatest, Observable } from "rxjs";
 
 @Component({
   selector: 'dontcode-basic-entity',
@@ -9,22 +10,29 @@ import { BasicComponent } from "../basic-component";
   styleUrls: ['./basic-entity.component.scss']
 })
 export class BasicEntityComponent extends BasicComponent implements PreviewHandler {
+  protected change$:Observable<Change>
 
-
-  ngOnInit(): void {
-    super.ngOnInit();
-  }
+  entityName:string;
+  fields:any[];
 
   initCommandFlow(provider: CommandProviderInterface, pointer: DontCodeModelPointer): any {
-    provider.receiveCommands(pointer.position).pipe(
-      takeUntil(this.unsubscriber)
-    ).subscribe(change => {
-      console.log("Getting updates from ", pointer.position, " with value ", change.value);
-    });
-  }
+    const curJson = provider.getJsonAt(pointer.position);
+    this.entityName=curJson[DontCodeModel.APP_ENTITIES_NAME_NODE];
+    this.fields=curJson[DontCodeModel.APP_FIELDS_NODE];
 
-  ngOnDestroy(): void {
-    super.ngOnDestroy();
+    provider.receiveCommands(pointer.position).pipe(
+      takeUntil(this.unsubscriber),
+      map(change => {
+        let value:any=this.decodeStringField(change, DontCodeModel.APP_ENTITIES_NAME_NODE);
+        if( value ) {
+          this.entityName=change.value;
+        } else {
+          value = this.decodeArrayField(change, DontCodeModel.APP_FIELDS_NODE);
+          if( value) {
+            this.fields=value;
+        }}
+      })
+    );
   }
 
 }
