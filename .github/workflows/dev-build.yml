@@ -38,8 +38,8 @@ jobs:
           npm update @dont-code/core
       - name: Build
         run: |
-          npm run nx run screen:build -- --prod
           npm run nx run basic:build -- --prod
+          npm run nx run screen:build -- --prod
 #      - uses: actions/upload-artifact@v1
 #        with:
 #          name: distribution
