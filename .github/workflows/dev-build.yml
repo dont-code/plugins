@@ -48,11 +48,3 @@ jobs:
         run: npm run nx run basic:build -- --prod
       - name: Unit tests Basic
         run: npm run nx run basic:test
-      - name: Publish Screen
-        run: npm publish dist/libs/screen --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Publish Basic
-        run: npm publish dist/libs/basic --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
