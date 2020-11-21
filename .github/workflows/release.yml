@@ -1,0 +1,64 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: master
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+      - name: Install
+        run: |
+          npm ci
+          git merge origin/Development
+          npm update @dont-code/core
+      - name: Version
+        run: npm version patch
+        working-directory: libs/screens
+      - name: Version
+        run: npm version patch
+        working-directory: libs/basic
+      - name: Build
+        run: |
+          npm run nx run screen:build -- --prod
+          npm run nx run basic:build -- --prod
+      - name: Unit tests
+        run: |
+          npm run nx run screen:test
+          npm run nx run basic:test
+      - name: Push
+          git config user.name "GitHub Actions"
+          git config user.email noreply@github.com
+          git commit -a -m "New version"
+          git push
+      - name: Publish Screen
+        run: npm publish dist/libs/screen --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish Basic
+        run: npm publish dist/libs/basic --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
