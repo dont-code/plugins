@@ -1,9 +1,6 @@
 {
-  "name": "@dontcode/basic",
-  "version": "0.0.1",
+  "name": "@dontcode/plugin-basic",
+  "version": "0.1.17",
   "peerDependencies": {
-    "@angular/common": "^9.1.0",
-    "@angular/core": "^9.1.0",
-    "tslib": "^1.10.0"
   }
 }

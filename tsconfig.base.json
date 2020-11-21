@@ -20,7 +20,7 @@
       "@dontcode/core": ["node_modules/@dontcode/core"],
       "rxjs": ["node_modules/rxjs"],
       "rxjs/*": ["node_modules/rxjs/*"],
-      "@dontcode/basic": ["libs/basic/src/index.ts"]
+      "@dontcode/plugin-basic": ["libs/basic/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

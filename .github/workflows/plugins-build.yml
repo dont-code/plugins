@@ -35,15 +35,23 @@ jobs:
             ${{ runner.OS }}-
       - name: building
         run: npm ci
-      - name: building
+      - name: building Screen
         run: npm run nx run screen:build -- --prod
 #      - uses: actions/upload-artifact@v1
 #        with:
 #          name: distribution
 #          path: node/dist/libs/core
-      - name: Unit tests
+      - name: Unit tests Screen
         run: npm run nx run screen:test
-      - name: Publish
+      - name: building Basic
+        run: npm run nx run basic:build -- --prod
+      - name: Unit tests Basic
+        run: npm run nx run basic:test
+      - name: Publish Screen
         run: npm publish dist/libs/screen --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish Basic
+        run: npm publish dist/libs/basic --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
