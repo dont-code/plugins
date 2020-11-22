@@ -37,7 +37,7 @@ jobs:
           git merge origin/Development
       - name: Version
         run: npm version patch
-        working-directory: libs/screens
+        working-directory: libs/screen
       - name: Version
         run: npm version patch
         working-directory: libs/basic
