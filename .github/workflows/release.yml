@@ -32,9 +32,9 @@ jobs:
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
       - name: Install
         run: |
+          npm install @dontcode/core@latest
           npm ci
           git merge origin/Development
-          npm update @dont-code/core
       - name: Version
         run: npm version patch
         working-directory: libs/screens
