@@ -15,12 +15,13 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
+    "esModuleInterop": true,
     "paths": {
       "@dontcode/plugin-screen": ["libs/screen/src"],
+      "@dontcode/plugin-basic": ["libs/basic/src"],
       "@dontcode/core": ["node_modules/@dontcode/core"],
       "rxjs": ["node_modules/rxjs"],
-      "rxjs/*": ["node_modules/rxjs/*"],
-      "@dontcode/plugin-basic": ["libs/basic/src/index.ts"]
+      "rxjs/*": ["node_modules/rxjs/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

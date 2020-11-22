@@ -1,10 +1,9 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
 import { DontCode, PluginModuleInterface } from "@dontcode/core";
-import dtcde = DontCode.dtcde;
 import { ScreenPlugin } from "./declaration/screen-plugin";
-import { ScreenComponent } from './preview/screen/screen.component';
-import { BasicEntityComponent } from "@dontcode/plugin-basic";
+import { ScreenComponent } from "./preview/screen/screen.component";
+import dtcde = DontCode.dtcde;
 
 @NgModule({
   imports: [CommonModule],

@@ -35,7 +35,7 @@ jobs:
       - name: Install
         run: |
           npm ci
-          npm update @dont-code/core
+          npm install @dontcode/core@latest
       - name: Build
         run: |
           npm run nx run basic:build -- --prod
