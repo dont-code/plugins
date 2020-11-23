@@ -1,6 +1,5 @@
 {
   "name": "@dontcode/plugin-basic",
-  "version": "0.1.17",
-  "peerDependencies": {
-  }
+  "version": "0.1.18",
+  "peerDependencies": {}
 }
