@@ -49,6 +49,7 @@ jobs:
         run: |
           npm run nx run screen:test
           npm run nx run basic:test
+        working-directory: .
       - name: Push
         run: |
           git config user.name "GitHub Actions"
