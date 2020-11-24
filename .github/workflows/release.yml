@@ -49,11 +49,16 @@ jobs:
         run: |
           npm run nx run screen:test
           npm run nx run basic:test
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
+        with:
+          path: libs/basic
       - name: Push
         run: |
           git config user.name "GitHub Actions"
           git config user.email noreply@github.com
-          git commit -a -m "New version"
+          git commit -a -m "New release ${{steps.package-version.outputs.current-version}}"
           git push
       - name: Publish Screen
         run: npm publish dist/libs/screen --access public
