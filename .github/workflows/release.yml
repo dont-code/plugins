@@ -49,6 +49,11 @@ jobs:
         run: |
           npm run nx run screen:test
           npm run nx run basic:test
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
+        with:
+          path: libs/basic
       - name: Push
         run: |
           git config user.name "GitHub Actions"
