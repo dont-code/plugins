@@ -4,9 +4,10 @@ import { DontCode, PluginModuleInterface } from "@dontcode/core";
 import dtcde = DontCode.dtcde;
 import { BasicPlugin } from "./declaration/basic-plugin";
 import { BasicEntityComponent } from './preview/entity/basic-entity.component';
+import { TableModule } from "primeng/table";
 
 @NgModule({
-  imports: [CommonModule],
+  imports: [CommonModule, TableModule],
   declarations: [BasicEntityComponent],
   id:'dontcode-plugin/basic'
 })
