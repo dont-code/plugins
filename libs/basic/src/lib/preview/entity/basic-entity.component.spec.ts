@@ -1,14 +1,16 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
 import { BasicEntityComponent } from './basic-entity.component';
+import { TableModule } from "primeng/table";
 
 describe('BasicEntityComponent', () => {
   let component: BasicEntityComponent;
   let fixture: ComponentFixture<BasicEntityComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BasicEntityComponent ]
+      declarations: [ BasicEntityComponent ],
+      imports: [TableModule]
     })
     .compileComponents();
   }));
