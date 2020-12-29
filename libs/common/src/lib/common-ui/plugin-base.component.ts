@@ -1,11 +1,11 @@
 import { Subscription } from "rxjs";
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Change } from "@dontcode/core";
+import { Change, CommandProviderInterface, DontCodeModelPointer } from "@dontcode/core";
 
 @Component({template:''})
 export abstract class PluginBaseComponent implements OnInit, OnDestroy {
   protected subscriptions = new Subscription();
-
+  entityPointer:DontCodeModelPointer;
 
   ngOnInit(): void {
   }
@@ -18,7 +18,12 @@ export abstract class PluginBaseComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  decodeStringField(change: Change, key: string): string {
+  initCommandFlow(provider: CommandProviderInterface, pointer: DontCodeModelPointer): any {
+    this.entityPointer = pointer;
+  }
+
+
+    decodeStringField(change: Change, key: string): string {
     if (change.pointer.key === key) {
       return change.value;
     } else

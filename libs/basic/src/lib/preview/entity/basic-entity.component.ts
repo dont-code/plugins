@@ -12,7 +12,6 @@ import { PluginBaseComponent } from "../../../../../common/src/lib/common-ui/plu
 export class BasicEntityComponent extends PluginBaseComponent implements PreviewHandler {
 
   entityName:string;
-  fields:{};
   cols:PrimeColumn[];
   values:any[];
 
@@ -21,29 +20,39 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   }
 
   initCommandFlow(provider: CommandProviderInterface, pointer: DontCodeModelPointer): any {
-    const curJson = provider.getJsonAt(pointer.position);
+    super.initCommandFlow(provider, pointer);
+
+    const curJson = provider.getJsonAt(this.entityPointer.position);
     console.log("Entity init:",curJson);
     if (curJson) {
       this.entityName=curJson[DontCodeModel.APP_ENTITIES_NAME_NODE];
-      this.fields=curJson[DontCodeModel.APP_FIELDS_NODE];
-      this.cols = this.updateColumns (this.cols, this.fields);
+      this.cols = this.updateColumns (this.cols, curJson[DontCodeModel.APP_FIELDS_NODE]);
       this.ref.markForCheck();
       this.ref.detectChanges();
     }
 
     //console.log("Listening to ",pointer.position);
-    this.subscriptions.add (provider.receiveCommands(pointer.position).pipe(
+    this.subscriptions.add (provider.receiveCommands(this.entityPointer.position).pipe(
       map (change => {
         //console.log("Changed Entity",change.position);
-        let value:any=this.decodeStringField(change, DontCodeModel.APP_ENTITIES_NAME_NODE);
-        if( value ) {
-          this.entityName=change.value;
-        } else {
-          value = this.decodeMapField(change, this.fields, DontCodeModel.APP_FIELDS_NODE);
+        let prop = change.pointer.isPropertyOf(this.entityPointer);
+        if( prop ) {
+          switch (prop) {
+            case     DontCodeModel.APP_ENTITIES_NAME_NODE:
+              this.entityName = change.value;
+              break;
+            case     DontCodeModel.APP_FIELDS_NODE:
+              this.cols = this.updateColumns (this.cols,
+                provider.getJsonAt(this.entityPointer.position+'/'+DontCodeModel.APP_FIELDS_NODE)
+              );
+              break;
+          }
+        }/* else {
+          let value = this.decodeMapField(change, this.fields, DontCodeModel.APP_FIELDS_NODE);
           if( value) {
             this.fields=value;
             this.cols = this.updateColumns (this.cols, this.fields);
-          }}
+          }}*/
         //console.log("Entity Name updated:", this.entityName);
         this.ref.markForCheck();
         this.ref.detectChanges();
