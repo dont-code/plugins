@@ -49,6 +49,7 @@ jobs:
           npm run nx run basic:build -- --prod
       - name: Unit tests
         run: |
+          npm run nx run common:test
           npm run nx run screen:test
           npm run nx run basic:test
       - name: get-npm-version
@@ -58,6 +59,7 @@ jobs:
           path: libs/basic
       - name: Push
         run: |
+          rm -rf libs/basic/src/common
           git config user.name "GitHub Actions"
           git config user.email noreply@github.com
           git commit -a -m "New release ${{steps.package-version.outputs.current-version}}"
