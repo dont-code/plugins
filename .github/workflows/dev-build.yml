@@ -36,6 +36,13 @@ jobs:
         run: |
           npm install @dontcode/core@latest
           npm ci
+      - name: Deploy Common
+        uses: jacobtomlinson/gha-find-replace@master
+          with:
+            find: "../../common/src/lib"
+            replace: "common/src/lib"
+            include: "libs/basic/src/lib/"
+        run: |
           mkdir -p libs/basic/src/common
           cp -r libs/common/src libs/basic/src/common
       - name: Build
