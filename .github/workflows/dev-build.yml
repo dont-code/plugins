@@ -36,7 +36,8 @@ jobs:
         run: |
           npm install @dontcode/core@latest
           npm ci
-          cp -r libs/common/src libs/basic/src/common
+          pwd
+          cp -r plugins/libs/common/src plugins/libs/basic/src/common
       - name: Build
         run: |
           npm run nx run basic:build -- --prod
