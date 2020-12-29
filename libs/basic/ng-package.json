@@ -4,8 +4,9 @@
   "lib": {
     "entryFile": "src/index.ts",
     "umdModuleIds": {
+      "primeng/table": "primeng/table",
       "@dontcode/core": "@dontcode/core",
-      "primeng/table": "primeng/table"
+      "@dontcode/plugin-common": "@dontcode/plugin-common"
     }
   }
 }

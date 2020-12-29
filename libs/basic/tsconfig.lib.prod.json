@@ -1,5 +1,12 @@
 {
   "extends": "./tsconfig.lib.json",
+  "compilerOptions": {
+    "paths": {
+      "@dontcode/plugin-common": ["libs/basic/src/common/src"],
+      "@dontcode/plugin-common/*": ["libs/basic/src/common/src/lib/*"]
+    }
+
+  },
   "angularCompilerOptions": {
     "enableIvy": false
   }
