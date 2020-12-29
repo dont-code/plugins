@@ -35,6 +35,8 @@ jobs:
           npm install @dontcode/core@latest
           npm ci
           git merge origin/Development
+          mkdir -p libs/basic/src/common
+          cp -r libs/common/src libs/basic/src/common
       - name: Version
         run: npm version patch
         working-directory: libs/screen

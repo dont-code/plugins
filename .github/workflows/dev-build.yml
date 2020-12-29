@@ -38,8 +38,6 @@ jobs:
           npm ci
           mkdir -p libs/basic/src/common
           cp -r libs/common/src libs/basic/src/common
-          ls -al libs/basic/src/common
-          ls -al libs/basic/src/common/src
       - name: Build
         run: |
           npm run nx run basic:build -- --prod
