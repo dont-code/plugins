@@ -34,6 +34,8 @@ jobs:
         run: |
           npm install @dontcode/core@latest
           npm ci
+          git config user.name "GitHub Actions"
+          git config user.email noreply@github.com
           git merge origin/Development
           mkdir -p libs/basic/src/common
           cp -r libs/common/src libs/basic/src/common
@@ -60,8 +62,6 @@ jobs:
       - name: Push
         run: |
           rm -rf libs/basic/src/common
-          git config user.name "GitHub Actions"
-          git config user.email noreply@github.com
           git commit -a -m "New release ${{steps.package-version.outputs.current-version}}"
           git push
       - name: Publish Screen
