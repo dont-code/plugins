@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from "@angular/core";
 import { Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler } from "@dontcode/core";
 import { map } from "rxjs/operators";
-import { PluginBaseComponent } from "../../../common/src/lib/common-ui/plugin-base.component";
+import { PluginBaseComponent } from "../../../../../common/src/lib/common-ui/plugin-base.component";
 
 @Component({
   selector: 'dontcode-basic-entity',
