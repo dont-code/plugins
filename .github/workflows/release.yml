@@ -67,6 +67,12 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@master
         with:
           path: libs/basic
+      - name: Undeploy Common
+        uses: jacobtomlinson/gha-find-replace@master
+        with:
+          find: "common/src/lib"
+          replace: "../../common/src/lib"
+          include: "libs/basic/src/lib/"
       - name: Push
         run: |
           rm -rf libs/basic/src/common
