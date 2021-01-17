@@ -1,6 +1,7 @@
 import { Subscription } from "rxjs";
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Change, CommandProviderInterface, DontCodeModelPointer } from "@dontcode/core";
+import { Change, ChangeType, CommandProviderInterface, DontCodeModelPointer } from "@dontcode/core";
+import { map } from "rxjs/operators";
 
 @Component({template:''})
 export abstract class PluginBaseComponent implements OnInit, OnDestroy {
@@ -24,6 +25,58 @@ export abstract class PluginBaseComponent implements OnInit, OnDestroy {
     this.provider = provider;
   }
 
+  /**
+   * When the component is created for display, it receives the initial data as complete Json.
+   * If it wants, it can call this method who will call handleChange for each property.
+   * This will avoid to duplicate code (first time when a complete json is sent, second when subelements are sent)
+   * @protected
+   */
+  protected decomposeJsonToMultipleChanges(pointer:DontCodeModelPointer, json:any): void {
+    if (json) {
+      let change:Change;
+      for (let prop in json) {
+        const subPropertyPointer = pointer.subPropertyPointer (prop);
+        const propType = this.provider.getSchemaManager().locateItem(subPropertyPointer.schemaPosition);
+        if( propType?.isArray()) {
+          this.decomposeJsonToMultipleChanges(subPropertyPointer, json[prop]);
+        } else {
+          change = new Change(
+            ChangeType.ADD,
+            pointer.position + '/' + prop,
+            json[prop],
+            subPropertyPointer);
+          if(!propType) {
+              // This is not a sub property but a subItem of an array
+            change.pointer.itemId=change.pointer.key;
+            change.pointer.key = null;
+          }
+
+          this.handleChange(change);
+        }
+      }
+    }
+  }
+
+  /**
+   * Calls handleChange each time a change event for any element below this (as per the model's position) is received
+   * @protected
+   */
+  protected initChangeListening () {
+    this.subscriptions.add (this.provider.receiveCommands(this.entityPointer.position).pipe(
+      map (change => {
+        this.handleChange(change);
+      }))
+      .subscribe()
+    );
+
+  }
+
+  /**
+   * This is where components react to changes received
+   * @param change
+   * @protected
+   */
+  protected abstract handleChange (change: Change );
 
   /**
    * Retrieve the value of the key property if the change concerns it
