@@ -2,8 +2,15 @@ import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
 import { PluginBaseComponent } from "./plugin-base.component";
 import { Component } from "@angular/core";
-import { Change, ChangeType, CommandProviderInterface, DontCodeModelPointer } from "@dontcode/core";
+import {
+  Change,
+  ChangeType,
+  CommandProviderInterface, DontCode,
+  DontCodeModelPointer,
+  DontCodeSchemaManager
+} from "@dontcode/core";
 import { Observable } from "rxjs";
+import dtcde = DontCode.dtcde;
 
 
 describe('PluginBaseComponent', () => {
@@ -207,10 +214,20 @@ class TestProviderInterface implements CommandProviderInterface {
     return undefined;
   }
 
+  calculatePointerFor(position: string): DontCodeModelPointer {
+    return dtcde.getSchemaManager().generateSchemaPointer(position);
+  }
+
+  getSchemaManager(): DontCodeSchemaManager {
+    return dtcde.getSchemaManager();
+  }
+
 }
 
 @Component({
   template: ``
 })
 class TestBaseComponent extends PluginBaseComponent {
+  protected handleChange(change: Change) {
+  }
 }

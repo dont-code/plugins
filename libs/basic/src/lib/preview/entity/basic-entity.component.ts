@@ -3,6 +3,7 @@ import { Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, 
 import { map } from "rxjs/operators";
 import { PluginBaseComponent } from "../../../../../common/src/lib/common-ui/plugin-base.component";
 
+
 @Component({
   selector: 'dontcode-basic-entity',
   templateUrl: './basic-entity.component.html',
@@ -12,7 +13,7 @@ import { PluginBaseComponent } from "../../../../../common/src/lib/common-ui/plu
 export class BasicEntityComponent extends PluginBaseComponent implements PreviewHandler {
 
   entityName:string;
-  cols:PrimeColumn[];
+  cols = new Array<PrimeColumn>();
   colsMap = new Map<string, number>();
   values:any[];
 
@@ -23,54 +24,38 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   initCommandFlow(provider: CommandProviderInterface, pointer: DontCodeModelPointer): any {
     super.initCommandFlow(provider, pointer);
 
-    const curJson = provider.getJsonAt(this.entityPointer.position);
-    console.log("Entity init:",curJson);
-    if (curJson) {
-      this.entityName=curJson[DontCodeModel.APP_ENTITIES_NAME_NODE];
-      this.cols = this.updateColumns (this.cols, curJson[DontCodeModel.APP_FIELDS_NODE]);
-      this.ref.markForCheck();
-      this.ref.detectChanges();
-    }
+    this.decomposeJsonToMultipleChanges (this.entityPointer, provider.getJsonAt(this.entityPointer.position)); // Dont provide a special handling for initial json, but emulate a list of changes
+    this.initChangeListening (); // Listen to all changes occuring after entityPointer
 
-    //console.log("Listening to ",pointer.position);
-    this.subscriptions.add (provider.receiveCommands(this.entityPointer.position).pipe(
-      map (change => {
-        //console.log("Changed Entity",change.position);
-        let prop = change.pointer.getUnderPropertyOf(this.entityPointer);
-        if( prop ) {
-          switch (prop) {
-            case     DontCodeModel.APP_ENTITIES_NAME_NODE:
-              this.entityName = change.value;
-              break;
-            case     DontCodeModel.APP_FIELDS_NODE:
-              /*this.cols = this.updateColumns (this.cols,
-                provider.getJsonAt(this.entityPointer.position+'/'+DontCodeModel.APP_FIELDS_NODE)
-              );*/
-              this.cols = this.applyUpdatesToArray (this.cols, this.colsMap, change, prop, (key,item) => {
-                return new PrimeColumn(item.name, item.name);
-              });
-              break;
-          }
-        }/* else {
-          let value = this.decodeMapField(change, this.fields, DontCodeModel.APP_FIELDS_NODE);
-          if( value) {
-            this.fields=value;
-            this.cols = this.updateColumns (this.cols, this.fields);
-          }}*/
-        //console.log("Entity Name updated:", this.entityName);
-        this.ref.markForCheck();
-        this.ref.detectChanges();
-      }))
-      .subscribe()
-    );
   }
 
-  private updateColumns(cols: PrimeColumn[], fields: any) : PrimeColumn[]{
-    let ret=new Array<PrimeColumn>();
-    for (const field in fields){
-      ret.push (new PrimeColumn(field, fields[field].name));
-    };
-    return ret;
+
+  /**
+   * Make the appropriate display updates whenever a change is received
+   * @param change
+   * @protected
+   */
+  protected handleChange (change: Change ) {
+    //console.log("Changed Entity",change.position);
+    let prop = change.pointer.getUnderPropertyOf(this.entityPointer);
+    if( prop ) {
+      switch (prop) {
+        case     DontCodeModel.APP_ENTITIES_NAME_NODE:
+          this.entityName = change.value;
+          break;
+        case     DontCodeModel.APP_FIELDS_NODE:
+          /*this.cols = this.updateColumns (this.cols,
+            provider.getJsonAt(this.entityPointer.position+'/'+DontCodeModel.APP_FIELDS_NODE)
+          );*/
+          this.cols = this.applyUpdatesToArray (this.cols, this.colsMap, change, prop, (key,item) => {
+            return new PrimeColumn(item.name, item.name);
+          });
+          break;
+      }
+    }
+    this.ref.markForCheck();
+    this.ref.detectChanges();
+
   }
 
 }
