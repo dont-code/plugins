@@ -25,6 +25,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
+      - name: Merge
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email noreply@github.com
+          git merge origin/Development --strategy=recursive --strategy-option=theirs
       - name: Cache Node.js modules
         uses: actions/cache@v2
         with:
@@ -32,9 +37,6 @@ jobs:
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
       - name: Install
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email noreply@github.com
-          git merge origin/Development --strategy=recursive --strategy-option=theirs
           npm install @dontcode/core@latest
           npm ci
       - name: Deploy Common
