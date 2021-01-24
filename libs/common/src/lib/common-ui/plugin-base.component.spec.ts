@@ -11,6 +11,7 @@ import {
 } from "@dontcode/core";
 import { Observable } from "rxjs";
 import dtcde = DontCode.dtcde;
+import {DontCodeTestManager} from "@dontcode/core";
 
 
 describe('PluginBaseComponent', () => {
@@ -35,7 +36,7 @@ describe('PluginBaseComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should manage properly map field updates', () => {
+/*  it('should manage properly map field updates', () => {
     let change = createTestChange('creation/entities', 'a', 'fields', 'ab',
       {
         "name": "id",
@@ -87,9 +88,10 @@ describe('PluginBaseComponent', () => {
     expect(result['ab'].type).toBe(change.value.type);
 
   });
+*/
 
   it('should manage properly array updates', () => {
-    let change = createTestChange('creation/entities', 'a', 'fields', 'ab', {
+    let change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'ab', {
       "name": "id",
       "type": "number"
     });
@@ -104,7 +106,7 @@ describe('PluginBaseComponent', () => {
     expect(array[0]).toEqual(result);
 
     // Check that it inserts item when the id is different
-    change = createTestChange('creation/entities', 'a', 'fields', 'bc', {
+    change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'bc', {
       "name": "name",
       "type": "string"
     });
@@ -116,7 +118,7 @@ describe('PluginBaseComponent', () => {
     expect(array[1]).toEqual(result);
 
     // Check that it just changes the existing item if the id is the same
-    change = createTestChange('creation/entities', 'a', 'fields', 'ab', {
+    change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'ab', {
       "name": "identity",
       "type": "number"
     });
@@ -126,12 +128,13 @@ describe('PluginBaseComponent', () => {
     expect(map.get('ab')).toBe(0);
     expect(array[0]).toEqual(result);
 
+    // Prepare to return the exist values of the entitites/a
     component.initCommandFlow(new TestProviderInterface ({
       name:"newName", type:"string"
     }), createPointer('creation/entities/a'));
 
     // Check that it can changes the item when receiving an update of its subProperty
-    change = createTestChange('creation/entities', 'a', 'fields','bc', "newName",'name');
+    change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields','bc', "newName",'name');
     array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
     expect(array).toHaveLength(2);
     result = new TestArrayTarget("newName", "string");
@@ -143,7 +146,7 @@ describe('PluginBaseComponent', () => {
     }), createPointer('creation/entities/a'));
 
       // Check that it creates a new item when receiving an update of its subProperty
-    change = createTestChange('creation/entities', 'a', 'fields','ef', "description",'name');
+    change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields','ef', "description",'name');
     array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
     expect(array).toHaveLength(3);
     result = new TestArrayTarget("description", undefined);
@@ -152,32 +155,139 @@ describe('PluginBaseComponent', () => {
 
   });
 
-  function createTestChange(containerSchema: string, containerItemId: string, schema: string, itemId: string, value: any, property?:string) {
-    if( property) {
-      return new Change(ChangeType.ADD,
-        containerSchema + '/' + containerItemId + '/' + schema+'/'+itemId+'/'+property,
-        value, new DontCodeModelPointer(
-          containerSchema + '/' + containerItemId + '/' + schema+'/'+itemId+'/'+property,
-          containerSchema + '/' + schema+'/'+property,
-          containerSchema + '/' + containerItemId+'/'+schema+'/'+itemId,
-          containerSchema + '/' + schema,
-          property,
-          null
-        ));
-    } else {
-      return new Change(ChangeType.ADD,
-        containerSchema + '/' + containerItemId + '/' + schema + '/' + itemId,
-        value, new DontCodeModelPointer(
-          containerSchema + '/' + containerItemId + '/' + schema + '/' + itemId,
-          containerSchema + '/' + schema,
-          containerSchema + '/' + containerItemId,
-          containerSchema,
-          null,
-          itemId
-        ));
+  it('should manage properly element move', () => {
+    //First creates 3 elements a,b,c
+    let map = new Map<string, any>();
+    let array = new Array<TestArrayTarget>();
+    const resultA = new TestArrayTarget("eltA", "number");
+    const resultB = new TestArrayTarget("eltB", "string");
+    const resultC = new TestArrayTarget("eltC", "number");
 
-    }
-  };
+    let change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'a',
+      resultA);
+    array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
+
+    change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'b',
+      resultB);
+    array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
+
+    change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'c',
+      resultC);
+    array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
+
+    expect(array).toHaveLength(3);
+    expect(map.get('b')).toBe(1);
+    expect(array[1]).toEqual(resultB);
+
+    // Move b before a
+    change = DontCodeTestManager.createMoveChange('b','a','creation/entities', 'a', 'fields', 'b');
+    array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
+
+    expect(array).toEqual(new Array(resultB, resultA, resultC));
+    expect(map).toEqual(new Map([
+      ['a', 1],
+      ['b', 0],
+      ['c', 2]
+    ]));
+    // Move a after c, at the end
+    change = DontCodeTestManager.createMoveChange('a',null,'creation/entities', 'a', 'fields', 'a');
+    array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
+
+    expect(array).toEqual(new Array(resultB, resultC, resultA));
+    expect(map).toEqual(new Map([
+      ['a', 2],
+      ['b', 0],
+      ['c', 1]
+    ]));
+    // Move b before a
+    change = DontCodeTestManager.createMoveChange('b','a','creation/entities', 'a', 'fields', 'b');
+    array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
+
+    expect(array).toEqual(new Array( resultC, resultB, resultA));
+    expect(map).toEqual(new Map([
+      ['a', 2],
+      ['b', 1],
+      ['c', 0]
+    ]));
+    // Move a before b
+    change = DontCodeTestManager.createMoveChange('a','b','creation/entities', 'a', 'fields', 'a');
+    array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
+
+    expect(array).toEqual(new Array( resultC, resultA, resultB));
+    expect(map).toEqual(new Map([
+      ['a', 1],
+      ['b', 2],
+      ['c', 0]
+    ]));
+
+  });
+
+  it('should manage properly element delete', () => {
+    //First creates 3 elements a,b,c
+    let map = new Map<string, any>();
+    let array = new Array<TestArrayTarget>();
+    const resultA = new TestArrayTarget("eltA", "number");
+    const resultB = new TestArrayTarget("eltB", "string");
+    const resultC = new TestArrayTarget("eltC", "number");
+
+    let change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'a',
+      resultA);
+    array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
+
+    change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'b',
+      resultB);
+    array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
+
+    change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'c',
+      resultC);
+    array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
+
+    expect(array).toHaveLength(3);
+    expect(map.get('b')).toBe(1);
+    expect(array[1]).toEqual(resultB);
+
+    // Delete b
+    change = DontCodeTestManager.createDeleteChange('creation/entities', 'a', 'fields', 'b');
+    array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
+
+    expect(array).toEqual(new Array(resultA, resultC));
+    expect(map).toEqual(new Map([
+      ['a', 0],
+      ['c', 1]
+    ]));
+    // Delete a
+    change = DontCodeTestManager.createDeleteChange('creation/entities', 'a', 'fields', 'a');
+    array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
+
+    expect(array).toEqual(new Array(resultC));
+    expect(map).toEqual(new Map([
+      ['c', 0]
+    ]));
+      // Reinsert a
+    change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'a',
+      resultA);
+    array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
+    expect(array).toEqual(new Array(resultC, resultA));
+    expect(map).toEqual(new Map([
+      ['c', 0],
+      ['a', 1]
+    ]));
+    // Delete a
+    change = DontCodeTestManager.createDeleteChange('creation/entities', 'a', 'fields', 'a');
+    array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
+
+    expect(array).toEqual(new Array(resultC));
+    expect(map).toEqual(new Map([
+      ['c', 0]
+    ]));
+
+    // Delete c
+    change = DontCodeTestManager.createDeleteChange('creation/entities', 'a', 'fields', 'c');
+    array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
+
+    expect(array).toEqual(new Array());
+    expect(map).toEqual(new Map());
+  });
 
   function transformToTarget(key: string, value: any): TestArrayTarget {
     return new TestArrayTarget(value.name, value.type);
