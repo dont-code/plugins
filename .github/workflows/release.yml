@@ -36,6 +36,7 @@ jobs:
           npm ci
           git config user.name "GitHub Actions"
           git config user.email noreply@github.com
+          del package-lock.json
           git merge origin/Development --autostash
       - name: Deploy Common
         uses: jacobtomlinson/gha-find-replace@master
