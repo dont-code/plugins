@@ -32,12 +32,11 @@ jobs:
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
       - name: Install
         run: |
-          npm install @dontcode/core@latest
-          npm ci
           git config user.name "GitHub Actions"
           git config user.email noreply@github.com
-          rm package-lock.json
-          git merge origin/Development --autostash
+          git merge origin/Development --strategy=recursive --strategy-option=theirs
+          npm install @dontcode/core@latest
+          npm ci
       - name: Deploy Common
         uses: jacobtomlinson/gha-find-replace@master
         with:
