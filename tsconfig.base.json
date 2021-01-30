@@ -19,6 +19,7 @@
     "paths": {
       "@dontcode/plugin-screen": ["libs/screen/src"],
       "@dontcode/plugin-basic": ["libs/basic/src"],
+      "@dontcode/plugin-common": ["libs/common/src"],
       "@dontcode/core": ["node_modules/@dontcode/core"],
       "rxjs": ["node_modules/rxjs"],
       "rxjs/*": ["node_modules/rxjs/*"]

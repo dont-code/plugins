@@ -204,6 +204,18 @@
       "sourceRoot": "libs/common/src",
       "prefix": "dontcode",
       "architect": {
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "options": {
+            "tsConfig": "libs/common/tsconfig.lib.json",
+            "project": "libs/common/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/common/tsconfig.lib.prod.json"
+            }
+          }
+        },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {

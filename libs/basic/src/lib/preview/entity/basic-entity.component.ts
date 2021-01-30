@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from "@angular/core";
 import { Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler } from "@dontcode/core";
-import { map } from "rxjs/operators";
-import { PluginBaseComponent } from "../../../../../common/src/lib/common-ui/plugin-base.component";
+/**
+ * The next import is modified during the build by the build script. Don't change it
+ */
+import { PluginBaseComponent } from "@dontcode/plugin-common";
 
 
 @Component({

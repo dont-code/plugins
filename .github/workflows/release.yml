@@ -39,16 +39,9 @@ jobs:
         run: |
           npm install @dontcode/core@latest
           npm ci
-      - name: Deploy Common
-        uses: jacobtomlinson/gha-find-replace@master
-        with:
-          find: "../../common/src/lib"
-          replace: "common/src/lib"
-          include: "libs/basic/src/lib/"
-      - name: Copy Common
-        run: |
-          mkdir -p libs/basic/src/common
-          cp -r libs/common/src libs/basic/src/common
+      - name: Version
+        run: npm version patch
+        working-directory: libs/common
       - name: Version
         run: npm version patch
         working-directory: libs/screen
@@ -57,8 +50,9 @@ jobs:
         working-directory: libs/basic
       - name: Build
         run: |
-          npm run nx run screen:build -- --prod
+          npm run nx run common:build -- --prod
           npm run nx run basic:build -- --prod
+          npm run nx run screen:build -- --prod
       - name: Unit tests
         run: |
           npm run nx run common:test
@@ -69,17 +63,14 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@master
         with:
           path: libs/basic
-      - name: Undeploy Common
-        uses: jacobtomlinson/gha-find-replace@master
-        with:
-          find: "common/src/lib"
-          replace: "../../common/src/lib"
-          include: "libs/basic/src/lib/"
       - name: Push
         run: |
-          rm -rf libs/basic/src/common
           git commit -a -m "New release ${{steps.package-version.outputs.current-version}}"
           git push
+      - name: Publish Common
+        run: npm publish dist/libs/common --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish Screen
         run: npm publish dist/libs/screen --access public
         env:

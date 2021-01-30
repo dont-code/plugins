@@ -36,18 +36,9 @@ jobs:
         run: |
           npm install @dontcode/core@latest
           npm ci
-      - name: Deploy Common
-        uses: jacobtomlinson/gha-find-replace@master
-        with:
-          find: "../../common/src/lib"
-          replace: "common/src/lib"
-          include: "libs/basic/src/lib/"
-      - name: Copy Common
-        run: |
-          mkdir -p libs/basic/src/common
-          cp -r libs/common/src libs/basic/src/common
       - name: Build
         run: |
+          npm run nx run common:build -- --prod
           npm run nx run basic:build -- --prod
           npm run nx run screen:build -- --prod
 #      - uses: actions/upload-artifact@v1
