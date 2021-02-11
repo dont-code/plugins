@@ -52,12 +52,20 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
           this.cols = this.applyUpdatesToArray (this.cols, this.colsMap, change, prop, (key,item) => {
             return new PrimeColumn(item.name, item.name);
           });
+          this.reloadData ();
           break;
       }
     }
     this.ref.markForCheck();
     this.ref.detectChanges();
 
+  }
+
+  protected reloadData () {
+    this.values.clear();
+    if (this.provider.) {
+      this.cols.forEach ()
+    }
   }
 
 }
