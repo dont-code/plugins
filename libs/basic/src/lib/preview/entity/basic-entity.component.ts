@@ -17,7 +17,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   entityName:string;
   cols = new Array<PrimeColumn>();
   colsMap = new Map<string, number>();
-  values:any[];
+  values = new Array<any>();
 
   constructor(private ref:ChangeDetectorRef) {
     super();
@@ -39,7 +39,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
    */
   protected handleChange (change: Change ) {
     //console.log("Changed Entity",change.position);
-    let prop = change.pointer.getUnderPropertyOf(this.entityPointer);
+    const prop = change.pointer.getUnderPropertyOf(this.entityPointer);
     if( prop ) {
       switch (prop) {
         case     DontCodeModel.APP_ENTITIES_NAME_NODE:
@@ -62,9 +62,16 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   }
 
   protected reloadData () {
-    this.values.clear();
-    if (this.provider.) {
-      this.cols.forEach ()
+    this.values.length=0;
+    const fields = this.provider.getJsonAt(this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE).position)
+    if (fields) {
+      for (let i=0; i<10;i++) {
+        const row = {};
+        for (const field of Object.values(fields) as any) {
+          row[field.name] = field.type+' '+i;
+        }
+        this.values.push(row);
+      }
     }
   }
 
