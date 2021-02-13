@@ -1,10 +1,14 @@
 <h1>Name = {{entityName}}</h1>
 <!-- Display an array of elements -->
-<p-table [columns]="cols" [value]="values">
+<p-table [columns]="cols" [value]="values"
+         styleClass="p-datatable-striped"
+         [scrollable]="true" [rows]="100" scrollHeight="250px"
+         [virtualScroll]="true" [virtualRowHeight]="34"
+         selectionMode="single" [(selection)]="selectedItem" [dataKey]="itemKeyName">
   <ng-template pTemplate="header" let-columns>
     <tr>
-      <th *ngFor="let col of columns">
-        {{col.header}}
+      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+        {{col.header}} <p-sortIcon [field]="col.field"></p-sortIcon>
       </th>
     </tr>
   </ng-template>

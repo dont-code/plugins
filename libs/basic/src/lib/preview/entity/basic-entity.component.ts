@@ -18,17 +18,22 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   cols = new Array<PrimeColumn>();
   colsMap = new Map<string, number>();
   values = new Array<any>();
+  selectedItem: any;
+  itemKeyName: any;
+  initing = false;
 
   constructor(private ref:ChangeDetectorRef) {
     super();
   }
 
   initCommandFlow(provider: CommandProviderInterface, pointer: DontCodeModelPointer): any {
+    this.initing=true;
     super.initCommandFlow(provider, pointer);
 
     this.decomposeJsonToMultipleChanges (this.entityPointer, provider.getJsonAt(this.entityPointer.position)); // Dont provide a special handling for initial json, but emulate a list of changes
     this.initChangeListening (); // Listen to all changes occuring after entityPointer
-
+    this.initing=false;
+    this.reloadData();
   }
 
 
@@ -62,16 +67,25 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   }
 
   protected reloadData () {
-    this.values.length=0;
-    const fields = this.provider.getJsonAt(this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE).position)
-    if (fields) {
-      for (let i=0; i<10;i++) {
-        const row = {};
-        for (const field of Object.values(fields) as any) {
-          row[field.name] = field.type+' '+i;
+    if (!this.initing) {
+      this.values.length=0;
+      const fields = this.provider.getJsonAt(this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE).position)
+      if (fields) {
+        let first=true;
+        for (let i=0; i<10;i++) {
+          const row = {};
+          for (const field of Object.values(fields) as any) {
+            if (first) {
+              this.itemKeyName = field.name;
+              first = false;
+            }
+            row[field.name] = field.type+' '+i;
+          }
+          this.values.push(row);
         }
-        this.values.push(row);
       }
+      //trigger change detection
+      this.values = [...this.values];
     }
   }
 
