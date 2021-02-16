@@ -1,0 +1,20 @@
+<p-table [columns]="cols" [value]="values"
+         styleClass="p-datatable-striped"
+         [scrollable]="true" [rows]="100" scrollHeight="250px"
+         [virtualScroll]="true" [virtualRowHeight]="34"
+         selectionMode="single" [(selection)]="selectedItem" [dataKey]="itemKeyName" (selectionChange)="selectionChange($event)" >
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+        {{col.header}} <p-sortIcon [field]="col.field"></p-sortIcon>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <tr [pSelectableRow]="rowData">
+      <td *ngFor="let col of columns">
+        {{rowData[col.field]}}
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

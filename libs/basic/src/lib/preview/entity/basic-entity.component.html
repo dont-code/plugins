@@ -1,22 +1,10 @@
 <h1>Name = {{entityName}}</h1>
-<!-- Display an array of elements -->
-<p-table [columns]="cols" [value]="values"
-         styleClass="p-datatable-striped"
-         [scrollable]="true" [rows]="100" scrollHeight="250px"
-         [virtualScroll]="true" [virtualRowHeight]="34"
-         selectionMode="single" [(selection)]="selectedItem" [dataKey]="itemKeyName">
-  <ng-template pTemplate="header" let-columns>
-    <tr>
-      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-        {{col.header}} <p-sortIcon [field]="col.field"></p-sortIcon>
-      </th>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-rowData let-columns="columns">
-    <tr>
-      <td *ngFor="let col of columns">
-        {{rowData[col.field]}}
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
+<p-tabView>
+  <p-tabPanel header="List">
+      <!-- Display an array of elements -->
+    <dontcode-list-entity [(selectedItem)]="selectedItem" (selectedItemChange)="selectChange($event)" ></dontcode-list-entity>
+  </p-tabPanel>
+  <p-tabPanel header="Edit" [disabled]="!selectedItem">
+      <dontcode-edit-entity [value]="selectedItem"></dontcode-edit-entity>
+  </p-tabPanel>
+</p-tabView>

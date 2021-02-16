@@ -133,7 +133,7 @@ export abstract class PluginBaseComponent implements OnInit, OnDestroy {
    * @private
    */
   applyUpdatesToArray<T>(target: T[], targetMap: Map<string, number>, change: Change, property: string, transform: (key:string, item:any) => T, applyProperty?: (target:T, key:string, value:any) => boolean): T[] {
-    let itemId = change.pointer.calculateItemIdOrContainer();
+    const itemId = change.pointer.calculateItemIdOrContainer();
     let newTarget:T = null;
     let pos = -1;
     let targetPos = -1;
@@ -158,7 +158,7 @@ export abstract class PluginBaseComponent implements OnInit, OnDestroy {
             ))
           ) {
             // It cannot be dynamically updated by the caller, so we do a full replacement
-            let fullValue = this.provider.getJsonAt(change.pointer.containerPosition);
+            const fullValue = this.provider.getJsonAt(change.pointer.containerPosition);
             newTarget = transform(property, fullValue);
           }
         }else {
@@ -167,9 +167,9 @@ export abstract class PluginBaseComponent implements OnInit, OnDestroy {
         }
         break;
       case ChangeType.MOVE:
-        if( pos != -1) {
+        if( pos !== -1) {
           // We delete the element moved, it will be inserted at the right position later
-          if ((targetPos!=-1) && (targetPos > pos))
+          if ((targetPos!==-1) && (targetPos > pos))
             targetPos--;
           target.splice(pos, 1);
           // Recalculate all indexes in targetMap
@@ -196,10 +196,10 @@ export abstract class PluginBaseComponent implements OnInit, OnDestroy {
     }
 
     if (newTarget) {
-      if( pos!=-1) {
+      if( pos!==-1) {
           // We just need to replace the new value at the same position
         target[pos]=newTarget;
-      } else if (targetPos!=-1) {
+      } else if (targetPos!==-1) {
           // Insert the element at the correct position
           target.splice(targetPos, 0, newTarget);
           // Recalculate all indexes in targetMap
