@@ -1,3 +1,13 @@
 <ng-container *ngIf="value">Editor:
 <p>{{value | json}}</p>
+  <div class="p-fluid">
+    <div class="p-field p-grid" *ngFor="let field of fields">
+      <label [for]="field.name" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">{{field.name}}</label>
+      <div class="p-col-12 p-md-10">
+        <input *ngIf="field.type===types.INPUT" [id]="field.name" type="text" [(ngModel)]="value[field.name]" pInputText />
+        <p-checkbox *ngIf="field.type===types.CHECK" [id]="field.name" [(ngModel)]="value[field.name]" [binary]="true"></p-checkbox>
+        <p-inputNumber *ngIf="field.type===types.NUMERIC" [id]="field.name" [(ngModel)]="value[field.name]" [showButtons]="true"></p-inputNumber>
+      </div>
+    </div>
+  </div>
 </ng-container>

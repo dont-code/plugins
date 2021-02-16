@@ -74,7 +74,19 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
               this.itemKeyName = field.name;
               first = false;
             }
-            row[field.name] = field.type+' '+i;
+            switch (field.type) {
+              case 'string':
+                row[field.name] = field.name+' '+i;
+                break;
+              case 'boolean':
+                row[field.name] = (i % 3 === 0);
+                break;
+              case 'number':
+                row[field.name] = i;
+                break;
+              default:
+                row[field.name] = field.name+' '+i;
+            }
           }
           this.values.push(row);
         }

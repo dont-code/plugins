@@ -2,6 +2,7 @@ import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Vi
 import { Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler } from "@dontcode/core";
 import { PluginBaseComponent } from "@dontcode/plugin-common";
 import {ListEntityComponent} from "./list-entity.component";
+import {EditEntityComponent} from "./edit-entity.component";
 
 
 @Component({
@@ -15,8 +16,13 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   entityName:string;
   selectedItem: any;
 
+  tabIndex = 0;
+
   @ViewChild(ListEntityComponent)
   list: ListEntityComponent;
+
+  @ViewChild(EditEntityComponent)
+  edit: EditEntityComponent;
 
   constructor(private ref:ChangeDetectorRef) {
     super();
@@ -31,6 +37,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
 
   ngAfterViewInit(): void {
     this.list.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
+    this.edit.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
   }
 
   /**
@@ -57,6 +64,9 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
 
   selectChange($event: any) {
     console.log("Event:", $event);
+    if ($event) {
+      this.tabIndex = 1;  // Automatically move to edit when selection is made
+    }
   }
 }
 

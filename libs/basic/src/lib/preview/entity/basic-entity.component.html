@@ -1,5 +1,5 @@
 <h1>Name = {{entityName}}</h1>
-<p-tabView>
+<p-tabView [(activeIndex)]="tabIndex">
   <p-tabPanel header="List">
       <!-- Display an array of elements -->
     <dontcode-list-entity [(selectedItem)]="selectedItem" (selectedItemChange)="selectChange($event)" ></dontcode-list-entity>

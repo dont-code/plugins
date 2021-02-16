@@ -8,9 +8,13 @@ import { TableModule } from "primeng/table";
 import { ListEntityComponent } from './preview/entity/list-entity.component';
 import { EditEntityComponent } from './preview/entity/edit-entity.component';
 import {TabViewModule} from "primeng/tabview";
+import {CheckboxModule} from "primeng/checkbox";
+import {FormsModule} from "@angular/forms";
+import {InputNumberModule} from "primeng/inputnumber";
+import {InputTextModule} from "primeng/inputtext";
 
 @NgModule({
-  imports: [CommonModule, TableModule, TabViewModule],
+  imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule],
   declarations: [BasicEntityComponent, ListEntityComponent, EditEntityComponent],
   id:'dontcode-plugin/basic'
 })
