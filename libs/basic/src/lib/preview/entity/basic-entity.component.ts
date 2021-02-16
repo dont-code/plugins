@@ -36,8 +36,11 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   }
 
   ngAfterViewInit(): void {
-    this.list.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
-    this.edit.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
+    // When testing entityPointer is not defined
+    if (this.entityPointer) {
+      this.list.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
+      this.edit.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
+    }
   }
 
   /**

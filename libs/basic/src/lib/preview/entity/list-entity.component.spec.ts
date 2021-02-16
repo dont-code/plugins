@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ListEntityComponent } from './list-entity.component';
+import {TableModule} from "primeng/table";
 
 describe('ListEntityComponent', () => {
   let component: ListEntityComponent;
@@ -8,7 +9,8 @@ describe('ListEntityComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ListEntityComponent ]
+      declarations: [ ListEntityComponent ],
+      imports: [TableModule]
     })
     .compileComponents();
   });
