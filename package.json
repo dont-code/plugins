@@ -46,6 +46,7 @@
     "@nrwl/angular": "^10.4.4",
     "broadcast-channel": "^3.3.0",
     "core-js": "^3.6.5",
+    "dexie": "^3.0.3",
     "primeflex": "^2.0.0",
     "primeicons": "^4.1.0",
     "primeng": "^11.1.0",
