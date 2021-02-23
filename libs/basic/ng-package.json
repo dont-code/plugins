@@ -5,7 +5,13 @@
     "entryFile": "src/index.ts",
     "umdModuleIds": {
       "primeng/table": "primeng/table",
-      "@dontcode/core": "@dontcode/core"
+      "primeng/api": "primeng/api",
+      "primeng/inputtext": "primeng/inputtext",
+      "primeng/checkbox": "primeng/checkbox",
+      "primeng/inputnumber": "primeng/inputnumber",
+      "primeng/tabview": "primeng/tabview",
+      "@dontcode/core": "@dontcode/core",
+      "@dontcode/plugin-common": "@dontcode/plugin-common"
     }
   }
 }

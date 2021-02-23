@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DontCode, PluginModuleInterface } from "@dontcode/core";
-import dtcde = DontCode.dtcde;
+import { dtcde, PluginModuleInterface } from "@dontcode/core";
 import { BasicPlugin } from "./declaration/basic-plugin";
 import { BasicEntityComponent } from './preview/entity/basic-entity.component';
 import { TableModule } from "primeng/table";

@@ -5,12 +5,12 @@ import { Component } from "@angular/core";
 import {
   Change,
   ChangeType,
-  CommandProviderInterface, DontCode,
+  CommandProviderInterface,
   DontCodeModelPointer,
-  DontCodeSchemaManager
+  DontCodeSchemaManager,
+  dtcde
 } from "@dontcode/core";
 import { Observable } from "rxjs";
-import dtcde = DontCode.dtcde;
 import {DontCodeTestManager} from "@dontcode/core";
 
 
@@ -97,7 +97,7 @@ describe('PluginBaseComponent', () => {
     });
 
     // Simple results first
-    let map = new Map<string, any>();
+    const map = new Map<string, any>();
     let array = new Array<TestArrayTarget>();
     array = component.applyUpdatesToArray(array, map, change, 'fields', transformToTarget);
     expect(array).toHaveLength(1);
@@ -157,7 +157,7 @@ describe('PluginBaseComponent', () => {
 
   it('should manage properly element move', () => {
     //First creates 3 elements a,b,c
-    let map = new Map<string, any>();
+    const map = new Map<string, any>();
     let array = new Array<TestArrayTarget>();
     const resultA = new TestArrayTarget("eltA", "number");
     const resultB = new TestArrayTarget("eltB", "string");
@@ -224,7 +224,7 @@ describe('PluginBaseComponent', () => {
 
   it('should manage properly element delete', () => {
     //First creates 3 elements a,b,c
-    let map = new Map<string, any>();
+    const map = new Map<string, any>();
     let array = new Array<TestArrayTarget>();
     const resultA = new TestArrayTarget("eltA", "number");
     const resultB = new TestArrayTarget("eltB", "string");
