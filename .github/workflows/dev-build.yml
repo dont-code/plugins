@@ -34,8 +34,8 @@ jobs:
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
       - name: Install
         run: |
-          npm install @dontcode/core@latest
-          npm ci --no-optional
+          npm install @dontcode/core@latest --no-optional
+          npm ci
       - name: Build
         run: |
           npm run nx run common:build -- --prod
