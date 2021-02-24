@@ -35,7 +35,7 @@ jobs:
       - name: Install
         run: |
           npm install @dontcode/core@latest
-          npm ci
+          npm ci --no-optional
       - name: Build
         run: |
           npm run nx run common:build -- --prod
