@@ -1,8 +1,8 @@
-import { async, TestBed } from '@angular/core/testing';
-import { BasicModule } from './basic.module';
+import {TestBed, waitForAsync} from '@angular/core/testing';
+import {BasicModule} from './basic.module';
 
 describe('BasicModule', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [BasicModule],
     }).compileComponents();
