@@ -1,8 +1,16 @@
 <h1>Basic editor of {{entityName}}</h1>
+<p-toolbar>
+  <ng-template pTemplate="left">
+    <button pButton icon="pi pi-plus" class="p-button-rounded p-button-success p-mr-2" (click)="newEntity()"></button>
+    <button pButton icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteEntity()" [disabled]="!selectedItem"></button>
+    <i class="pi pi-minus p-mx-2" style="font-size: 0.5rem"></i>
+    <button pButton icon="pi pi-save" class="p-button-rounded p-button-warning" (click)="saveEntity()" [disabled]="!selectedItem"></button>
+  </ng-template>
+</p-toolbar>
 <p-tabView [(activeIndex)]="tabIndex">
   <p-tabPanel header="List">
       <!-- Display an array of elements -->
-    <dontcode-list-entity [(selectedItem)]="selectedItem" (selectedItemChange)="selectChange($event)" ></dontcode-list-entity>
+    <dontcode-list-entity [store]="store" [(selectedItem)]="selectedItem" (selectedItemChange)="selectChange($event)" ></dontcode-list-entity>
   </p-tabPanel>
   <p-tabPanel header="Edit" [disabled]="!selectedItem">
       <dontcode-edit-entity [value]="selectedItem"></dontcode-edit-entity>

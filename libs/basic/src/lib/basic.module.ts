@@ -11,9 +11,11 @@ import {CheckboxModule} from "primeng/checkbox";
 import {FormsModule} from "@angular/forms";
 import {InputNumberModule} from "primeng/inputnumber";
 import {InputTextModule} from "primeng/inputtext";
+import {ToolbarModule} from "primeng/toolbar";
+import {ButtonModule} from "primeng/button";
 
 @NgModule({
-  imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule],
+  imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ToolbarModule, ButtonModule],
   declarations: [BasicEntityComponent, ListEntityComponent, EditEntityComponent],
   id:'dontcode-plugin/basic'
 })

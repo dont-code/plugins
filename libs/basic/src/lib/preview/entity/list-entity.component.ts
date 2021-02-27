@@ -1,6 +1,6 @@
-import {Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef} from '@angular/core';
-import {Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
-import {PluginBaseComponent} from "@dontcode/plugin-common";
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
+import {PluginBaseComponent, EntityListManager} from "@dontcode/plugin-common";
 
 
 @Component({
@@ -21,7 +21,10 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
 
   cols = new Array<PrimeColumn>();
   colsMap = new Map<string, number>();
-  values = new Array<any>();
+
+
+  @Input()
+  store: EntityListManager;
 
   constructor(private ref:ChangeDetectorRef) {
     super();
@@ -41,7 +44,7 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
     this.decomposeJsonToMultipleChanges (this.entityPointer, provider.getJsonAt(this.entityPointer.position)); // Dont provide a special handling for initial json, but emulate a list of changes
     this.initChangeListening (); // Listen to all changes occuring after entityPointer
     this.initing=false;
-    this.reloadData();
+//    this.reloadData();
   }
 
   /**
@@ -55,13 +58,13 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
     this.cols = this.applyUpdatesToArray (this.cols, this.colsMap, change, null, (key,item) => {
       return new PrimeColumn(item.name, item.name);
     });
-    this.reloadData ();
+  //  this.reloadData ();
     this.ref.markForCheck();
     this.ref.detectChanges();
 
   }
 
-  protected reloadData () {
+/*  protected reloadData () {
     if (!this.initing) {
       this.values.length=0;
       const fields = this.provider.getJsonAt(this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE).position)
@@ -95,7 +98,7 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
       this.values = [...this.values];
     }
   }
-
+*/
 
 
 }

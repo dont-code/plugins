@@ -1,6 +1,6 @@
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from "@angular/core";
 import { Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler } from "@dontcode/core";
-import { PluginBaseComponent } from "@dontcode/plugin-common";
+import { PluginBaseComponent,EntityListManager, EntityStoreService } from "@dontcode/plugin-common";
 import {ListEntityComponent} from "./list-entity.component";
 import {EditEntityComponent} from "./edit-entity.component";
 
@@ -16,6 +16,8 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   entityName:string;
   selectedItem: any;
 
+  store:EntityListManager;
+
   tabIndex = 0;
 
   @ViewChild(ListEntityComponent)
@@ -24,14 +26,18 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   @ViewChild(EditEntityComponent)
   edit: EditEntityComponent;
 
-  constructor(private ref:ChangeDetectorRef) {
+  constructor(protected entityService:EntityStoreService, private ref:ChangeDetectorRef) {
     super();
   }
 
 
   initCommandFlow(provider: CommandProviderInterface, pointer: DontCodeModelPointer): any {
     super.initCommandFlow(provider, pointer);
-    this.decomposeJsonToMultipleChanges (this.entityPointer, provider.getJsonAt(this.entityPointer.position));
+    if( this.entityPointer) {
+      const json=provider.getJsonAt(this.entityPointer.position);
+      this.store = this.entityService.retrieveListManager(this.entityPointer.position, json);
+      this.decomposeJsonToMultipleChanges (this.entityPointer, json);
+    }
     this.initChangeListening (); // Listen to name changes of this Entity
   }
 
@@ -40,6 +46,11 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
     if (this.entityPointer) {
       this.list.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
       this.edit.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
+      this.store.loadAll().then (() => {
+        console.log ("Loaded entities");
+        this.ref.markForCheck();
+        this.ref.detectChanges();
+      });
     }
   }
 
@@ -66,9 +77,32 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   }
 
   selectChange($event: any) {
-    console.log("Event:", $event);
+    // console.log("Event:", $event);
     if ($event) {
       this.tabIndex = 1;  // Automatically move to edit when selection is made
+    }
+  }
+
+  deleteEntity() {
+    if( this.selectedItem) {
+      this.store.remove(this.selectedItem);
+      this.selectedItem = null;
+      this.tabIndex=0;
+    }
+  }
+
+  newEntity() {
+    const newEntity = {};
+    this.store.push(newEntity);
+    this.selectedItem = newEntity;
+    this.tabIndex = 1;
+  }
+
+  saveEntity() {
+    if( this.selectedItem) {
+      this.store.store (this.selectedItem).then(value => {
+        console.log("Entity with Id ", value, " stored");
+      });
     }
   }
 }
