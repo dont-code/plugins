@@ -1,10 +1,10 @@
 <h1>Basic editor of {{entityName}}</h1>
 <p-toolbar>
   <ng-template pTemplate="left">
-    <button pButton icon="pi pi-plus" class="p-button-rounded p-button-success p-mr-2" (click)="newEntity()"></button>
-    <button pButton icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteEntity()" [disabled]="!selectedItem"></button>
+    <button name="new" pButton icon="pi pi-plus" class="p-button-rounded p-button-success p-mr-2" (click)="newEntity()"></button>
+    <button name="delete" pButton icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteEntity()" [disabled]="!selectedItem"></button>
     <i class="pi pi-minus p-mx-2" style="font-size: 0.5rem"></i>
-    <button pButton icon="pi pi-save" class="p-button-rounded p-button-warning" (click)="saveEntity()" [disabled]="!selectedItem"></button>
+    <button name="save" pButton icon="pi pi-save" class="p-button-rounded p-button-warning" (click)="saveEntity()" [disabled]="!selectedItem"></button>
   </ng-template>
 </p-toolbar>
 <p-tabView [(activeIndex)]="tabIndex">
