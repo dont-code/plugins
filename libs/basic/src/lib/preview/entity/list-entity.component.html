@@ -5,7 +5,7 @@
          selectionMode="single" [(selection)]="selectedItem" [dataKey]="itemKeyName" (selectionChange)="selectionChange($event)" >
   <ng-template pTemplate="header" let-columns>
     <tr>
-      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+      <th id="header-{{col.header}}" *ngFor="let col of columns" [pSortableColumn]="col.field">
         {{col.header}} <p-sortIcon [field]="col.field"></p-sortIcon>
       </th>
     </tr>
