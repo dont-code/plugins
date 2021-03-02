@@ -50,7 +50,7 @@
     "dexie": "^3.0.3",
     "primeflex": "^2.0.0",
     "primeicons": "^4.1.0",
-    "primeng": "^11.1.0",
+    "primeng": "^11.2.3",
     "rxjs": "^6.6.3",
     "tslib": "^2.0.3",
     "zone.js": "^0.11.2"
