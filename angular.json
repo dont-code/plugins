@@ -26,10 +26,7 @@
               "libs/screen/tsconfig.lib.json",
               "libs/screen/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/screen/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/screen/**/*"]
           }
         },
         "test": {
@@ -38,9 +35,7 @@
             "jestConfig": "libs/screen/jest.config.js",
             "passWithNoTests": true
           },
-          "outputs": [
-            "coverage/libs/screen"
-          ]
+          "outputs": ["coverage/libs/screen"]
         }
       },
       "schematics": {
@@ -120,9 +115,7 @@
               ]
             }
           },
-          "outputs": [
-            "{options.outputPath}"
-          ]
+          "outputs": ["{options.outputPath}"]
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -152,10 +145,7 @@
               "apps/preview-tester/tsconfig.app.json",
               "apps/preview-tester/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/preview-tester/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!apps/preview-tester/**/*"]
           }
         },
         "test": {
@@ -164,9 +154,7 @@
             "jestConfig": "apps/preview-tester/jest.config.js",
             "passWithNoTests": true
           },
-          "outputs": [
-            "coverage/apps/preview-tester"
-          ]
+          "outputs": ["coverage/apps/preview-tester"]
         }
       }
     },
@@ -195,10 +183,7 @@
               "libs/basic/tsconfig.lib.json",
               "libs/basic/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/basic/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/basic/**/*"]
           }
         },
         "test": {
@@ -207,9 +192,7 @@
             "jestConfig": "libs/basic/jest.config.js",
             "passWithNoTests": true
           },
-          "outputs": [
-            "coverage/libs/basic"
-          ]
+          "outputs": ["coverage/libs/basic"]
         }
       },
       "schematics": {
@@ -243,10 +226,7 @@
               "libs/common/tsconfig.lib.json",
               "libs/common/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/common/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/common/**/*"]
           }
         },
         "test": {
@@ -255,14 +235,49 @@
             "jestConfig": "libs/common/jest.config.js",
             "passWithNoTests": true
           },
-          "outputs": [
-            "coverage/libs/common"
-          ]
+          "outputs": ["coverage/libs/common"]
         }
       },
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
+        }
+      }
+    },
+    "fields": {
+      "projectType": "library",
+      "root": "libs/fields",
+      "sourceRoot": "libs/fields/src",
+      "prefix": "dontcode",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:ng-packagr-lite",
+          "options": {
+            "tsConfig": "libs/fields/tsconfig.lib.json",
+            "project": "libs/fields/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/fields/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/fields/src/**/*.ts",
+              "libs/fields/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/fields"],
+          "options": {
+            "jestConfig": "libs/fields/jest.config.js",
+            "passWithNoTests": true
+          }
         }
       }
     }
@@ -274,11 +289,18 @@
   "defaultProject": "screen",
   "schematics": {
     "@nrwl/angular:application": {
+      "style": "scss",
+      "linter": "eslint",
       "unitTestRunner": "jest",
       "e2eTestRunner": "cypress"
     },
     "@nrwl/angular:library": {
+      "style": "scss",
+      "linter": "eslint",
       "unitTestRunner": "jest"
+    },
+    "@nrwl/angular:component": {
+      "style": "scss"
     }
   }
 }

@@ -22,7 +22,8 @@
       "@dontcode/plugin-common": ["libs/common/src"],
       "@dontcode/core": ["node_modules/@dontcode/core"],
       "rxjs": ["node_modules/rxjs"],
-      "rxjs/*": ["node_modules/rxjs/*"]
+      "rxjs/*": ["node_modules/rxjs/*"],
+      "@dontcode/plugin-fields": ["libs/fields/src"]
     }
   },
   "exclude": ["node_modules", "tmp"]
