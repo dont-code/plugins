@@ -1,6 +1,15 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ComponentFactoryResolver,
+  EventEmitter, Injector,
+  Input,
+  OnInit,
+  Output,
+  TemplateRef
+} from '@angular/core';
 import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
-import {PluginBaseComponent, EntityListManager} from "@dontcode/plugin-common";
+import {PluginBaseComponent, EntityListManager, TemplateList, DynamicComponent} from "@dontcode/plugin-common";
 
 
 @Component({
@@ -26,8 +35,8 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
   @Input()
   store: EntityListManager;
 
-  constructor(private ref:ChangeDetectorRef) {
-    super();
+  constructor(private ref:ChangeDetectorRef, componentFactoryResolver: ComponentFactoryResolver, injector: Injector) {
+    super(componentFactoryResolver, injector);
   }
 
   ngOnInit(): void {
@@ -55,61 +64,42 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
   protected handleChange (change: Change ) {
     //console.log("Changed Entity",change.position);
 
-    this.cols = this.applyUpdatesToArray (this.cols, this.colsMap, change, null, (key,item) => {
-      return new PrimeColumn(item.name, item.name);
-    });
-  //  this.reloadData ();
-    this.ref.markForCheck();
-    this.ref.detectChanges();
+    this.applyUpdatesToArrayAsync (this.cols, this.colsMap, change, null, (key,item) => {
+      return this.loadSubComponent(change.pointer, change.value).then(component => {
 
-  }
-
-/*  protected reloadData () {
-    if (!this.initing) {
-      this.values.length=0;
-      const fields = this.provider.getJsonAt(this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE).position)
-      if (fields) {
-        let first=true;
-        for (let i=0; i<10;i++) {
-          const row = {};
-          for (const field of Object.values(fields) as any) {
-            if (first) {
-              this.itemKeyName = field.name;
-              first = false;
-            }
-            switch (field.type) {
-              case 'string':
-                row[field.name] = field.name+' '+i;
-                break;
-              case 'boolean':
-                row[field.name] = (i % 3 === 0);
-                break;
-              case 'number':
-                row[field.name] = i;
-                break;
-              default:
-                row[field.name] = field.name+' '+i;
-            }
-          }
-          this.values.push(row);
+        const ret= new PrimeColumn(item.name, item.name);
+        if( component ) {
+          ret.component=component;
         }
-      }
-      //trigger change detection
-      this.values = [...this.values];
-    }
+        return ret;
+      });
+    }).then(updatedColumns => {
+      this.cols = updatedColumns;
+      //  this.reloadData ();
+      this.ref.markForCheck();
+      this.ref.detectChanges();
+    });
   }
-*/
 
+  providesTemplates(): TemplateList {
+    return null;
+  }
+
+  templateOf (col: PrimeColumn): TemplateRef<any> {
+    return col.component.providesTemplates().forInlineView;
+  }
 
 }
 
 class PrimeColumn {
   field:string; header:string;
+  component: DynamicComponent;
 
   constructor(field: string, header: string) {
     this.field = field;
     this.header = header;
   }
+
 }
 
 

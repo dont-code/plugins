@@ -1,3 +1,4 @@
+<dtcde-dynamic></dtcde-dynamic>
 <p-table [columns]="cols" [value]="store?.entities"
          styleClass="p-datatable-striped"
          [scrollable]="true" [rows]="100" scrollHeight="250px"
@@ -13,7 +14,10 @@
   <ng-template pTemplate="body" let-rowData let-columns="columns">
     <tr [pSelectableRow]="rowData">
       <td *ngFor="let col of columns">
-        {{rowData[col.field]}}
+        <ng-container *ngIf="col.component">
+          <ng-container *ngTemplateOutlet="templateOf(col)"></ng-container>
+        </ng-container>
+        <ng-container *ngIf="!col.component">{{rowData[col.field]}}</ng-container>
       </td>
     </tr>
   </ng-template>

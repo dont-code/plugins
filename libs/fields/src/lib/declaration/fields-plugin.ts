@@ -28,10 +28,12 @@ export class FieldsPlugin implements Plugin
       'preview-handlers': [
         {
           location: {
-            parent: DontCodeModel.APP_FIELDS_TYPE
+            parent: DontCodeModel.APP_FIELDS,
+            id: 'type',
+            values: ['Country']
           },
           class: {
-            name:'CurrencyComponent',
+            name:'CountryComponent',
             source:'fields'
           }
         }

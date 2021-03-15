@@ -1,6 +1,13 @@
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from "@angular/core";
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ComponentFactoryResolver, Injector,
+  ViewChild
+} from "@angular/core";
 import { Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler } from "@dontcode/core";
-import { PluginBaseComponent,EntityListManager, EntityStoreService } from "@dontcode/plugin-common";
+import {PluginBaseComponent, EntityListManager, EntityStoreService, TemplateList} from "@dontcode/plugin-common";
 import {ListEntityComponent} from "./list-entity.component";
 import {EditEntityComponent} from "./edit-entity.component";
 
@@ -26,8 +33,8 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   @ViewChild(EditEntityComponent)
   edit: EditEntityComponent;
 
-  constructor(protected entityService:EntityStoreService, private ref:ChangeDetectorRef) {
-    super();
+  constructor(protected entityService:EntityStoreService, private ref:ChangeDetectorRef, componentFactoryResolver: ComponentFactoryResolver, injector: Injector) {
+    super(componentFactoryResolver, injector);
   }
 
 
@@ -104,6 +111,10 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
         console.log("Entity with Id ", value, " stored");
       });
     }
+  }
+
+  providesTemplates(): TemplateList {
+    return null;
   }
 }
 
