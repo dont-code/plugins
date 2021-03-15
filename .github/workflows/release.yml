@@ -48,16 +48,21 @@ jobs:
       - name: Version
         run: npm version patch
         working-directory: libs/basic
+      - name: Version
+        run: npm version patch
+        working-directory: libs/fields
       - name: Build
         run: |
           npm run nx run common:build -- --prod
           npm run nx run basic:build -- --prod
+          npm run nx run fields:build -- --prod
           npm run nx run screen:build -- --prod
       - name: Unit tests
         run: |
           npm run nx run common:test
           npm run nx run screen:test
           npm run nx run basic:test
+          npm run nx run fields:test
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
@@ -77,5 +82,9 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish Basic
         run: npm publish dist/libs/basic --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish Fields
+        run: npm publish dist/libs/fields --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
