@@ -41,6 +41,7 @@ jobs:
           npm run nx run common:build -- --prod
           npm run nx run basic:build -- --prod
           npm run nx run screen:build -- --prod
+          npm run nx run fields:build -- --prod
 #      - uses: actions/upload-artifact@v1
 #        with:
 #          name: distribution
@@ -50,3 +51,4 @@ jobs:
           npm run nx run common:test
           npm run nx run screen:test
           npm run nx run basic:test
+          npm run nx run fields:test
