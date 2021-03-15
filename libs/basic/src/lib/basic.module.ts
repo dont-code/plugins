@@ -13,9 +13,10 @@ import {InputNumberModule} from "primeng/inputnumber";
 import {InputTextModule} from "primeng/inputtext";
 import {ToolbarModule} from "primeng/toolbar";
 import {ButtonModule} from "primeng/button";
+import {PluginCommonModule} from "@dontcode/plugin-common";
 
 @NgModule({
-  imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ToolbarModule, ButtonModule],
+  imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ToolbarModule, ButtonModule, PluginCommonModule],
   declarations: [BasicEntityComponent, ListEntityComponent, EditEntityComponent],
   id:'dontcode-plugin/basic'
 })

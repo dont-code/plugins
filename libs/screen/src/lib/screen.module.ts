@@ -6,7 +6,8 @@ import { ScreenComponent } from "./preview/screen/screen.component";
 
 @NgModule({
   imports: [CommonModule],
-  declarations: [ScreenComponent]
+  declarations: [ScreenComponent],
+  id:'dontcode-plugin/screen'
 })
 export class ScreenModule implements PluginModuleInterface {
   constructor() {

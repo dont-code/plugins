@@ -1,6 +1,6 @@
-import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, ComponentFactoryResolver, Injector, Input, OnInit} from '@angular/core';
 import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
-import {PluginBaseComponent} from "@dontcode/plugin-common";
+import {PluginBaseComponent, TemplateList} from "@dontcode/plugin-common";
 
 @Component({
   selector: 'dontcode-edit-entity',
@@ -19,8 +19,8 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
 
   types=FormElementType;
 
-  constructor(private ref:ChangeDetectorRef) {
-    super();
+  constructor(private ref:ChangeDetectorRef, componentFactoryResolver: ComponentFactoryResolver, injector: Injector) {
+    super(componentFactoryResolver, injector);
   }
 
   ngOnInit(): void {
@@ -42,7 +42,7 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
    * @protected
    */
   protected handleChange(change: Change) {
-    this.fields = this.applyUpdatesToArray (this.fields, this.fieldsMap, change, null, (key,item) => {
+    this.applyUpdatesToArray (this.fields, this.fieldsMap, change, null, (key,item) => {
       let type:FormElementType;
       switch (item.type) {
         case 'string':
@@ -58,12 +58,13 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
           type = FormElementType.INPUT;
       }
       return new FormElement(item.name, type);
+    }).then (updatedFields => {
+      this.fields = updatedFields;
+      this.rebuildForm();
+      this.ref.markForCheck();
+      this.ref.detectChanges();
+
     });
-
-    this.rebuildForm();
-    this.ref.markForCheck();
-    this.ref.detectChanges();
-
   }
 
   /**
@@ -73,6 +74,11 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
   private rebuildForm() {
 
   }
+
+  providesTemplates(): TemplateList {
+    return null;
+  }
+
 }
 
 class FormElement {

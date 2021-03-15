@@ -6,6 +6,8 @@
     "umdModuleIds": {
       "primeng/table": "primeng/table",
       "primeng/api": "primeng/api",
+      "primeng/toolbar": "primeng/toolbar",
+      "primeng/button": "primeng/button",
       "primeng/inputtext": "primeng/inputtext",
       "primeng/checkbox": "primeng/checkbox",
       "primeng/inputnumber": "primeng/inputnumber",

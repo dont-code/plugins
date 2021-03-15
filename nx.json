@@ -2,10 +2,7 @@
   "npmScope": "dontcode",
   "implicitDependencies": {
     "angular.json": "*",
-    "package.json": {
-      "dependencies": "*",
-      "devDependencies": "*"
-    },
+    "package.json": { "dependencies": "*", "devDependencies": "*" },
     "tslint.json": "*",
     "nx.json": "*",
     "tsconfig.base.json": "*"
@@ -13,26 +10,15 @@
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/workspace/tasks-runners/default",
-      "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"]
-      }
+      "options": { "cacheableOperations": ["build", "lint", "test", "e2e"] }
     }
   },
   "projects": {
-    "screen": {
-      "tags": []
-    },
-    "preview-tester": {
-      "tags": []
-    },
-    "basic": {
-      "tags": []
-    },
-    "common": {
-      "tags": []
-    }
+    "screen": { "tags": [] },
+    "preview-tester": { "tags": [] },
+    "basic": { "tags": [] },
+    "common": { "tags": [] },
+    "fields": { "tags": [] }
   },
-  "affected": {
-    "defaultBase": "master"
-  }
+  "affected": { "defaultBase": "master" }
 }
