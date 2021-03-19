@@ -1,6 +1,7 @@
 import {ChangeDetectorRef, Component, ComponentFactoryResolver, Injector, Input, OnInit} from '@angular/core';
 import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
 import {PluginBaseComponent, TemplateList} from "@dontcode/plugin-common";
+import {ComponentLoaderService} from "../../../../../common/src/lib/common-dynamic/component-loader.service";
 
 @Component({
   selector: 'dontcode-edit-entity',
@@ -19,8 +20,8 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
 
   types=FormElementType;
 
-  constructor(private ref:ChangeDetectorRef, componentFactoryResolver: ComponentFactoryResolver, injector: Injector) {
-    super(componentFactoryResolver, injector);
+  constructor(private ref:ChangeDetectorRef, componentLoader: ComponentLoaderService, injector: Injector) {
+    super(componentLoader, injector);
   }
 
   ngOnInit(): void {
