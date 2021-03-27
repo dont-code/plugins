@@ -1,15 +1,12 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  ComponentFactoryResolver,
-  EventEmitter, Injector,
-  Input,
-  OnInit,
-  Output,
-  TemplateRef
-} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Injector, Input, OnInit, Output, TemplateRef} from '@angular/core';
 import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
-import {PluginBaseComponent, EntityListManager, TemplateList, DynamicComponent} from "@dontcode/plugin-common";
+import {
+  ComponentLoaderService,
+  DynamicComponent,
+  EntityListManager,
+  PluginBaseComponent,
+  TemplateList
+} from "@dontcode/plugin-common";
 
 
 @Component({
@@ -35,8 +32,8 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
   @Input()
   store: EntityListManager;
 
-  constructor(private ref:ChangeDetectorRef, componentFactoryResolver: ComponentFactoryResolver, injector: Injector) {
-    super(componentFactoryResolver, injector);
+  constructor(private ref:ChangeDetectorRef, componentLoader: ComponentLoaderService, injector: Injector) {
+    super(componentLoader, injector);
   }
 
   ngOnInit(): void {
@@ -67,9 +64,12 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
     this.applyUpdatesToArrayAsync (this.cols, this.colsMap, change, null, (key,item) => {
       return this.loadSubComponent(change.pointer, change.value).then(component => {
 
-        const ret= new PrimeColumn(item.name, item.name);
+        const ret= new PrimeColumn(item.name, item.name, change.pointer);
         if( component ) {
-          ret.component=component;
+          // Keep the component only if it provides the view template
+          if (component.providesTemplates().forInlineView) {
+            ret.component=component;
+          }
         }
         return ret;
       });
@@ -85,7 +85,8 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
     return null;
   }
 
-  templateOf (col: PrimeColumn): TemplateRef<any> {
+  templateOf (col: PrimeColumn, value:any): TemplateRef<any> {
+    col.component.setValue(value);
     return col.component.providesTemplates().forInlineView;
   }
 
@@ -93,9 +94,10 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
 
 class PrimeColumn {
   field:string; header:string;
+  pointer:DontCodeModelPointer;
   component: DynamicComponent;
 
-  constructor(field: string, header: string) {
+  constructor(field: string, header: string, pointer: any) {
     this.field = field;
     this.header = header;
   }

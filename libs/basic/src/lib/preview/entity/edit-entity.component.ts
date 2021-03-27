@@ -1,6 +1,15 @@
-import {ChangeDetectorRef, Component, ComponentFactoryResolver, Injector, Input, OnInit} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ComponentFactoryResolver,
+  Injector,
+  Input,
+  OnInit,
+  TemplateRef, ViewChild
+} from '@angular/core';
 import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
-import {PluginBaseComponent, TemplateList} from "@dontcode/plugin-common";
+import {DynamicComponent, PluginBaseComponent, TemplateList, ComponentLoaderService} from "@dontcode/plugin-common";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'dontcode-edit-entity',
@@ -9,8 +18,18 @@ import {PluginBaseComponent, TemplateList} from "@dontcode/plugin-common";
 })
 export class EditEntityComponent extends PluginBaseComponent implements PreviewHandler, OnInit {
 
-  @Input()
   value:any
+
+  @Input("value") set _value(newval:any) {
+    this.value = newval;
+    if (this.form) {
+      this.form.reset(this.value,{emitEvent:false});
+    }
+
+  }
+
+  @ViewChild('defaulteditor')
+  private defaultTemplate: TemplateRef<any>;
 
   initing = false;
 
@@ -19,11 +38,23 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
 
   types=FormElementType;
 
-  constructor(private ref:ChangeDetectorRef, componentFactoryResolver: ComponentFactoryResolver, injector: Injector) {
-    super(componentFactoryResolver, injector);
+  form: FormGroup;
+  formConfig = {};
+
+  constructor(private ref:ChangeDetectorRef, protected fb:FormBuilder,protected componentFactoryResolver: ComponentFactoryResolver, componentLoader: ComponentLoaderService, injector: Injector) {
+    super(componentLoader, injector);
   }
 
   ngOnInit(): void {
+    this.form = this.fb.group({}, {updateOn:'blur'});
+    this.form.valueChanges.subscribe(change => {
+      if (this.value) {
+        for (const changeKey in change) {
+          this.value[changeKey] = change[changeKey];
+        }
+        //console.log(this.value);
+      }
+    });
   }
 
   initCommandFlow(provider: CommandProviderInterface, pointer: DontCodeModelPointer): any {
@@ -42,22 +73,25 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
    * @protected
    */
   protected handleChange(change: Change) {
-    this.applyUpdatesToArray (this.fields, this.fieldsMap, change, null, (key,item) => {
-      let type:FormElementType;
-      switch (item.type) {
-        case 'string':
-          type=FormElementType.INPUT;
-          break;
-        case 'number':
-          type=FormElementType.NUMERIC;
-          break;
-        case 'boolean':
-          type=FormElementType.CHECK;
-          break;
-        default:
-          type = FormElementType.INPUT;
-      }
-      return new FormElement(item.name, type);
+    this.applyUpdatesToArrayAsync (this.fields, this.fieldsMap, change, null, (key,item) => {
+      return this.loadSubComponent(change.pointer, change.value).then(component => {
+        let type: FormElementType;
+        switch (item.type) {
+          case 'string':
+            type = FormElementType.INPUT;
+            break;
+          case 'number':
+            type = FormElementType.NUMERIC;
+            break;
+          case 'boolean':
+            type = FormElementType.CHECK;
+            break;
+          default:
+            type = FormElementType.INPUT;
+        }
+        component.setName(item.name);
+        return new FormElement(item.name, type, component);
+      });
     }).then (updatedFields => {
       this.fields = updatedFields;
       this.rebuildForm();
@@ -72,6 +106,25 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
    * @private
    */
   private rebuildForm() {
+      // Updates the formgroup with new fields and remove old fields if necessary
+    const toRemove = new Set<string>();
+    // tslint:disable-next-line:forin
+    for (const formKey in this.form.controls) {
+      toRemove.add(formKey);
+    }
+
+    this.fields.forEach(field => {
+      let val=null;
+      if((this.value)&&(this.value[field.name])) {
+        val = this.value[field.name];
+      }
+      toRemove.delete(field.name);
+      this.form.addControl(field.name, new FormControl(val, Validators.required));
+    });
+
+    toRemove.forEach(key => {
+      this.form.removeControl(key);
+    })
 
   }
 
@@ -79,15 +132,24 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
     return null;
   }
 
+  templateOf(field: FormElement): TemplateRef<any> {
+    let ref= field.component.providesTemplates(field.type).forFullEdit;
+    if( !ref)
+      ref = this.defaultTemplate;
+
+    return ref;
+  }
 }
 
 class FormElement {
   type: FormElementType;
   name: string;
+  component: DynamicComponent;
 
-  constructor(name?:string,type?:FormElementType) {
+  constructor(name:string,type:FormElementType, component:DynamicComponent) {
     this.name=name;
     this.type=type;
+    this.component = component;
   }
 
 }

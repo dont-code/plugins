@@ -7,8 +7,8 @@ import {
   TemplateRef,
   ViewChild
 } from '@angular/core';
-import {PluginBaseComponent, TemplateList} from '@dontcode/plugin-common';
-import {PreviewHandler} from '@dontcode/core';
+import {DynamicComponent, PluginBaseComponent, TemplateList} from '@dontcode/plugin-common';
+import {Change, PreviewHandler} from '@dontcode/core';
 
 /**
  * Display or edit a country value
@@ -18,26 +18,26 @@ import {PreviewHandler} from '@dontcode/core';
   templateUrl: './country.component.html',
   styleUrls: ['./country.component.css']
 })
-export class CountryComponent extends PluginBaseComponent implements PreviewHandler, AfterViewInit {
-
+export class CountryComponent implements DynamicComponent{
   @ViewChild('inlineView')
   private inlineView: TemplateRef<any>;
 
-  value = 'France';
+  value = '';
+  name:string;
 
-  constructor(componentFactoryResolver: ComponentFactoryResolver,injector: Injector) {
-    super(componentFactoryResolver, injector);
+  constructor() {
   }
 
-  ngAfterViewInit(): void {
-        console.log (this.inlineView);
+  setName(name: string): void {
+    this.name = name;
     }
-
-  protected handleChange(change) {
-  }
 
   providesTemplates (): TemplateList {
     return new TemplateList(this.inlineView);
+  }
+
+  setValue(val: any) {
+    this.value = val;
   }
 
 }

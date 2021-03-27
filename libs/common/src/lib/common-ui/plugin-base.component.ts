@@ -13,25 +13,27 @@ import {
   CommandProviderInterface,
   DontCodeModelPointer,
   dtcde,
-  PluginModuleInterface
+  PluginModuleInterface,
+  PreviewHandler
 } from "@dontcode/core";
 import {map} from "rxjs/operators";
 import {TemplateList} from "./template-list";
 import {DynamicComponent} from "./dynamic-component";
+import {ComponentLoaderService} from "../common-dynamic/component-loader.service";
 
 @Directive({selector: 'dtcde-dynamic'})
 export class DynamicInsertPoint {
 }
 
 @Component({template:''})
-export abstract class PluginBaseComponent implements DynamicComponent, OnDestroy {
+export abstract class PluginBaseComponent implements DynamicComponent, PreviewHandler, OnDestroy {
   protected subscriptions = new Subscription();
   entityPointer: DontCodeModelPointer;
   provider: CommandProviderInterface;
 
   @ViewChild(DynamicInsertPoint, {read : ViewContainerRef}) dynamicInsertPoint: ViewContainerRef;
 
-  constructor(protected componentFactoryResolver: ComponentFactoryResolver, protected injector: Injector) {
+  constructor(protected loader:ComponentLoaderService, protected injector: Injector) {
   }
 
   ngOnDestroy(): void {
@@ -99,7 +101,9 @@ export abstract class PluginBaseComponent implements DynamicComponent, OnDestroy
    * @param change
    * @protected
    */
-  protected abstract handleChange(change: Change);
+  protected handleChange(change: Change) {
+
+  }
 
   /**
    * Retrieve the value of the key property if the change concerns it
@@ -238,28 +242,23 @@ export abstract class PluginBaseComponent implements DynamicComponent, OnDestroy
    * @param currentJson
    */
   loadSubComponent(position: DontCodeModelPointer, currentJson?: any): Promise<DynamicComponent> {
-    const previewMgr = dtcde.getPreviewManager();
-    if (!currentJson)
-      currentJson = this.provider.getJsonAt(position.position);
-
-    const handlerConfig = previewMgr.retrieveHandlerConfig(position.schemaPosition, currentJson);
-
-    if (handlerConfig) {
-      console.log("Importing from ", handlerConfig.class.source);
-        // First lets try if the plugin is imported during the compilation
-        const module: PluginModuleInterface = getModuleFactory('dontcode-plugin/' + handlerConfig.class.source).create(null).instance;
-
-        //console.log ("Applying component");
-        const componentFactory = this.componentFactoryResolver.resolveComponentFactory(module.exposedPreviewHandlers().get(handlerConfig.class.name));
-
-        //const componentRef = componentFactory.create(this.injector);
+    return this.loader.loadComponentFactory(position, this.provider, currentJson).then (componentFactory => {
+      if( componentFactory) {
         const componentRef = this.dynamicInsertPoint.createComponent(componentFactory);
         const handler = componentRef.instance as DynamicComponent;
-        return Promise.resolve(handler);
-    } else {
-      return Promise.resolve(null);
-    }
+        return handler;
+      } else {
+        return null;
+      }
+    });
   }
 
   abstract providesTemplates(): TemplateList;
+
+  setName(name: string): void {
+  }
+
+  setValue(val: any): void {
+  }
+
 }

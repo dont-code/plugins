@@ -10,6 +10,7 @@ import { Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, 
 import {PluginBaseComponent, EntityListManager, EntityStoreService, TemplateList} from "@dontcode/plugin-common";
 import {ListEntityComponent} from "./list-entity.component";
 import {EditEntityComponent} from "./edit-entity.component";
+import {ComponentLoaderService} from "@dontcode/plugin-common";
 
 
 @Component({
@@ -33,8 +34,8 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   @ViewChild(EditEntityComponent)
   edit: EditEntityComponent;
 
-  constructor(protected entityService:EntityStoreService, private ref:ChangeDetectorRef, componentFactoryResolver: ComponentFactoryResolver, injector: Injector) {
-    super(componentFactoryResolver, injector);
+  constructor(protected entityService:EntityStoreService, private ref:ChangeDetectorRef, componentLoader: ComponentLoaderService, injector: Injector) {
+    super(componentLoader, injector);
   }
 
 

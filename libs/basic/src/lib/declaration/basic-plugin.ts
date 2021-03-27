@@ -28,7 +28,19 @@ export class BasicPlugin implements Plugin
             name:"BasicEntityComponent",
             source:"basic"
           }
+        },
+        {
+          location: {
+            parent: DontCodeModel.APP_FIELDS,
+            id: 'type',
+            values: ['string', 'number', 'boolean']
+          },
+          class: {
+            name:'BasicFieldsComponent',
+            source:'basic'
+          }
         }
+
       ]
     }
   }
