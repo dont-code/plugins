@@ -10,7 +10,7 @@ import { Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, 
 import {PluginBaseComponent, EntityListManager, EntityStoreService, TemplateList} from "@dontcode/plugin-common";
 import {ListEntityComponent} from "./list-entity.component";
 import {EditEntityComponent} from "./edit-entity.component";
-import {ComponentLoaderService} from "../../../../../common/src/lib/common-dynamic/component-loader.service";
+import {ComponentLoaderService} from "@dontcode/plugin-common";
 
 
 @Component({

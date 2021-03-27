@@ -1,16 +1,12 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  ComponentFactoryResolver,
-  EventEmitter, Injector,
-  Input,
-  OnInit,
-  Output,
-  TemplateRef
-} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Injector, Input, OnInit, Output, TemplateRef} from '@angular/core';
 import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
-import {PluginBaseComponent, EntityListManager, TemplateList, DynamicComponent} from "@dontcode/plugin-common";
-import {ComponentLoaderService} from "../../../../../common/src/lib/common-dynamic/component-loader.service";
+import {
+  ComponentLoaderService,
+  DynamicComponent,
+  EntityListManager,
+  PluginBaseComponent,
+  TemplateList
+} from "@dontcode/plugin-common";
 
 
 @Component({
@@ -70,7 +66,10 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
 
         const ret= new PrimeColumn(item.name, item.name, change.pointer);
         if( component ) {
-          ret.component=component;
+          // Keep the component only if it provides the view template
+          if (component.providesTemplates().forInlineView) {
+            ret.component=component;
+          }
         }
         return ret;
       });

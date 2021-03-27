@@ -23,9 +23,14 @@ export class CountryComponent implements DynamicComponent{
   private inlineView: TemplateRef<any>;
 
   value = '';
+  name:string;
 
   constructor() {
   }
+
+  setName(name: string): void {
+    this.name = name;
+    }
 
   providesTemplates (): TemplateList {
     return new TemplateList(this.inlineView);

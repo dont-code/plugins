@@ -36,9 +36,6 @@ export abstract class PluginBaseComponent implements DynamicComponent, PreviewHa
   constructor(protected loader:ComponentLoaderService, protected injector: Injector) {
   }
 
-  setValue(val: any): void {
-    }
-
   ngOnDestroy(): void {
     this.forceUnsubscribe();
   }
@@ -257,4 +254,11 @@ export abstract class PluginBaseComponent implements DynamicComponent, PreviewHa
   }
 
   abstract providesTemplates(): TemplateList;
+
+  setName(name: string): void {
+  }
+
+  setValue(val: any): void {
+  }
+
 }
