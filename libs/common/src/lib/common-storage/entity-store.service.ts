@@ -15,7 +15,7 @@ export class EntityStoreService {
 }
 
 /**
- * Manages a list of any object in a way that Angular detects the changes
+ * Manages a list of any object stored by the Dont-Code StoreManager in a way that Angular detects the changes
  */
 export class EntityListManager {
   protected position: string;
@@ -34,8 +34,15 @@ export class EntityListManager {
     this.entities = [...this.entities, element];
   }
 
-  remove (element:any): void {
-    this.entities = this.entities.filter(val => (val!==element));
+  remove (element:any): Promise<boolean> {
+    return dtcde.getStoreManager().deleteEntity(this.position, element._id).then(deleted => {
+      if( deleted)
+        this.entities = this.entities.filter(val => (val!==element));
+      return deleted;
+    }).catch((reason:Error) => {
+      console.log(reason.message);
+      return false;
+    });
   }
 
   reset (): void {

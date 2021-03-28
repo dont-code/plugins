@@ -93,9 +93,12 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
 
   deleteEntity() {
     if( this.selectedItem) {
-      this.store.remove(this.selectedItem);
-      this.selectedItem = null;
-      this.tabIndex=0;
+      this.store.remove(this.selectedItem).then(deleted => {
+        this.selectedItem = null;
+        this.tabIndex=0;
+        this.ref.markForCheck();
+        this.ref.detectChanges();
+      })
     }
   }
 
