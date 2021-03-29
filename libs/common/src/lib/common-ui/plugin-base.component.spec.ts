@@ -11,7 +11,7 @@ import {
   dtcde
 } from "@dontcode/core";
 import {Observable} from "rxjs";
-import {TemplateList} from "./template-list";
+import {PossibleTemplateList, TemplateList} from "./template-list";
 
 
 describe('PluginBaseComponent', () => {
@@ -370,6 +370,10 @@ class TestBaseComponent extends PluginBaseComponent {
   }
 
   providesTemplates(): TemplateList {
+    return undefined;
+  }
+
+  canProvide(key?: string): PossibleTemplateList {
     return undefined;
   }
 }
