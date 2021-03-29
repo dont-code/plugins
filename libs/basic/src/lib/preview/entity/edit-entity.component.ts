@@ -8,7 +8,13 @@ import {
   TemplateRef, ViewChild
 } from '@angular/core';
 import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
-import {DynamicComponent, PluginBaseComponent, TemplateList, ComponentLoaderService} from "@dontcode/plugin-common";
+import {
+  DynamicComponent,
+  PluginBaseComponent,
+  TemplateList,
+  ComponentLoaderService,
+  PossibleTemplateList
+} from "@dontcode/plugin-common";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
@@ -131,6 +137,11 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
   providesTemplates(): TemplateList {
     return null;
   }
+
+  canProvide(key?: string): PossibleTemplateList {
+    return null;
+  }
+
 
   templateOf(field: FormElement): TemplateRef<any> {
     let ref= field.component.providesTemplates(field.type).forFullEdit;

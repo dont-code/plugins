@@ -4,7 +4,7 @@ import {
   ComponentLoaderService,
   DynamicComponent,
   EntityListManager,
-  PluginBaseComponent,
+  PluginBaseComponent, PossibleTemplateList,
   TemplateList
 } from "@dontcode/plugin-common";
 
@@ -67,7 +67,7 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
         const ret= new PrimeColumn(item.name, item.name, change.pointer);
         if( component ) {
           // Keep the component only if it provides the view template
-          if (component.providesTemplates().forInlineView) {
+          if (component.canProvide().forInlineView) {
             ret.component=component;
           }
         }
@@ -82,6 +82,10 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
   }
 
   providesTemplates(): TemplateList {
+    return null;
+  }
+
+  canProvide(key?: string): PossibleTemplateList {
     return null;
   }
 

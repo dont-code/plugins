@@ -7,7 +7,13 @@ import {
   ViewChild
 } from "@angular/core";
 import { Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler } from "@dontcode/core";
-import {PluginBaseComponent, EntityListManager, EntityStoreService, TemplateList} from "@dontcode/plugin-common";
+import {
+  PluginBaseComponent,
+  EntityListManager,
+  EntityStoreService,
+  TemplateList,
+  PossibleTemplateList
+} from "@dontcode/plugin-common";
 import {ListEntityComponent} from "./list-entity.component";
 import {EditEntityComponent} from "./edit-entity.component";
 import {ComponentLoaderService} from "@dontcode/plugin-common";
@@ -118,6 +124,10 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   }
 
   providesTemplates(): TemplateList {
+    return null;
+  }
+
+  canProvide(key?: string): PossibleTemplateList {
     return null;
   }
 }

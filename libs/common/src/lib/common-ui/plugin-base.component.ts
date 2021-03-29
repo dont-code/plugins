@@ -17,7 +17,7 @@ import {
   PreviewHandler
 } from "@dontcode/core";
 import {map} from "rxjs/operators";
-import {TemplateList} from "./template-list";
+import {PossibleTemplateList, TemplateList} from "./template-list";
 import {DynamicComponent} from "./dynamic-component";
 import {ComponentLoaderService} from "../common-dynamic/component-loader.service";
 
@@ -25,15 +25,15 @@ import {ComponentLoaderService} from "../common-dynamic/component-loader.service
 export class DynamicInsertPoint {
 }
 
-@Component({template:''})
+@Component({template: ''})
 export abstract class PluginBaseComponent implements DynamicComponent, PreviewHandler, OnDestroy {
   protected subscriptions = new Subscription();
   entityPointer: DontCodeModelPointer;
   provider: CommandProviderInterface;
 
-  @ViewChild(DynamicInsertPoint, {read : ViewContainerRef}) dynamicInsertPoint: ViewContainerRef;
+  @ViewChild(DynamicInsertPoint, {read: ViewContainerRef}) dynamicInsertPoint: ViewContainerRef;
 
-  constructor(protected loader:ComponentLoaderService, protected injector: Injector) {
+  constructor(protected loader: ComponentLoaderService, protected injector: Injector) {
   }
 
   ngOnDestroy(): void {
@@ -254,6 +254,7 @@ export abstract class PluginBaseComponent implements DynamicComponent, PreviewHa
   }
 
   abstract providesTemplates(): TemplateList;
+  abstract canProvide(key?: string): PossibleTemplateList;
 
   setName(name: string): void {
   }

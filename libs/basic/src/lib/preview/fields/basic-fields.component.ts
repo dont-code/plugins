@@ -1,5 +1,5 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {DynamicComponent, TemplateList} from "@dontcode/plugin-common";
+import {DynamicComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
 
 @Component({
   selector: 'plugins-basic-fields',
@@ -32,6 +32,9 @@ export class BasicFieldsComponent implements OnInit, DynamicComponent {
       default:
         return new TemplateList(null,null,this.inputTemplate);
     }
+  }
+  canProvide(type?: string): PossibleTemplateList {
+    return new PossibleTemplateList(false, false, true);
   }
 
   setValue(val: any): void {

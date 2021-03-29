@@ -1,2 +1,16 @@
-<ng-template #inlineView >Country: {{value}}</ng-template>
-<ng-template #fullEditView >Country: {{value}}</ng-template>
+<ng-template #inlineView ><span class="flag-icon" [ngClass]="'flag-icon-'+value?.toLowerCase()"></span>{{value}}</ng-template>
+<ng-template #fullEditView let-form="form">
+  <ng-container [formGroup]="form">
+    <p-dropdown [options]="countries" [formControlName]="name" optionLabel="name" optionValue="alpha2" [filter]="true" filterBy="name" [showClear]="true" placeholder="Select a Country">
+      <ng-template pTemplate="selectedItem">
+        <div *ngIf="form.controls[name].value">
+          <span class="flag-icon" [ngClass]="'flag-icon-'+form.controls[name].value?.toLowerCase()"></span>
+          {{form.controls[name].value}}
+        </div>
+      </ng-template>
+      <ng-template let-country pTemplate="item">
+        <span class="flag-icon" [ngClass]="'flag-icon-'+country?.alpha2.toLowerCase()"></span>
+        {{country.name}}
+      </ng-template>
+    </p-dropdown>
+  </ng-container></ng-template>
