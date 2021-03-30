@@ -16,6 +16,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "paths": {
       "@dontcode/plugin-screen": ["libs/screen/src"],
       "@dontcode/plugin-basic": ["libs/basic/src"],
