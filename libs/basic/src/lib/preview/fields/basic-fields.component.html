@@ -1,3 +1,4 @@
 <ng-template #INPUT let-form="form"><ng-container [formGroup]="form"><input [name]="name" [formControlName]="name" pInputText /></ng-container></ng-template>
 <ng-template #NUMERIC let-form="form"><ng-container [formGroup]="form"><p-inputNumber [name]="name" [formControlName]="name" [showButtons]="true"></p-inputNumber></ng-container></ng-template>
 <ng-template #CHECK let-form="form"><ng-container [formGroup]="form"><p-checkbox [name]="name" [formControlName]="name" [binary]="true"></p-checkbox></ng-container></ng-template>
+<ng-template #LIST_CHECK><p-checkbox readonly="true" [binary]="true" [ngModel]="value"></p-checkbox></ng-template>

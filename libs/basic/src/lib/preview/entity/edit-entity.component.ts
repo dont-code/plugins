@@ -7,7 +7,7 @@ import {
   OnInit,
   TemplateRef, ViewChild
 } from '@angular/core';
-import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
+import {Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
 import {
   DynamicComponent,
   PluginBaseComponent,
@@ -28,6 +28,8 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
 
   @Input("value") set _value(newval:any) {
     this.value = newval;
+    if( this.value == null)
+      this.value = {};
     if (this.form) {
       this.form.reset(this.value,{emitEvent:false});
     }
@@ -41,8 +43,6 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
 
   fields = new Array<FormElement>();
   fieldsMap = new Map<string, number>();
-
-  types=FormElementType;
 
   form: FormGroup;
   formConfig = {};
@@ -79,26 +79,23 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
    * @protected
    */
   protected handleChange(change: Change) {
-    this.applyUpdatesToArrayAsync (this.fields, this.fieldsMap, change, null, (key,item) => {
-      return this.loadSubComponent(change.pointer, change.value).then(component => {
-        let type: FormElementType;
-        switch (item.type) {
-          case 'string':
-            type = FormElementType.INPUT;
-            break;
-          case 'number':
-            type = FormElementType.NUMERIC;
-            break;
-          case 'boolean':
-            type = FormElementType.CHECK;
+    this.applyUpdatesToArrayAsync (this.fields, this.fieldsMap, change, null, (position,value) => {
+      return this.loadSubComponent(position, value).then(component => {
+        if( component)
+          component.setName(value.name);
+        return new FormElement(value.name, value.type, component);
+      });
+    }, (elt, key, newVal) => {
+        switch (key) {
+          case DontCodeModel.APP_FIELDS_NAME_NODE:
+            elt.name = newVal;
             break;
           default:
-            type = FormElementType.INPUT;
+            return false;
         }
-        component.setName(item.name);
-        return new FormElement(item.name, type, component);
-      });
-    }).then (updatedFields => {
+        return true;
+      }
+      ).then (updatedFields => {
       this.fields = updatedFields;
       this.rebuildForm();
       this.ref.markForCheck();
@@ -144,7 +141,7 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
 
 
   templateOf(field: FormElement): TemplateRef<any> {
-    let ref= field.component.providesTemplates(field.type).forFullEdit;
+    let ref= field.component?.providesTemplates(field.type).forFullEdit;
     if( !ref)
       ref = this.defaultTemplate;
 
@@ -153,18 +150,14 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
 }
 
 class FormElement {
-  type: FormElementType;
+  type: string;
   name: string;
   component: DynamicComponent;
 
-  constructor(name:string,type:FormElementType, component:DynamicComponent) {
+  constructor(name:string,type:string, component:DynamicComponent) {
     this.name=name;
     this.type=type;
     this.component = component;
   }
 
-}
-
-enum FormElementType {
-  INPUT='INPUT', TEXTAREA='TEXTAREA', 'CHECK'='CHECK', NUMERIC='NUMERIC'
 }
