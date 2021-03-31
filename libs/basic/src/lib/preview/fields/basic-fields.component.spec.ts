@@ -4,7 +4,7 @@ import { BasicFieldsComponent } from './basic-fields.component';
 import {InputTextModule} from "primeng/inputtext";
 import {InputNumberModule} from "primeng/inputnumber";
 import {CheckboxModule} from "primeng/checkbox";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 describe('BasicFieldsComponent', () => {
   let component: BasicFieldsComponent;
@@ -13,7 +13,7 @@ describe('BasicFieldsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ BasicFieldsComponent ],
-      imports: [InputTextModule, InputNumberModule, CheckboxModule, ReactiveFormsModule]
+      imports: [InputTextModule, InputNumberModule, CheckboxModule, ReactiveFormsModule, FormsModule]
     })
     .compileComponents();
   });
