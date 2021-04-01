@@ -41,6 +41,8 @@ describe('PluginBaseComponent', () => {
       "name": "id",
       "type": "number"
     });
+    const provider = new TestProviderInterface(null);
+    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer.containerSchemaPosition) );
 
     // Simple results first
     const map = new Map<string, any>();
@@ -133,6 +135,8 @@ describe('PluginBaseComponent', () => {
     let change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'a',
       resultA);
     // tslint:disable-next-line:no-shadowed-variable
+    const provider = new TestProviderInterface(null);
+    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer.containerSchemaPosition) );
     return component.applyUpdatesToArrayAsync(array, map, change, 'fields', transformToTarget).then (array => {
 
     change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'b',
@@ -227,6 +231,8 @@ describe('PluginBaseComponent', () => {
 
     let change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'a',
       resultA);
+    const provider = new TestProviderInterface(null);
+    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer.containerSchemaPosition) );
     // tslint:disable-next-line:no-shadowed-variable
     return component.applyUpdatesToArrayAsync(array, map, change, 'fields', transformToTarget).then (array => {
 
@@ -317,7 +323,7 @@ describe('PluginBaseComponent', () => {
     })
   });
 
-  function transformToTarget(key: string, value: any): Promise<TestArrayTarget> {
+  function transformToTarget(position: DontCodeModelPointer, value: any): Promise<TestArrayTarget> {
     return Promise.resolve( new TestArrayTarget(value.name, value.type));
   }
 
