@@ -3,11 +3,12 @@ import {CommonModule} from '@angular/common';
 import {dtcde, PluginModuleInterface} from '@dontcode/core';
 import {FieldsPlugin} from './declaration/fields-plugin';
 import { CountryComponent } from './preview/country/country.component';
-import {ReactiveFormsModule} from "@angular/forms";
-import {DropdownModule} from "primeng/dropdown";
+import {ReactiveFormsModule} from '@angular/forms';
+import {DropdownModule} from 'primeng/dropdown';
+import {PluginCommonModule} from '@dontcode/plugin-common';
 
 @NgModule({
-    imports: [CommonModule, ReactiveFormsModule, DropdownModule],
+    imports: [CommonModule, ReactiveFormsModule, DropdownModule, PluginCommonModule],
   declarations: [CountryComponent],
   id:'dontcode-plugin/fields'
 })

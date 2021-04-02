@@ -61,13 +61,13 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
   protected handleChange (change: Change ) {
     //console.log("Changed Entity",change.position);
 
-    this.applyUpdatesToArrayAsync (this.cols, this.colsMap, change, null, (key,item) => {
-      return this.loadSubComponent(change.pointer, change.value).then(component => {
+    this.applyUpdatesToArrayAsync (this.cols, this.colsMap, change, null, (position,value) => {
+      return this.loadSubComponent(position, value).then(component => {
 
-        const ret= new PrimeColumn(item.name, item.name, change.pointer);
+        const ret= new PrimeColumn(value.name, value.name, value.type);
         if( component ) {
           // Keep the component only if it provides the view template
-          if (component.canProvide().forInlineView) {
+          if (component.canProvide(value.type).forInlineView) {
             ret.component=component;
           }
         }
@@ -91,19 +91,19 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
 
   templateOf (col: PrimeColumn, value:any): TemplateRef<any> {
     col.component.setValue(value);
-    return col.component.providesTemplates().forInlineView;
+    return col.component.providesTemplates(col.type).forInlineView;
   }
 
 }
 
 class PrimeColumn {
-  field:string; header:string;
-  pointer:DontCodeModelPointer;
+  field:string; header:string; type:string;
   component: DynamicComponent;
 
-  constructor(field: string, header: string, pointer: any) {
+  constructor(field: string, header: string, type:string) {
     this.field = field;
     this.header = header;
+    this.type = type;
   }
 
 }

@@ -14,6 +14,8 @@ export class BasicFieldsComponent implements OnInit, DynamicComponent {
   private numericTemplate: TemplateRef<any>;
   @ViewChild('CHECK')
   private checkTemplate: TemplateRef<any>;
+  @ViewChild('LIST_CHECK')
+  private listCheckTemplate: TemplateRef<any>;
 
   name:string;
   value:any;
@@ -25,16 +27,16 @@ export class BasicFieldsComponent implements OnInit, DynamicComponent {
 
   providesTemplates(type:string): TemplateList {
     switch (type) {
-      case 'NUMERIC':
+      case 'number':
         return new TemplateList(null, null,this.numericTemplate);
-      case 'CHECK':
-        return new TemplateList(null, null, this.checkTemplate);
+      case 'boolean':
+        return new TemplateList(this.listCheckTemplate, null, this.checkTemplate);
       default:
         return new TemplateList(null,null,this.inputTemplate);
     }
   }
   canProvide(type?: string): PossibleTemplateList {
-    return new PossibleTemplateList(false, false, true);
+    return new PossibleTemplateList((type==='boolean')?true:false, false, true);
   }
 
   setValue(val: any): void {

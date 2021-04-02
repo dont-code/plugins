@@ -126,7 +126,7 @@ export abstract class PluginBaseComponent implements DynamicComponent, PreviewHa
    * @param transform
    * @private
    */
-  applyUpdatesToArray<T>(target: T[], targetMap: Map<string, number>, change: Change, property: string, transform: (key: string, item: any) => T, applyProperty?: (target: T, key: string, value: any) => boolean): Promise<T[]> {
+  applyUpdatesToArray<T>(target: T[], targetMap: Map<string, number>, change: Change, property: string, transform: (position: DontCodeModelPointer, item: any) => T, applyProperty?: (target: T, key: string, value: any) => boolean): Promise<T[]> {
      return this.applyUpdatesToArrayAsync(target, targetMap, change, property, (key, item) => {
         return Promise.resolve( transform(key, item));
       } );
@@ -141,7 +141,7 @@ export abstract class PluginBaseComponent implements DynamicComponent, PreviewHa
    * @param transform
    * @private
    */
-  applyUpdatesToArrayAsync<T>(target: T[], targetMap: Map<string, number>, change: Change, property: string, transform: (key: string, item: any) => Promise<T>, applyProperty?: (target: T, key: string, value: any) => boolean): Promise<T[]> {
+  applyUpdatesToArrayAsync<T>(target: T[], targetMap: Map<string, number>, change: Change, property: string, transform: (position: DontCodeModelPointer, item: any) => Promise<T>, applyProperty?: (target: T, key: string, value: any) => boolean): Promise<T[]> {
     const itemId = change.pointer.calculateItemIdOrContainer();
     let futureTarget: Observable<T> = null;
     let newTarget: T = null;
@@ -171,11 +171,11 @@ export abstract class PluginBaseComponent implements DynamicComponent, PreviewHa
           ) {
             // It cannot be dynamically updated by the caller, so we do a full replacement
             const fullValue = this.provider.getJsonAt(change.pointer.containerPosition);
-            futureTarget = from (transform(property, fullValue));
+            futureTarget = from (transform(this.provider.calculatePointerFor(change.pointer.containerPosition), fullValue));
           }
         } else {
           // The new value replace the old one
-          futureTarget = from (transform(property, change.value));
+          futureTarget = from (transform(this.provider.calculatePointerFor(change.pointer.containerPosition), change.value));
         }
         break;
       case ChangeType.MOVE:
@@ -248,6 +248,7 @@ export abstract class PluginBaseComponent implements DynamicComponent, PreviewHa
         const handler = componentRef.instance as DynamicComponent;
         return handler;
       } else {
+        // Let's try to find the closest ancestor that is an object. Maybe we'll find a component for it and it will
         return null;
       }
     });
