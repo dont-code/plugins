@@ -5,7 +5,8 @@
     "entryFile": "src/index.ts",
     "umdModuleIds": {
       "primeng/table": "primeng/table",
-      "@dontcode/core": "@dontcode/core"
+      "@dontcode/core": "@dontcode/core",
+      "@dontcode/plugin-common": "@dontcode/plugin-common"
     }
   }
 }
