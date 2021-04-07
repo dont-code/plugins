@@ -24,7 +24,7 @@
       "@dontcode/core": ["node_modules/@dontcode/core"],
       "@dontcode/plugin-fields": ["libs/fields/src"],
       "rxjs": ["node_modules/rxjs"],
-      "rxjs/*": ["node_modules/rxjs/*"],
+      "rxjs/*": ["node_modules/rxjs/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]
