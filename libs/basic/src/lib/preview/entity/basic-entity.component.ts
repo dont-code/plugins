@@ -1,22 +1,15 @@
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, ViewChild} from "@angular/core";
+import {Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
 import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ComponentFactoryResolver, Injector,
-  ViewChild
-} from "@angular/core";
-import { Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler } from "@dontcode/core";
-import {
-  PluginBaseComponent,
+  ComponentLoaderService,
   EntityListManager,
   EntityStoreService,
-  TemplateList,
-  PossibleTemplateList
+  PluginBaseComponent,
+  PossibleTemplateList,
+  TemplateList
 } from "@dontcode/plugin-common";
 import {ListEntityComponent} from "./list-entity.component";
 import {EditEntityComponent} from "./edit-entity.component";
-import {ComponentLoaderService} from "@dontcode/plugin-common";
 
 
 @Component({
