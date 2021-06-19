@@ -1,21 +1,6 @@
 import {from, Observable, of, Subscription} from "rxjs";
-import {
-  Component,
-  ComponentFactoryResolver, Directive,
-  getModuleFactory,
-  Injector,
-  OnDestroy, ViewChild,
-  ViewContainerRef
-} from "@angular/core";
-import {
-  Change,
-  ChangeType,
-  CommandProviderInterface,
-  DontCodeModelPointer,
-  dtcde,
-  PluginModuleInterface,
-  PreviewHandler
-} from "@dontcode/core";
+import {Component, Directive, Injector, OnDestroy, ViewChild, ViewContainerRef} from "@angular/core";
+import {Change, ChangeType, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
 import {map} from "rxjs/operators";
 import {PossibleTemplateList, TemplateList} from "./template-list";
 import {DynamicComponent} from "./dynamic-component";

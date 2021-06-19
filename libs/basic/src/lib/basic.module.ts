@@ -15,10 +15,12 @@ import {ToolbarModule} from "primeng/toolbar";
 import {ButtonModule} from "primeng/button";
 import {PluginCommonModule} from "@dontcode/plugin-common";
 import {BasicFieldsComponent} from './preview/fields/basic-fields.component';
+import {DontCodeApiStoreProvider} from "./store/dont-code-api-store-provider";
 
 @NgModule({
     imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ToolbarModule, ButtonModule, PluginCommonModule, ReactiveFormsModule],
   declarations: [BasicEntityComponent, ListEntityComponent, EditEntityComponent, BasicFieldsComponent],
+  providers: [DontCodeApiStoreProvider],
   id:'dontcode-plugin/basic'
 })
 export class BasicModule implements PluginModuleInterface {
@@ -30,9 +32,11 @@ export class BasicModule implements PluginModuleInterface {
   // We declare the components
   exposedPreviewHandlers(): Map<string, any> {
         return new Map<string, any> ([['BasicEntityComponent', BasicEntityComponent],
-          ['BasicFieldsComponent', BasicFieldsComponent]]);
+          ['BasicFieldsComponent', BasicFieldsComponent],
+          ['DontCodeApiStoreProvider', DontCodeApiStoreProvider]]);
     }
 
 }
 
 export * from './preview/entity/basic-entity.component';
+export * from './store/dont-code-api-store-provider';
