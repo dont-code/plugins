@@ -1,6 +1,6 @@
 import {TestBed} from '@angular/core/testing';
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
-import {DONTCODE_STORE_APÏ_URL, DontCodeApiStoreProvider} from "./dont-code-api-store-provider";
+import {DONTCODE_STORE_API_URL, DontCodeApiStoreProvider} from "./dont-code-api-store-provider";
 import {HttpClient} from "@angular/common/http";
 import { dtcde } from '@dontcode/core';
 
@@ -14,7 +14,7 @@ describe('DontCode Api Store Manager', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [ {provide: DONTCODE_STORE_APÏ_URL, useValue: '/testData'}]
+      providers: [ {provide: DONTCODE_STORE_API_URL, useValue: '/testData'}]
     }).compileComponents();
 
     // Inject the http service and test controller for each test

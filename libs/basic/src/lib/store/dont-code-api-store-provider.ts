@@ -4,7 +4,7 @@ import {HttpClient} from "@angular/common/http";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
 import {map} from "rxjs/internal/operators";
 
-export const DONTCODE_STORE_APÏ_URL = new InjectionToken<string>('DontCodeStoreApiUrl');
+export const DONTCODE_STORE_API_URL = new InjectionToken<string>('DontCodeStoreApiUrl');
 /**
  * A Store Provider that uses the DontCode API to store / read application data
  */
@@ -16,7 +16,7 @@ export class DontCodeApiStoreProvider implements DontCodeStoreProvider {
   apiUrl: string;
   modelMgr: DontCodeModelManager;
 
-  constructor(protected http:HttpClient, @Inject(DONTCODE_STORE_APÏ_URL) apiUrl: string) {
+  constructor(protected http:HttpClient, @Inject(DONTCODE_STORE_API_URL) apiUrl: string) {
     this.apiUrl = apiUrl;
     this.modelMgr = dtcde.getModelManager();
   }
