@@ -112,6 +112,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
     if( this.selectedItem) {
       this.store.store (this.selectedItem).then(value => {
         console.log("Entity with Id ", value, " stored");
+        this.selectedItem = value;
       });
     }
   }

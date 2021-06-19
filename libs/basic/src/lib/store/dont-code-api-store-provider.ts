@@ -28,9 +28,9 @@ export class DontCodeApiStoreProvider implements DontCodeStoreProvider {
     }
 
     if( data._id) {
-      return this.http.put(this.apiUrl+'/'+entity.name+'/'+data._id, entity, {observe:"body", responseType:"json"}).toPromise();
+      return this.http.put(this.apiUrl+'/'+entity.name+'/'+data._id, data, {observe:"body", responseType:"json"}).toPromise();
     } else {
-      return this.http.post(this.apiUrl+'/'+entity.name, entity, {observe:"body", responseType:"json"}).toPromise();
+      return this.http.post(this.apiUrl+'/'+entity.name, data, {observe:"body", responseType:"json"}).toPromise();
     }
   }
 
