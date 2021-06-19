@@ -63,7 +63,7 @@ export class BasicPlugin implements Plugin
             values: ['Dont-code users']
           },
           class: {
-            name:'BasicFieldsComponent',
+            name:'DontCodeApiStoreProvider',
             source:'basic'
           }
         }
