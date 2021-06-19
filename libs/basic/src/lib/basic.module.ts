@@ -39,3 +39,4 @@ export class BasicModule implements PluginModuleInterface {
 }
 
 export * from './preview/entity/basic-entity.component';
+export * from './store/dont-code-api-store-provider';
