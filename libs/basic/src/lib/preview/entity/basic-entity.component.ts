@@ -10,6 +10,7 @@ import {
 } from "@dontcode/plugin-common";
 import {ListEntityComponent} from "./list-entity.component";
 import {EditEntityComponent} from "./edit-entity.component";
+import {map} from "rxjs/operators";
 
 
 @Component({
@@ -59,6 +60,22 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
         this.ref.detectChanges();
       });
     }
+  }
+
+  protected initChangeListening() {
+    super.initChangeListening();
+    this.subscriptions.add(this.provider.receiveCommands(DontCodeModel.APP_SHARING_WITH).pipe(
+      map(change => {
+        console.log("Reloading data due to change of StoreManager");
+        this.store.reset();
+        this.store.loadAll().then (() => {
+          this.ref.markForCheck();
+          this.ref.detectChanges();
+        });
+      }))
+      .subscribe()
+    );
+
   }
 
   /**
