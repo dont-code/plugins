@@ -18,7 +18,6 @@ module.exports = {
           'jest-preset-angular/build/StripStylesTransformer'
         ]
       }
-      },
     },
   },
 };
