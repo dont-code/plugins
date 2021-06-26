@@ -2,7 +2,7 @@ import {DontCodeModelManager, DontCodeStoreCriteria, DontCodeStoreProvider, dtcd
 import {Observable, of, throwError} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {Inject, Injectable, InjectionToken} from "@angular/core";
-import {map} from "rxjs/internal/operators";
+import { map } from "rxjs/operators";
 
 export const DONTCODE_STORE_API_URL = new InjectionToken<string>('DontCodeStoreApiUrl');
 /**
