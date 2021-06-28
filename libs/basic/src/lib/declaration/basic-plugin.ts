@@ -58,6 +58,28 @@ export class BasicPlugin implements Plugin
         },
         {
           location: {
+            parent: DontCodeModel.APP_FIELDS,
+            id: 'type',
+            values: ['Date', 'Date & Time', 'Time']
+          },
+          class: {
+            name:'TimeFieldsComponent',
+            source:'basic'
+          }
+        },
+        {
+          location: {
+            parent: DontCodeModel.APP_FIELDS,
+            id: 'type',
+            values: ['Website (url)', 'Image']
+          },
+          class: {
+            name:'WebFieldsComponent',
+            source:'basic'
+          }
+        },
+        {
+          location: {
             parent: DontCodeModel.APP_SHARING,
             id: 'with',
             values: ['Dont-code users']

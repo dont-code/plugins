@@ -56,7 +56,9 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
     this.form.valueChanges.subscribe(change => {
       if (this.value) {
         for (const changeKey in change) {
-          this.value[changeKey] = change[changeKey];
+          if( change.hasOwnProperty(changeKey)) {
+            this.value[changeKey] = change[changeKey];
+          }
         }
         //console.log(this.value);
       }
@@ -138,7 +140,6 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
   canProvide(key?: string): PossibleTemplateList {
     return null;
   }
-
 
   templateOf(field: FormElement): TemplateRef<any> {
     let ref= field.component?.providesTemplates(field.type).forFullEdit;

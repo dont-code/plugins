@@ -1,0 +1,6 @@
+<ng-template #EDIT_DATE let-form="form"><ng-container [formGroup]="form"><p-calendar [name]="name" [formControlName]="name" (onSelect)="dateSelected(form, $event)"></p-calendar></ng-container></ng-template>
+<ng-template #EDIT_DATE_TIME let-form="form"><ng-container [formGroup]="form"><p-calendar [name]="name" [formControlName]="name" (onSelect)="dateSelected(form, $event)" [showTime]="true"></p-calendar></ng-container></ng-template>
+<ng-template #EDIT_TIME let-form="form"><ng-container [formGroup]="form"><p-calendar [name]="name" [formControlName]="name" (onSelect)="dateSelected(form, $event)" [timeOnly]="true"></p-calendar></ng-container></ng-template>
+<ng-template #READ_DATE><span pTooltip="{{value | date: 'longDate'}}">{{value | date: 'shortDate'}}</span></ng-template>
+<ng-template #READ_DATE_TIME><span pTooltip="{{value | date: 'long'}}">{{value | date: 'short'}}</span></ng-template>
+<ng-template #READ_TIME><span pTooltip="{{value | date: 'longTime'}}">{{value | date: 'shortTime'}}</span></ng-template>
