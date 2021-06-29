@@ -5,6 +5,7 @@ import {InputNumberModule} from "primeng/inputnumber";
 import {CheckboxModule} from "primeng/checkbox";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {WebFieldsComponent} from "./web-fields.component";
+import {TooltipModule} from "primeng/tooltip";
 
 describe('WebFieldsComponent', () => {
   let component: WebFieldsComponent;
@@ -13,7 +14,7 @@ describe('WebFieldsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ WebFieldsComponent ],
-      imports: [InputTextModule, InputNumberModule, CheckboxModule, ReactiveFormsModule, FormsModule]
+      imports: [InputTextModule, TooltipModule, ReactiveFormsModule, FormsModule]
     })
     .compileComponents();
   });

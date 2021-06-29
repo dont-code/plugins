@@ -5,6 +5,8 @@ import {InputNumberModule} from "primeng/inputnumber";
 import {CheckboxModule} from "primeng/checkbox";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TimeFieldsComponent} from "./time-fields.component";
+import {CalendarModule} from "primeng/calendar";
+import {TooltipModule} from "primeng/tooltip";
 
 describe('TimeFieldsComponent', () => {
   let component: TimeFieldsComponent;
@@ -13,7 +15,7 @@ describe('TimeFieldsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ TimeFieldsComponent ],
-      imports: [InputTextModule, InputNumberModule, CheckboxModule, ReactiveFormsModule, FormsModule]
+      imports: [CalendarModule, TooltipModule, ReactiveFormsModule, FormsModule]
     })
     .compileComponents();
   });
