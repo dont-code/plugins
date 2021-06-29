@@ -27,16 +27,16 @@ export class BasicFieldsComponent implements OnInit, DynamicComponent {
 
   providesTemplates(type:string): TemplateList {
     switch (type) {
-      case 'number':
+      case 'Number':
         return new TemplateList(null, null,this.numericTemplate);
-      case 'boolean':
+      case 'Boolean':
         return new TemplateList(this.listCheckTemplate, null, this.checkTemplate);
       default:
         return new TemplateList(null,null,this.inputTemplate);
     }
   }
   canProvide(type?: string): PossibleTemplateList {
-    return new PossibleTemplateList((type==='boolean')?true:false, false, true);
+    return new PossibleTemplateList((type==='Boolean')?true:false, false, true);
   }
 
   setValue(val: any): void {

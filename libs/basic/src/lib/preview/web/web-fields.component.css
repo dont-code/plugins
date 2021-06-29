@@ -1,0 +1,9 @@
+.inline-image {
+  max-height: 5em;
+  max-width: 10em;
+}
+
+.tip-image {
+  max-height: 50em;
+  max-width: 100em;
+}

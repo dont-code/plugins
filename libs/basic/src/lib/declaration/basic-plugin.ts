@@ -28,7 +28,7 @@ export class BasicPlugin implements Plugin
               "id":"with"
             },
             "replace": false,
-            "add": {
+            "update": {
               "enum": [
                 "Dont-code users"
               ]
@@ -49,10 +49,32 @@ export class BasicPlugin implements Plugin
           location: {
             parent: DontCodeModel.APP_FIELDS,
             id: 'type',
-            values: ['string', 'number', 'boolean']
+            values: ['String', 'Number', 'Boolean']
           },
           class: {
             name:'BasicFieldsComponent',
+            source:'basic'
+          }
+        },
+        {
+          location: {
+            parent: DontCodeModel.APP_FIELDS,
+            id: 'type',
+            values: ['Date', 'Date & Time', 'Time']
+          },
+          class: {
+            name:'TimeFieldsComponent',
+            source:'basic'
+          }
+        },
+        {
+          location: {
+            parent: DontCodeModel.APP_FIELDS,
+            id: 'type',
+            values: ['Website (url)', 'Image']
+          },
+          class: {
+            name:'WebFieldsComponent',
             source:'basic'
           }
         },

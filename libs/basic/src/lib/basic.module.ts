@@ -16,10 +16,14 @@ import {ButtonModule} from "primeng/button";
 import {PluginCommonModule} from "@dontcode/plugin-common";
 import {BasicFieldsComponent} from './preview/fields/basic-fields.component';
 import {DontCodeApiStoreProvider} from "./store/dont-code-api-store-provider";
+import {TimeFieldsComponent} from "./preview/time/time-fields.component";
+import {WebFieldsComponent} from "./preview/web/web-fields.component";
+import {CalendarModule} from "primeng/calendar";
+import {TooltipModule} from "primeng/tooltip";
 
 @NgModule({
-    imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ToolbarModule, ButtonModule, PluginCommonModule, ReactiveFormsModule],
-  declarations: [BasicEntityComponent, ListEntityComponent, EditEntityComponent, BasicFieldsComponent],
+  imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ToolbarModule, ButtonModule, PluginCommonModule, ReactiveFormsModule, CalendarModule, TooltipModule],
+  declarations: [BasicEntityComponent, ListEntityComponent, EditEntityComponent, BasicFieldsComponent, TimeFieldsComponent, WebFieldsComponent],
   providers: [DontCodeApiStoreProvider],
   id:'dontcode-plugin/basic'
 })
@@ -33,6 +37,8 @@ export class BasicModule implements PluginModuleInterface {
   exposedPreviewHandlers(): Map<string, any> {
         return new Map<string, any> ([['BasicEntityComponent', BasicEntityComponent],
           ['BasicFieldsComponent', BasicFieldsComponent],
+          ['TimeFieldsComponent', TimeFieldsComponent],
+          ['WebFieldsComponent', WebFieldsComponent],
           ['DontCodeApiStoreProvider', DontCodeApiStoreProvider]]);
     }
 

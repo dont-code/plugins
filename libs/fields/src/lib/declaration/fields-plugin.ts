@@ -17,7 +17,7 @@ export class FieldsPlugin implements Plugin
             parent: '#/definitions/field',
             id: 'type'
           },
-          add: {
+          update: {
             enum: [
               'Country'
             ]

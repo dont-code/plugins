@@ -18,7 +18,7 @@ export class ScreenPlugin implements Plugin
             "id": "type",
             "after": "name"
           },
-          "add": {
+          "update": {
             "enum": [
               "list"
             ]
@@ -36,7 +36,7 @@ export class ScreenPlugin implements Plugin
             "id": "type",
             "after": "name"
           },
-          "add": {
+          "update": {
             "enum": [
               "freeform"
             ]
