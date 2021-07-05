@@ -46,10 +46,6 @@ export class WebFieldsComponent implements OnInit, DynamicComponent {
     }
   }
 
-  setValue(val: any): void {
-    this.value = val;
-  }
-
   setName (name:string): void {
     this.name = name;
   }
@@ -64,4 +60,18 @@ export class WebFieldsComponent implements OnInit, DynamicComponent {
       else
         return url;
   }
+
+  setValue(val: any): void {
+    this.value = val;
+  }
+
+  getValue(): any {
+    return this.value;
+  }
+
+  overrideValue(value: any): any {
+    // We don't need to override any value in this component
+    return value;
+  }
+
 }

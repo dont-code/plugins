@@ -1,0 +1,6 @@
+<ng-template #inlineView><span class="numeric">{{value?.amount | currency:value?.currencyCode}}</span></ng-template>
+<ng-template #fullEditView let-form="form">
+  <ng-container [formGroup]="form">
+    <p-inputNumber mode="currency" [currency]="value.currencyCode" [name]="name" [formControlName]="name" ></p-inputNumber>
+  </ng-container>
+</ng-template>

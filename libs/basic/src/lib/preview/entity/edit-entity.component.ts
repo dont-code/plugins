@@ -57,7 +57,12 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
       if (this.value) {
         for (const changeKey in change) {
           if( change.hasOwnProperty(changeKey)) {
-            this.value[changeKey] = change[changeKey];
+            const field = this.fields[this.fieldsMap.get(changeKey)];
+            let newVal = change[changeKey];
+            if (field) {
+              newVal = field.component.overrideValue (newVal);
+            }
+            this.value[changeKey] = newVal;
           }
         }
         //console.log(this.value);

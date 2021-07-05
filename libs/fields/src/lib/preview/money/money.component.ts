@@ -1,24 +1,23 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {MoneyAmount} from '@dontcode/core';
 import {DynamicComponent, PossibleTemplateList, TemplateList} from '@dontcode/plugin-common';
-import * as i18nCountries from 'i18n-iso-countries';
-import countryDataEn from 'i18n-iso-countries/langs/en.json'
 
 /**
  * Display or edit a country value
  */
 @Component({
-  selector: 'dontcode-fields-country',
-  templateUrl: './country.component.html',
-  styleUrls: ['./country.component.css']
+  selector: 'dontcode-fields-money',
+  templateUrl: './money.component.html',
+  styleUrls: ['./money.component.css']
 })
-export class CountryComponent implements DynamicComponent, OnInit{
+export class MoneyComponent implements DynamicComponent, OnInit{
   @ViewChild('inlineView')
   private inlineView: TemplateRef<any>;
 
   @ViewChild('fullEditView')
   private fullEditView: TemplateRef<any>;
 
-  value = '';
+  value:MoneyAmount = new MoneyAmount();
   name:string;
 
   countries = new Array<{ name, alpha2code }>();
@@ -29,31 +28,26 @@ export class CountryComponent implements DynamicComponent, OnInit{
   }
 
   ngOnInit(): void {
-    i18nCountries.registerLocale(countryDataEn);
-
-    for (const alpha2 in i18nCountries.getAlpha2Codes()) {
-      this.countries.push({name:i18nCountries.getName(alpha2,'en'), alpha2code: alpha2});
-    }
   }
 
   setName(name: string): void {
     this.name = name;
     }
 
-  providesTemplates (): TemplateList {
+  providesTemplates (key?: string): TemplateList {
     return new TemplateList(this.inlineView, null, this.fullEditView);
   }
 
   canProvide(key?: string): PossibleTemplateList {
-    return new PossibleTemplateList(true, false, true);
-  }
-
-  setValue(val: any) {
-    this.value = val;
+      return new PossibleTemplateList(true, false, true);
   }
 
   getValue(): any {
     return this.value;
+  }
+
+  setValue(val: any) {
+    this.value = val;
   }
 
   overrideValue(value: any): any {

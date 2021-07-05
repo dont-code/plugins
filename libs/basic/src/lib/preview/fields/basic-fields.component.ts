@@ -39,12 +39,21 @@ export class BasicFieldsComponent implements OnInit, DynamicComponent {
     return new PossibleTemplateList((type==='Boolean')?true:false, false, true);
   }
 
+  setName (name:string): void {
+    this.name = name;
+  }
+
   setValue(val: any): void {
     this.value = val;
   }
 
-  setName (name:string): void {
-    this.name = name;
+  getValue(): any {
+    return this.value;
+  }
+
+  overrideValue(value: any): any {
+    // We don't need to override any value in this component
+    return value;
   }
 
 }

@@ -19,7 +19,8 @@ export class FieldsPlugin implements Plugin
           },
           update: {
             enum: [
-              'Country'
+              'Country',
+              'Currency'
             ]
           },
           replace: false
@@ -30,13 +31,72 @@ export class FieldsPlugin implements Plugin
           location: {
             parent: DontCodeModel.APP_FIELDS,
             id: 'type',
-            values: ['Country']
+            values: [{
+              International: {
+                enum: [
+                  'Country'
+                ]
+              }
+            }]
           },
           class: {
             name:'CountryComponent',
             source:'fields'
           }
+        },
+        {
+          location: {
+            parent: DontCodeModel.APP_FIELDS,
+            id: 'type',
+            values: [{
+              International: {
+                enum: [
+                  'Currency'
+                ]
+              }
+            }]
+          },
+          class: {
+            name:'CurrencyComponent',
+            source:'fields'
+          }
+        },
+        {
+          location: {
+            parent: DontCodeModel.APP_FIELDS,
+            id: 'type',
+            values: [{
+              Money: {
+                enum: [
+                  'Euro',
+                  'Dollar'
+                ]
+              }
+            }]
+          },
+          class: {
+            name:'EuroDollarComponent',
+            source:'fields'
+          }
+        },
+        {
+          location: {
+            parent: DontCodeModel.APP_FIELDS,
+            id: 'type',
+            values: [{
+              Money: {
+                enum: [
+                  'Other currency'
+                ]
+              }
+            }]
+          },
+          class: {
+            name:'MoneyComponent',
+            source:'fields'
+          }
         }
+
       ]
     }
   }

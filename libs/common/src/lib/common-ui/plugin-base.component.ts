@@ -248,4 +248,12 @@ export abstract class PluginBaseComponent implements DynamicComponent, PreviewHa
   setValue(val: any): void {
   }
 
+  getValue(): any {
+    return undefined;
+  }
+
+  overrideValue(value: any): any {
+    // We don't need to override any value in this component
+    return value;
+  }
 }
