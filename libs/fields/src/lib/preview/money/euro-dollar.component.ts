@@ -1,7 +1,7 @@
 import {Component, TemplateRef, ViewChild} from '@angular/core';
 import {MoneyAmount} from '@dontcode/core';
-import {DynamicComponent, PossibleTemplateList, TemplateList} from '@dontcode/plugin-common';
-import {addMethod} from "@nrwl/workspace";
+import {AbstractDynamicComponent, PossibleTemplateList, TemplateList} from '@dontcode/plugin-common';
+import {FormControl, FormGroup} from '@angular/forms';
 
 /**
  * Display or edit a country value
@@ -11,7 +11,7 @@ import {addMethod} from "@nrwl/workspace";
   templateUrl: './euro-dollar.component.html',
   styleUrls: ['./euro-dollar.component.css']
 })
-export class EuroDollarComponent implements DynamicComponent{
+export class EuroDollarComponent extends AbstractDynamicComponent{
   @ViewChild('inlineView')
   private inlineView: TemplateRef<any>;
 
@@ -19,13 +19,8 @@ export class EuroDollarComponent implements DynamicComponent{
   private fullEditView: TemplateRef<any>;
 
   value = new MoneyAmount();
-  name:string;
 
-  private amount: number = null;
-
-  setName(name: string): void {
-    this.name = name;
-    }
+  control:FormControl = new FormControl(null,{updateOn:'blur'})
 
   providesTemplates (key?:string): TemplateList {
     switch (key) {
@@ -38,23 +33,13 @@ export class EuroDollarComponent implements DynamicComponent{
     }
   }
 
-  getValue (): any {
-    this.value.amount=this.amount;
-    return this.value;
-  }
-
-  setValue(val: any) {
-    if( val && val.value)
-      this.value = val.value;
-    else {
-      delete this.value;
+  setValue(val: any):void {
+    if( val) {
+      this.value = val;
+      this.control.setValue(this.value.amount, {emitEvent: false});
+    } else {
+      this.value = new MoneyAmount();
     }
-    this.amount=this.value.amount;
-    if (!this.amount) this.amount = null;
-  }
-
-  overrideValue(value: any): any {
-    return this.getValue();
   }
 
   canProvide(key?: string): PossibleTemplateList {
@@ -68,4 +53,24 @@ export class EuroDollarComponent implements DynamicComponent{
     return new PossibleTemplateList(false, false, false);
   }
 
+  /**
+   * We are managing our own FormControl to store both the amount and currency
+   */
+  managesFormControl(): boolean {
+    return true;
+  }
+
+  setForm(form: FormGroup) {
+    super.setForm(form);
+    form.registerControl(this.name, this.control);
+  }
+
+  get amount (): number {
+    return this.value.amount;
+  }
+
+  set amount (newAmount){
+    this.value.amount=newAmount;
+    this.control.setValue(newAmount);
+  }
 }

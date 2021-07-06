@@ -28,12 +28,23 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
 
   @Input("value") set _value(newval:any) {
     this.value = newval;
-    if( this.value == null)
-      this.value = {};
-    if (this.form) {
-      this.form.reset(this.value,{emitEvent:false});
-    }
 
+    if( this.value) {
+        // Transforms the stored values into field values
+      this.fields.forEach(field => {
+        if (field?.component?.managesFormControl()) {
+          field.component.setValue(this.value[field.name]);
+        } else {
+          if (this.form) {
+            const singleVal={};
+            singleVal[field.name]=this.value[field.name];
+            this.form.patchValue(singleVal,{emitEvent:false});
+           }
+        }
+      });
+    } else {
+      this.form?.reset({}, {emitEvent:false});
+    }
   }
 
   @ViewChild('defaulteditor')
@@ -57,10 +68,15 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
       if (this.value) {
         for (const changeKey in change) {
           if( change.hasOwnProperty(changeKey)) {
-            const field = this.fields[this.fieldsMap.get(changeKey)];
+            const field = this.fields.find(toSearch => {
+              if (toSearch.name===changeKey)
+                return true;
+              else
+                return false;
+            });
             let newVal = change[changeKey];
-            if (field) {
-              newVal = field.component.overrideValue (newVal);
+            if (field?.component?.managesFormControl()) {
+              newVal = field.component.getValue();
             }
             this.value[changeKey] = newVal;
           }
@@ -88,8 +104,10 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
   protected handleChange(change: Change) {
     this.applyUpdatesToArrayAsync (this.fields, this.fieldsMap, change, null, (position,value) => {
       return this.loadSubComponent(position, value).then(component => {
-        if( component)
+        if( component) {
           component.setName(value.name);
+          component.setForm(this.form);
+        }
         return new FormElement(value.name, value.type, component);
       });
     }, (elt, key, newVal) => {
@@ -129,7 +147,13 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
         val = this.value[field.name];
       }
       toRemove.delete(field.name);
-      this.form.addControl(field.name, new FormControl(val, Validators.required));
+      if( field.component)
+        field.component.setValue(val);
+
+      // Check if the component manages the FormControl itself or if it relies on us
+      if(!field.component?.managesFormControl())
+        this.form.registerControl(field.name, new FormControl(val, Validators.required));
+
     });
 
     toRemove.forEach(key => {

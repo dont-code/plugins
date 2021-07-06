@@ -1,12 +1,12 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {DynamicComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
+import {AbstractDynamicComponent, DynamicComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
 
 @Component({
   selector: 'plugins-web-fields',
   templateUrl: './web-fields.component.html',
   styleUrls: ['./web-fields.component.css']
 })
-export class WebFieldsComponent implements OnInit, DynamicComponent {
+export class WebFieldsComponent extends AbstractDynamicComponent {
 
   @ViewChild('EDIT_URL')
   private editUrlTemplate: TemplateRef<any>;
@@ -16,14 +16,6 @@ export class WebFieldsComponent implements OnInit, DynamicComponent {
   private editImageTemplate: TemplateRef<any>;
   @ViewChild('READ_IMAGE')
   private readImageTemplate: TemplateRef<any>;
-
-  name:string;
-  value:any;
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
 
   providesTemplates(type:string): TemplateList {
     switch (type) {
@@ -46,10 +38,6 @@ export class WebFieldsComponent implements OnInit, DynamicComponent {
     }
   }
 
-  setName (name:string): void {
-    this.name = name;
-  }
-
   calculateUrl(url: string): string {
       if (url.includes('//')) {
         url = url.substring(url.indexOf('//')+2);
@@ -59,19 +47,6 @@ export class WebFieldsComponent implements OnInit, DynamicComponent {
         return url.substring(0, 17)+'...';
       else
         return url;
-  }
-
-  setValue(val: any): void {
-    this.value = val;
-  }
-
-  getValue(): any {
-    return this.value;
-  }
-
-  overrideValue(value: any): any {
-    // We don't need to override any value in this component
-    return value;
   }
 
 }

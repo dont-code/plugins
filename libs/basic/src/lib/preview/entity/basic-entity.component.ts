@@ -71,7 +71,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
         this.store.loadAll().then (() => {
           this.ref.markForCheck();
           this.ref.detectChanges();
-        });
+        })
       }))
       .subscribe()
     );

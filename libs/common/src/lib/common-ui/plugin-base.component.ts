@@ -5,6 +5,7 @@ import {map} from "rxjs/operators";
 import {PossibleTemplateList, TemplateList} from "./template-list";
 import {DynamicComponent} from "./dynamic-component";
 import {ComponentLoaderService} from "../common-dynamic/component-loader.service";
+import {FormGroup} from "@angular/forms";
 
 @Directive({selector: 'dtcde-dynamic'})
 export class DynamicInsertPoint {
@@ -45,23 +46,25 @@ export abstract class PluginBaseComponent implements DynamicComponent, PreviewHa
       let change: Change;
       const schemaManager = this.provider.getSchemaManager();
       for (const prop in json) {
-        const subPropertyPointer = schemaManager.generateSubSchemaPointer(pointer, prop);
-        const propType = schemaManager.locateItem(subPropertyPointer.schemaPosition);
-        if ((propType?.isArray()) &&( !subPropertyPointer.itemId)) {
-          this.decomposeJsonToMultipleChanges(subPropertyPointer, json[prop]);
-        } else {
-          change = new Change(
-            ChangeType.ADD,
-            pointer.position + '/' + prop,
-            json[prop],
-            subPropertyPointer);
-          if (!propType) {
-            // This is not a sub property but a subItem of an array
-            change.pointer.itemId = change.pointer.key;
-            change.pointer.key = null;
-          }
+        if( json.hasOwnProperty(prop)) {
+          const subPropertyPointer = schemaManager.generateSubSchemaPointer(pointer, prop);
+          const propType = schemaManager.locateItem(subPropertyPointer.schemaPosition);
+          if ((propType?.isArray()) &&( !subPropertyPointer.itemId)) {
+            this.decomposeJsonToMultipleChanges(subPropertyPointer, json[prop]);
+          } else {
+            change = new Change(
+              ChangeType.ADD,
+              pointer.position + '/' + prop,
+              json[prop],
+              subPropertyPointer);
+            if (!propType) {
+              // This is not a sub property but a subItem of an array
+              change.pointer.itemId = change.pointer.key;
+              change.pointer.key = null;
+            }
 
-          this.handleChange(change);
+            this.handleChange(change);
+          }
         }
       }
     }
@@ -252,8 +255,11 @@ export abstract class PluginBaseComponent implements DynamicComponent, PreviewHa
     return undefined;
   }
 
-  overrideValue(value: any): any {
-    // We don't need to override any value in this component
-    return value;
+  setForm(form: FormGroup): void {
   }
+
+  managesFormControl(): boolean {
+    return false;
+  }
+
 }

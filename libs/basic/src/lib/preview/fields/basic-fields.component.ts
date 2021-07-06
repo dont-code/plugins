@@ -1,12 +1,12 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {DynamicComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
+import {AbstractDynamicComponent, DynamicComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
 
 @Component({
   selector: 'plugins-basic-fields',
   templateUrl: './basic-fields.component.html',
   styleUrls: ['./basic-fields.component.css']
 })
-export class BasicFieldsComponent implements OnInit, DynamicComponent {
+export class BasicFieldsComponent extends AbstractDynamicComponent {
 
   @ViewChild('INPUT')
   private inputTemplate: TemplateRef<any>;
@@ -16,14 +16,6 @@ export class BasicFieldsComponent implements OnInit, DynamicComponent {
   private checkTemplate: TemplateRef<any>;
   @ViewChild('LIST_CHECK')
   private listCheckTemplate: TemplateRef<any>;
-
-  name:string;
-  value:any;
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
 
   providesTemplates(type:string): TemplateList {
     switch (type) {
@@ -37,23 +29,6 @@ export class BasicFieldsComponent implements OnInit, DynamicComponent {
   }
   canProvide(type?: string): PossibleTemplateList {
     return new PossibleTemplateList((type==='Boolean')?true:false, false, true);
-  }
-
-  setName (name:string): void {
-    this.name = name;
-  }
-
-  setValue(val: any): void {
-    this.value = val;
-  }
-
-  getValue(): any {
-    return this.value;
-  }
-
-  overrideValue(value: any): any {
-    // We don't need to override any value in this component
-    return value;
   }
 
 }

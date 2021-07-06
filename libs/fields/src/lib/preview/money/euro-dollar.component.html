@@ -1,6 +1,6 @@
-<ng-template #inlineView><span *ngIf="value&&value.currencyCode" class="numeric">{{value.amount | currency:value.currencyCode}}</span></ng-template>
-<ng-template #fullEditView let-form="form">
+<ng-template #inlineView><span *ngIf="value?.currencyCode" class="numeric">{{value.amount | currency:value.currencyCode}}</span></ng-template>
+<ng-template #fullEditView>
   <ng-container [formGroup]="form">
-    <p-inputNumber mode="currency" [currency]="value.currencyCode" [name]="name" [(ngModel)]="amount" [ngModelOptions]="{standalone: true}"></p-inputNumber>
+    <p-inputNumber *ngIf="value?.currencyCode" mode="currency" [currency]="value.currencyCode" [name]="name" [(ngModel)]="amount" [ngModelOptions]="{standalone:true}"></p-inputNumber>
   </ng-container>
 </ng-template>

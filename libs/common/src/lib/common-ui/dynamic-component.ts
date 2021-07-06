@@ -1,4 +1,5 @@
 import {PossibleTemplateList, TemplateList} from "../common-ui/template-list";
+import {FormGroup} from "@angular/forms";
 
 export interface DynamicComponent {
 
@@ -8,13 +9,6 @@ export interface DynamicComponent {
 
   getValue (): any;
 
-  /**
-   * Give the option for the DynamicComponent to modify the value before it is stored.
-   * This allows using a different storing model than the Reactive or non Reactive Form model
-   * @param value
-   */
-  overrideValue (value:any): any;
-
   canProvide (key?:string): PossibleTemplateList;
   /**
    * Returns the list of templates the component is providing
@@ -22,4 +16,14 @@ export interface DynamicComponent {
    */
   providesTemplates (key?:string): TemplateList;
 
+  /**
+   * Sets the formgroup to use in case of edition
+   * @param form
+   */
+  setForm (form: FormGroup): void;
+
+  /**
+   * Is the component managing its own FormControl or does it rely on the framework to create one for it ?
+   */
+  managesFormControl (): boolean;
 }

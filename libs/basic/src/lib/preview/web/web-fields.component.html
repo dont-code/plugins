@@ -1,4 +1,4 @@
-<ng-template #EDIT_URL let-form="form"><ng-container [formGroup]="form"><input [name]="name" [formControlName]="name" pInputText /></ng-container></ng-template>
-<ng-template #EDIT_IMAGE let-form="form"><ng-container [formGroup]="form"><input [name]="name" [formControlName]="name" pInputText /></ng-container></ng-template>
+<ng-template #EDIT_URL><ng-container [formGroup]="form"><input [name]="name" [formControlName]="name" pInputText /></ng-container></ng-template>
+<ng-template #EDIT_IMAGE><ng-container [formGroup]="form"><input [name]="name" [formControlName]="name" pInputText /></ng-container></ng-template>
 <ng-template #READ_URL><a [pTooltip]="value" [href]="value" target="_blank">{{calculateUrl (value)}}</a></ng-template>
 <ng-template #READ_IMAGE><img class="inline-image" [src]="value" /></ng-template>
