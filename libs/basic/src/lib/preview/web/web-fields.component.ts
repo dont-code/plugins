@@ -39,14 +39,16 @@ export class WebFieldsComponent extends AbstractDynamicComponent {
   }
 
   calculateUrl(url: string): string {
-      if (url.includes('//')) {
-        url = url.substring(url.indexOf('//')+2);
-      }
+    if (!url) return url;
 
-      if (url.length>20)
-        return url.substring(0, 17)+'...';
-      else
-        return url;
+    if (url.includes('//')) {
+      url = url.substring(url.indexOf('//')+2);
+    }
+
+    if (url.length>20)
+      return url.substring(0, 17)+'...';
+    else
+      return url;
   }
 
 }
