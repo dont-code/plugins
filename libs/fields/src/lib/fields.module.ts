@@ -9,7 +9,7 @@ import {PluginCommonModule} from '@dontcode/plugin-common';
 import {CurrencyComponent} from './preview/currency/currency.component';
 import {EuroDollarComponent} from './preview/money/euro-dollar.component';
 import {MoneyComponent} from './preview/money/money.component';
-import {InputNumberModule} from "primeng/inputnumber";
+import {InputNumberModule} from 'primeng/inputnumber';
 
 @NgModule({
   imports: [CommonModule,

@@ -1,5 +1,6 @@
-import {DynamicComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
+import {DynamicComponent} from "./dynamic-component";
 import {FormGroup} from "@angular/forms";
+import {PossibleTemplateList, TemplateList} from "./template-list";
 
 export abstract class AbstractDynamicComponent implements DynamicComponent {
 
