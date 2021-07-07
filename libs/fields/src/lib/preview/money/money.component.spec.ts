@@ -2,6 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {DropdownModule} from 'primeng/dropdown';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MoneyComponent} from './money.component';
+import {InputNumberModule} from 'primeng/inputnumber';
 
 describe('MoneyComponent', () => {
   let component: MoneyComponent;
@@ -10,7 +11,7 @@ describe('MoneyComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ MoneyComponent ],
-      imports: [DropdownModule, ReactiveFormsModule]
+      imports: [DropdownModule, InputNumberModule, ReactiveFormsModule]
     })
     .compileComponents();
   });
