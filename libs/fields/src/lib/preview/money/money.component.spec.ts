@@ -3,6 +3,7 @@ import {DropdownModule} from 'primeng/dropdown';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MoneyComponent} from './money.component';
 import {InputNumberModule} from 'primeng/inputnumber';
+import {PluginCommonModule} from "@dontcode/plugin-common";
 
 describe('MoneyComponent', () => {
   let component: MoneyComponent;
@@ -11,7 +12,7 @@ describe('MoneyComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ MoneyComponent ],
-      imports: [DropdownModule, InputNumberModule, FormsModule, ReactiveFormsModule]
+      imports: [DropdownModule, InputNumberModule, FormsModule, ReactiveFormsModule, PluginCommonModule]
     })
     .compileComponents();
   });

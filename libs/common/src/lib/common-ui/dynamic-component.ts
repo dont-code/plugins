@@ -1,4 +1,4 @@
-import {PossibleTemplateList, TemplateList} from "../common-ui/template-list";
+import {PossibleTemplateList, TemplateList} from "./template-list";
 import {FormGroup} from "@angular/forms";
 
 export interface DynamicComponent {
