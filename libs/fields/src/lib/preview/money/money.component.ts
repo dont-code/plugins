@@ -8,7 +8,7 @@ import {
   TemplateList
 } from '@dontcode/plugin-common';
 import {FormControl, FormGroup} from '@angular/forms';
-import {AbstractDynamicLoaderComponent} from "../../../../../common/src/lib/common-ui/abstract-dynamic-loader-component";
+import {AbstractDynamicLoaderComponent} from '@dontcode/plugin-common';
 
 /**
  * Display or edit a country value
