@@ -2,6 +2,10 @@ import {DynamicComponent} from "./dynamic-component";
 import {FormGroup} from "@angular/forms";
 import {PossibleTemplateList, TemplateList} from "./template-list";
 
+/**
+ * A component that can be dynamically loaded by the dont-code framework.
+ * It can integrate with the reactive form
+ */
 export abstract class AbstractDynamicComponent implements DynamicComponent {
 
   name: string;

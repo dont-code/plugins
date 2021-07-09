@@ -1,5 +1,5 @@
 <ng-template #inlineView ><span class="flag-icon" [ngClass]="'flag-icon-'+value?.toLowerCase()"></span>{{value}}</ng-template>
-<ng-template #fullEditView let-form="form">
+<ng-template #fullEditView>
   <ng-container [formGroup]="form">
     <p-dropdown [options]="countries" [formControlName]="name" optionLabel="name" optionValue="alpha2code" [filter]="true" filterBy="name" [showClear]="true" placeholder="Select a Country">
       <ng-template pTemplate="selectedItem">

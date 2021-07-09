@@ -22,11 +22,15 @@ export class ComponentLoaderService {
     this.previewMgr = dtcde.getPreviewManager();
   }
 
-  loadComponentFactory(position: DontCodeModelPointer, provider: CommandProviderInterface, currentJson?: any): Promise<ComponentFactory<DynamicComponent>> {
-    if (!currentJson)
-      currentJson = provider.getJsonAt(position.position);
+  loadComponentForFieldType(type: string): Promise<ComponentFactory<DynamicComponent>> {
+    return this.loadComponentFactory('creation/entities/fields/type', type);
+  }
 
-    const handlerConfig = this.previewMgr.retrieveHandlerConfig(position.schemaPosition, currentJson);
+  loadComponentFactory(schemaPosition: DontCodeModelPointer | string, currentJson?: any): Promise<ComponentFactory<DynamicComponent>> {
+    let schemaPos:string = (schemaPosition as DontCodeModelPointer).schemaPosition;
+    if (!schemaPos) schemaPos = schemaPosition as string;
+
+    const handlerConfig = this.previewMgr.retrieveHandlerConfig(schemaPos, currentJson);
 
     if (handlerConfig) {
       console.log("Importing from ", handlerConfig.class.source);
