@@ -1,25 +1,23 @@
 import {from, Observable, of, Subscription} from "rxjs";
-import {Component, Directive, Injector, OnDestroy, ViewChild, ViewContainerRef} from "@angular/core";
+import {Component, Injector, OnDestroy} from "@angular/core";
 import {Change, ChangeType, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
 import {map} from "rxjs/operators";
-import {PossibleTemplateList, TemplateList} from "./template-list";
-import {DynamicComponent} from "./dynamic-component";
 import {ComponentLoaderService} from "../common-dynamic/component-loader.service";
-import {FormGroup} from "@angular/forms";
+import {AbstractDynamicLoaderComponent} from "./abstract-dynamic-loader-component";
 
-@Directive({selector: 'dtcde-dynamic'})
-export class DynamicInsertPoint {
-}
-
+/**
+ * A component that can be loaded by the framework, load subcomponents, listen to model changes, and so on...
+ * Usually provided by plugins and run by the framework
+ */
 @Component({template: ''})
-export abstract class PluginBaseComponent implements DynamicComponent, PreviewHandler, OnDestroy {
+export abstract class PluginBaseComponent extends AbstractDynamicLoaderComponent implements PreviewHandler, OnDestroy {
   protected subscriptions = new Subscription();
   entityPointer: DontCodeModelPointer;
   provider: CommandProviderInterface;
 
-  @ViewChild(DynamicInsertPoint, {read: ViewContainerRef}) dynamicInsertPoint: ViewContainerRef;
 
-  constructor(protected loader: ComponentLoaderService, protected injector: Injector) {
+  constructor(loader: ComponentLoaderService, injector: Injector) {
+    super(loader, injector);
   }
 
   ngOnDestroy(): void {
@@ -222,44 +220,6 @@ export abstract class PluginBaseComponent implements DynamicComponent, PreviewHa
       return Promise.resolve(target);
     }
 
-  }
-
-  /**
-   * Loads the component that will handle the display and edit for the item at the specified position
-   * @param position
-   * @param currentJson
-   */
-  loadSubComponent(position: DontCodeModelPointer, currentJson?: any): Promise<DynamicComponent> {
-    return this.loader.loadComponentFactory(position, this.provider, currentJson).then (componentFactory => {
-      if( componentFactory) {
-        const componentRef = this.dynamicInsertPoint.createComponent(componentFactory);
-        const handler = componentRef.instance as DynamicComponent;
-        return handler;
-      } else {
-        // Let's try to find the closest ancestor that is an object. Maybe we'll find a component for it and it will
-        return null;
-      }
-    });
-  }
-
-  abstract providesTemplates(): TemplateList;
-  abstract canProvide(key?: string): PossibleTemplateList;
-
-  setName(name: string): void {
-  }
-
-  setValue(val: any): void {
-  }
-
-  getValue(): any {
-    return undefined;
-  }
-
-  setForm(form: FormGroup): void {
-  }
-
-  managesFormControl(): boolean {
-    return false;
   }
 
 }

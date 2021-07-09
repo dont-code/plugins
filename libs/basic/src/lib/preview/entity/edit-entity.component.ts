@@ -22,9 +22,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
   templateUrl: './edit-entity.component.html',
   styleUrls: ['./edit-entity.component.scss']
 })
-export class EditEntityComponent extends PluginBaseComponent implements PreviewHandler, OnInit {
-
-  value:any
+export class EditEntityComponent extends PluginBaseComponent implements OnInit {
 
   @Input("value") set _value(newval:any) {
     this.value = newval;
@@ -55,7 +53,6 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
   fields = new Array<FormElement>();
   fieldsMap = new Map<string, number>();
 
-  form: FormGroup;
   formConfig = {};
 
   constructor(private ref:ChangeDetectorRef, protected fb:FormBuilder,protected componentFactoryResolver: ComponentFactoryResolver, componentLoader: ComponentLoaderService, injector: Injector) {
@@ -176,6 +173,13 @@ export class EditEntityComponent extends PluginBaseComponent implements PreviewH
       ref = this.defaultTemplate;
 
     return ref;
+  }
+
+  setForm(form: FormGroup) {
+    // Just ignore any form set
+    if (form) {
+      throw new Error ("Trying to set a form to the Edit Entity component who already has one");
+    }
   }
 }
 
