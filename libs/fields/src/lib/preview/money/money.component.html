@@ -4,7 +4,7 @@
   <ng-container [formGroup]="group">
     <div class="p-grid">
       <div class="p-col-12 p-md-8">
-        <p-inputNumber [name]="name" [(ngModel)]="amount" [ngModelOptions]="{standalone:true}"></p-inputNumber>
+        <p-inputNumber [name]="name" [(ngModel)]="amount" [ngModelOptions]="{standalone:true}" [minFractionDigits]="2"></p-inputNumber>
       </div>
       <div class="p-col-12 p-md-4">
         <ng-container *ngTemplateOutlet="template()"></ng-container>
