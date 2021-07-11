@@ -1,5 +1,5 @@
 import {ComponentFactory, ComponentFactoryResolver, getModuleFactory, Injectable} from '@angular/core';
-import {CommandProviderInterface, DontCodeModelPointer, DontCodePreviewManager, dtcde, PluginModuleInterface} from '@dontcode/core';
+import {DontCodeModelPointer, DontCodePreviewManager, dtcde, PluginModuleInterface} from '@dontcode/core';
 import {DynamicComponent} from "../common-ui/dynamic-component";
 
 /**

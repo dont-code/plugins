@@ -1,19 +1,11 @@
+import {ChangeDetectorRef, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer} from "@dontcode/core";
 import {
-  ChangeDetectorRef,
-  Component,
-  ComponentFactoryResolver,
-  Injector,
-  Input,
-  OnInit,
-  TemplateRef, ViewChild
-} from '@angular/core';
-import {Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
-import {
+  ComponentLoaderService,
   DynamicComponent,
   PluginBaseComponent,
-  TemplateList,
-  ComponentLoaderService,
-  PossibleTemplateList
+  PossibleTemplateList,
+  TemplateList
 } from "@dontcode/plugin-common";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 
@@ -55,8 +47,8 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
 
   formConfig = {};
 
-  constructor(private ref:ChangeDetectorRef, protected fb:FormBuilder,protected componentFactoryResolver: ComponentFactoryResolver, componentLoader: ComponentLoaderService, injector: Injector) {
-    super(componentLoader, injector);
+  constructor(private ref:ChangeDetectorRef, protected fb:FormBuilder, componentLoader: ComponentLoaderService) {
+    super(componentLoader);
   }
 
   ngOnInit(): void {

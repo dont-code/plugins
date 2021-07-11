@@ -47,7 +47,7 @@ describe('PluginBaseComponent', () => {
     // Simple results first
     const map = new Map<string, any>();
     const srcArray = new Array<TestArrayTarget>();
-    return component.applyUpdatesToArrayAsync(srcArray, map, change, 'fields', transformToTarget).then(array => {
+    component.applyUpdatesToArrayAsync(srcArray, map, change, 'fields', transformToTarget).then(array => {
       expect(array).toHaveLength(1);
       let result = new TestArrayTarget(change.value.name, change.value.type);
       expect(map.get('ab')).toBe(0);
@@ -137,7 +137,7 @@ describe('PluginBaseComponent', () => {
     // tslint:disable-next-line:no-shadowed-variable
     const provider = new TestProviderInterface(null);
     component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer.containerSchemaPosition) );
-    return component.applyUpdatesToArrayAsync(array, map, change, 'fields', transformToTarget).then (array => {
+    component.applyUpdatesToArrayAsync(array, map, change, 'fields', transformToTarget).then (array => {
 
     change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'b',
       resultB);
@@ -234,7 +234,7 @@ describe('PluginBaseComponent', () => {
     const provider = new TestProviderInterface(null);
     component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer.containerSchemaPosition) );
     // tslint:disable-next-line:no-shadowed-variable
-    return component.applyUpdatesToArrayAsync(array, map, change, 'fields', transformToTarget).then (array => {
+    component.applyUpdatesToArrayAsync(array, map, change, 'fields', transformToTarget).then (array => {
 
     change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'b',
       resultB);

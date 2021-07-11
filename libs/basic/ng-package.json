@@ -12,6 +12,8 @@
       "primeng/checkbox": "primeng/checkbox",
       "primeng/inputnumber": "primeng/inputnumber",
       "primeng/tabview": "primeng/tabview",
+      "primeng/calendar": "primeng/calendar",
+      "primeng/tooltip": "primeng/tooltip",
       "@dontcode/core": "@dontcode/core",
       "@dontcode/plugin-common": "@dontcode/plugin-common"
     }
