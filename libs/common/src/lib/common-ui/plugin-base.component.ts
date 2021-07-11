@@ -16,8 +16,8 @@ export abstract class PluginBaseComponent extends AbstractDynamicLoaderComponent
   provider: CommandProviderInterface;
 
 
-  constructor(loader: ComponentLoaderService, injector: Injector) {
-    super(loader, injector);
+  constructor(loader: ComponentLoaderService) {
+    super(loader);
   }
 
   ngOnDestroy(): void {

@@ -1,14 +1,6 @@
 import {AbstractDynamicComponent} from "./abstract-dynamic-component";
-import { DynamicComponent} from "./dynamic-component";
-import {
-  AfterViewInit,
-  Component,
-  ComponentFactory,
-  Directive,
-  Injector,
-  ViewChild,
-  ViewContainerRef
-} from "@angular/core";
+import {DynamicComponent} from "./dynamic-component";
+import {AfterViewInit, Component, ComponentFactory, Directive, ViewChild, ViewContainerRef} from "@angular/core";
 import {DontCodeModelPointer} from "@dontcode/core";
 import {FormControl, FormGroup} from "@angular/forms";
 import {ComponentLoaderService} from "../common-dynamic/component-loader.service";
@@ -32,7 +24,7 @@ export abstract class AbstractDynamicLoaderComponent extends AbstractDynamicComp
   protected componentsByFormName = new Map<string, DynamicComponent> ();
   protected group: FormGroup;   // Manages the formGroup for all subcomponents
 
-  protected constructor(protected loader: ComponentLoaderService, protected injector: Injector) {
+  protected constructor(protected loader: ComponentLoaderService) {
     super();
   }
 

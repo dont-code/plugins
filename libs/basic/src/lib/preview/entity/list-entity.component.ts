@@ -1,10 +1,11 @@
-import {ChangeDetectorRef, Component, EventEmitter, Injector, Input, OnInit, Output, TemplateRef} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, TemplateRef} from '@angular/core';
 import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
 import {
   ComponentLoaderService,
   DynamicComponent,
   EntityListManager,
-  PluginBaseComponent, PossibleTemplateList,
+  PluginBaseComponent,
+  PossibleTemplateList,
   TemplateList
 } from "@dontcode/plugin-common";
 
@@ -32,8 +33,8 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
   @Input()
   store: EntityListManager;
 
-  constructor(private ref:ChangeDetectorRef, componentLoader: ComponentLoaderService, injector: Injector) {
-    super(componentLoader, injector);
+  constructor(private ref:ChangeDetectorRef, componentLoader: ComponentLoaderService) {
+    super(componentLoader);
   }
 
   ngOnInit(): void {

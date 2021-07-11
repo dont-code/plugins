@@ -28,8 +28,8 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent{
   value:MoneyAmount = new MoneyAmount();
   control:FormControl = new FormControl(null,{updateOn:'blur'})
 
-  constructor(protected loaderService: ComponentLoaderService, protected injector: Injector) {
-    super(loaderService, injector );
+  constructor(protected loaderService: ComponentLoaderService) {
+    super(loaderService );
   }
 
   providesTemplates (key?: string): TemplateList {
