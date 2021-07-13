@@ -376,10 +376,10 @@ class TestBaseComponent extends PluginBaseComponent {
   }
 
   providesTemplates(): TemplateList {
-    return new TemplateList();
+    return new TemplateList(null, null, null);
   }
 
   canProvide(key?: string): PossibleTemplateList {
-    return new PossibleTemplateList();
+    return new PossibleTemplateList(false, false, false);
   }
 }
