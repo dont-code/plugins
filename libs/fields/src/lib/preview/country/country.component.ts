@@ -13,13 +13,13 @@ import countryDataEn from 'i18n-iso-countries/langs/en.json'
 })
 export class CountryComponent extends AbstractDynamicComponent implements OnInit{
   @ViewChild('inlineView')
-  private inlineView: TemplateRef<any>;
+  private inlineView!: TemplateRef<any>;
 
   @ViewChild('fullEditView')
-  private fullEditView: TemplateRef<any>;
+  private fullEditView!: TemplateRef<any>;
 
-  countries = new Array<{ name, alpha2code }>();
-  selectedCountry;
+  countries = new Array<{ name:string, alpha2code:string }>();
+//  selectedCountry;
 
   ngOnInit(): void {
     i18nCountries.registerLocale(countryDataEn);

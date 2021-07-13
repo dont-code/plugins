@@ -9,13 +9,13 @@ import {AbstractDynamicComponent, DynamicComponent, PossibleTemplateList, Templa
 export class BasicFieldsComponent extends AbstractDynamicComponent {
 
   @ViewChild('INPUT')
-  private inputTemplate: TemplateRef<any>;
+  private inputTemplate!: TemplateRef<any>;
   @ViewChild('NUMERIC')
-  private numericTemplate: TemplateRef<any>;
+  private numericTemplate!: TemplateRef<any>;
   @ViewChild('CHECK')
-  private checkTemplate: TemplateRef<any>;
+  private checkTemplate!: TemplateRef<any>;
   @ViewChild('LIST_CHECK')
-  private listCheckTemplate: TemplateRef<any>;
+  private listCheckTemplate!: TemplateRef<any>;
 
   providesTemplates(type:string): TemplateList {
     switch (type) {

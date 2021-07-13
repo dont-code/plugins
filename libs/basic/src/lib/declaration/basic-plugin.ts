@@ -14,7 +14,8 @@ export class BasicPlugin implements Plugin
         "description": "Screens to directly list, edit, remove entities",
         "changes": [{
           "location": {
-            "parent": "#/definitions/entity"
+            "parent": "#/definitions",
+            "id":"entity"
           },
           "replace": false
         }]
@@ -38,7 +39,8 @@ export class BasicPlugin implements Plugin
       "preview-handlers": [
         {
           location: {
-            parent: DontCodeModel.APP_ENTITIES
+            parent: DontCodeModel.ROOT,
+            id:DontCodeModel.APP_ENTITIES_NODE
           },
           class: {
             name:"BasicEntityComponent",

@@ -9,22 +9,21 @@ import {AbstractDynamicComponent, DynamicComponent, PossibleTemplateList, Templa
 export class WebFieldsComponent extends AbstractDynamicComponent {
 
   @ViewChild('EDIT_URL')
-  private editUrlTemplate: TemplateRef<any>;
+  private editUrlTemplate!: TemplateRef<any>;
   @ViewChild('READ_URL')
-  private readUrlTemplate: TemplateRef<any>;
+  private readUrlTemplate!: TemplateRef<any>;
   @ViewChild('EDIT_IMAGE')
-  private editImageTemplate: TemplateRef<any>;
+  private editImageTemplate!: TemplateRef<any>;
   @ViewChild('READ_IMAGE')
-  private readImageTemplate: TemplateRef<any>;
+  private readImageTemplate!: TemplateRef<any>;
 
   providesTemplates(type:string): TemplateList {
     switch (type) {
       case 'Website (url)':
         return new TemplateList(this.readUrlTemplate, null,this.editUrlTemplate);
       case 'Image':
-        return new TemplateList(this.readImageTemplate, null, this.editImageTemplate);
       default:
-        return null;
+        return new TemplateList(this.readImageTemplate, null, this.editImageTemplate);
     }
   }
 

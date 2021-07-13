@@ -19,10 +19,10 @@ export class DynamicInsertPoint {
 @Component({template: ''})
 export abstract class AbstractDynamicLoaderComponent extends AbstractDynamicComponent implements AfterViewInit{
 
-  @ViewChild(DynamicInsertPoint, {read: ViewContainerRef, static:false}) dynamicInsertPoint: ViewContainerRef;
+  @ViewChild(DynamicInsertPoint, {read: ViewContainerRef, static:false}) dynamicInsertPoint!: ViewContainerRef;
 
   protected componentsByFormName = new Map<string, DynamicComponent> ();
-  protected group: FormGroup;   // Manages the formGroup for all subcomponents
+  group: FormGroup|null = null;   // Manages the formGroup for all subcomponents
 
   protected constructor(protected loader: ComponentLoaderService) {
     super();
@@ -49,10 +49,15 @@ export abstract class AbstractDynamicLoaderComponent extends AbstractDynamicComp
 
   getSubFieldValue(formName: string): any {
     const component = this.componentsByFormName.get(formName);
-    if (component.managesFormControl()) {
+    if (component?.managesFormControl()) {
       return component.getValue();
     } else {
-      return this.group.get(formName).value;
+      const subControl=this.group?.get(formName);
+      if (subControl) {
+        return subControl.value;
+      } else {
+        throw new Error ('Cannot provide value for non existent subField '+formName);
+      }
     }
   }
 
@@ -63,9 +68,13 @@ export abstract class AbstractDynamicLoaderComponent extends AbstractDynamicComp
         if (component.managesFormControl()) {
           component.setValue(val);
         } else {
-          const newVal = {};
-          newVal[formName] = val;
-          this.group.patchValue(newVal, {emitEvent: false});
+          if( this.group) {
+            const newVal:{[key:string]:any} = {};
+            newVal[formName] = val;
+            this.group.patchValue(newVal, {emitEvent: false});
+          } else {
+            throw new Error ('Cannot setSubFieldValue for '+formName+' without the FormGroup defined');
+          }
         }
       }
   }
@@ -74,31 +83,37 @@ export abstract class AbstractDynamicLoaderComponent extends AbstractDynamicComp
    * @param schemaPosition: Either the schemaPosition as string or as DontCodeModelPointer
    * @param currentJson
    */
-  loadSubComponent(schemaPosition: DontCodeModelPointer|string, currentJson?: any): Promise<DynamicComponent> {
+  loadSubComponent(schemaPosition: DontCodeModelPointer|string, currentJson?: any): Promise<DynamicComponent|null> {
     return this.loader.loadComponentFactory(schemaPosition, currentJson).then (componentFactory => {
-      return this.prepareComponent(componentFactory, null, currentJson);
+      if( componentFactory)
+        return this.prepareComponent(componentFactory, null, currentJson);
+      else
+        return null;
     });
   }
 
-  prepareComponent (factory: ComponentFactory<DynamicComponent>, formName:string, subValue:any): DynamicComponent {
+  prepareComponent (factory: ComponentFactory<DynamicComponent>, formName:string|null, subValue:any): DynamicComponent {
     if( factory && this.dynamicInsertPoint) {
       const componentRef = this.dynamicInsertPoint.createComponent(factory);
       const component = componentRef.instance as DynamicComponent;
 
         // Manages dynamic forms if needed
       if (formName) {
+        if( !this.group)
+          throw new Error ('Cannot prepare a self managing control component without a FormGroup');
         component.setName(formName);
-        component.setForm(this.group);
+
         if( !component.managesFormControl()) {
-          this.group.registerControl(formName, new FormControl(subValue,{updateOn:'blur'}))
+            this.group.registerControl(formName, new FormControl(subValue,{updateOn:'blur'}))
         } else {
+          component.setForm(this.group);
           component.setValue(subValue);
         }
         this.componentsByFormName.set(formName, component);
       }
       return component;
     } else {
-      return null;
+      throw new Error ('No ComponentFactory or missing <dtcde-dynamic></dtcde-dynamic> in template');
     }
 
   }

@@ -11,12 +11,12 @@ import country from 'all-country-data';
 })
 export class CurrencyComponent extends  AbstractDynamicComponent implements OnInit{
   @ViewChild('inlineView')
-  private inlineView: TemplateRef<any>;
+  private inlineView!: TemplateRef<any>;
 
   @ViewChild('fullEditView')
-  private fullEditView: TemplateRef<any>;
+  private fullEditView!: TemplateRef<any>;
 
-  currencies = new Array<{ currency, currencyCode }>();
+  currencies = new Array<{ currency:string, currencyCode:string }>();
 
   ngOnInit(): void {
 

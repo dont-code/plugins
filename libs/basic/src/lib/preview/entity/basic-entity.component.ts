@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, ViewChild} from "@angular/core";
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from "@angular/core";
 import {Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
 import {
   ComponentLoaderService,
@@ -21,18 +21,18 @@ import {map} from "rxjs/operators";
 })
 export class BasicEntityComponent extends PluginBaseComponent implements PreviewHandler, AfterViewInit {
 
-  entityName:string;
+  entityName:string='';
   selectedItem: any;
 
-  store:EntityListManager;
+  store:EntityListManager|null=null;
 
   tabIndex = 0;
 
   @ViewChild(ListEntityComponent)
-  list: ListEntityComponent;
+  list!: ListEntityComponent;
 
   @ViewChild(EditEntityComponent)
-  edit: EditEntityComponent;
+  edit!: EditEntityComponent;
 
   constructor(protected entityService:EntityStoreService, private ref:ChangeDetectorRef, componentLoader: ComponentLoaderService) {
     super(componentLoader);
@@ -51,31 +51,39 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
 
   ngAfterViewInit(): void {
     // When testing entityPointer is not defined
-    if (this.entityPointer) {
+    if ((this.entityPointer)&&(this.provider)) {
       this.list.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
       this.edit.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
-      this.store.loadAll().then (() => {
+      this.store?.loadAll().then (() => {
         console.log ("Loaded entities");
         this.ref.markForCheck();
         this.ref.detectChanges();
       });
+    } else {
+      throw new Error ('Cannot create subcomponents before initCommandFlow is called');
     }
   }
 
   protected initChangeListening() {
     super.initChangeListening();
-    this.subscriptions.add(this.provider.receiveCommands(DontCodeModel.APP_SHARING_WITH).pipe(
-      map(change => {
-        console.log("Reloading data due to change of StoreManager");
-        this.store.reset();
-        this.store.loadAll().then (() => {
-          this.ref.markForCheck();
-          this.ref.detectChanges();
-        })
-      }))
-      .subscribe()
-    );
-
+    if( this.provider) {
+      this.subscriptions.add(this.provider.receiveCommands(DontCodeModel.APP_SHARING_WITH).pipe(
+        map(change => {
+          if (this.store) {
+          console.log("Reloading data due to change of StoreManager");
+          this.store.reset();
+          this.store.loadAll().then (() => {
+            this.ref.markForCheck();
+            this.ref.detectChanges();
+          })
+        } else {
+          console.error ('Cannot reload data because store is not set');
+          }
+        })).subscribe()
+      );
+    } else {
+      throw new Error('Cannot create subcomponents before initCommandFlow is called');
+    }
   }
 
   /**
@@ -85,19 +93,29 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
    */
   protected handleChange (change: Change ) {
     //console.log("Changed Entity",change.position);
-    const prop = change.pointer.getUnderPropertyOf(this.entityPointer);
-    if( prop ) {
-      switch (prop) {
-        case     DontCodeModel.APP_ENTITIES_NAME_NODE:
-          this.entityName = change.value;
-          break;
-        default:
-          return;
+    if( !change.pointer) {
+      if(this.provider) {
+        change.pointer=this.provider.calculatePointerFor(change.position);
+      }else {
+        throw new Error ('Cannot handle change with no pointer for position'+ change.position);
       }
     }
-    this.ref.markForCheck();
-    this.ref.detectChanges();
-
+    if( this.entityPointer) {
+      const prop = change.pointer.getUnderPropertyOf(this.entityPointer);
+      if( prop ) {
+        switch (prop) {
+          case     DontCodeModel.APP_ENTITIES_NAME_NODE:
+            this.entityName = change.value;
+            break;
+          default:
+            return;
+        }
+      }
+      this.ref.markForCheck();
+      this.ref.detectChanges();
+    } else {
+      throw new Error ('Need an entityPointer to handle change @'+change.position);
+    }
   }
 
   selectChange($event: any) {
@@ -108,7 +126,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   }
 
   deleteEntity() {
-    if( this.selectedItem) {
+    if( (this.selectedItem) && (this.store)) {
       this.store.remove(this.selectedItem).then(deleted => {
         this.selectedItem = null;
         this.tabIndex=0;
@@ -120,14 +138,14 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
 
   newEntity() {
     const newEntity = {};
-    this.store.push(newEntity);
+    this.store?.push(newEntity);
     this.selectedItem = newEntity;
     this.tabIndex = 1;
   }
 
   saveEntity() {
     if( this.selectedItem) {
-      this.store.store (this.selectedItem).then(value => {
+      this.store?.store (this.selectedItem).then(value => {
         console.log("Entity with Id ", value, " stored");
         this.selectedItem = value;
       });
@@ -135,11 +153,11 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   }
 
   providesTemplates(): TemplateList {
-    return null;
+    return new TemplateList(null,null,null);
   }
 
   canProvide(key?: string): PossibleTemplateList {
-    return null;
+    return new PossibleTemplateList(false,false,false);
   }
 }
 
