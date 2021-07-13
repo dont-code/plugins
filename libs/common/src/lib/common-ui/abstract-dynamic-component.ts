@@ -8,9 +8,9 @@ import {PossibleTemplateList, TemplateList} from "./template-list";
  */
 export abstract class AbstractDynamicComponent implements DynamicComponent {
 
-  name: string;
+  name!: string;
   value: any;
-  form: FormGroup;
+  form!: FormGroup;
 
   setName(name: string): void {
     this.name = name;

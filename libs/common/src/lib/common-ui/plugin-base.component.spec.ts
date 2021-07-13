@@ -42,7 +42,7 @@ describe('PluginBaseComponent', () => {
       "type": "number"
     });
     const provider = new TestProviderInterface(null);
-    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer.containerSchemaPosition) );
+    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer?.containerSchemaPosition as string) );
 
     // Simple results first
     const map = new Map<string, any>();
@@ -136,7 +136,7 @@ describe('PluginBaseComponent', () => {
       resultA);
     // tslint:disable-next-line:no-shadowed-variable
     const provider = new TestProviderInterface(null);
-    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer.containerSchemaPosition) );
+    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer?.containerSchemaPosition as string) );
     component.applyUpdatesToArrayAsync(array, map, change, 'fields', transformToTarget).then (array => {
 
     change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'b',
@@ -232,7 +232,7 @@ describe('PluginBaseComponent', () => {
     let change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'a',
       resultA);
     const provider = new TestProviderInterface(null);
-    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer.containerSchemaPosition) );
+    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer?.containerSchemaPosition as string) );
     // tslint:disable-next-line:no-shadowed-variable
     component.applyUpdatesToArrayAsync(array, map, change, 'fields', transformToTarget).then (array => {
 
@@ -335,10 +335,10 @@ describe('PluginBaseComponent', () => {
 
 class TestArrayTarget {
   name:string;
-  type:string;
+  type?:string;
 
 
-  constructor(name: string, type: string) {
+  constructor(name: string, type?: string) {
     this.name = name;
     this.type = type;
   }
@@ -355,7 +355,7 @@ class TestProviderInterface implements CommandProviderInterface {
   }
 
   receiveCommands(position?: string, lastItem?: string): Observable<Change> {
-    return undefined;
+    return new Observable<Change>();
   }
 
   calculatePointerFor(position: string): DontCodeModelPointer {
@@ -376,10 +376,10 @@ class TestBaseComponent extends PluginBaseComponent {
   }
 
   providesTemplates(): TemplateList {
-    return undefined;
+    return new TemplateList();
   }
 
   canProvide(key?: string): PossibleTemplateList {
-    return undefined;
+    return new PossibleTemplateList();
   }
 }

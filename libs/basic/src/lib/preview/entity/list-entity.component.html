@@ -3,7 +3,7 @@
          styleClass="p-datatable-striped"
          [scrollable]="true" [rows]="100" scrollHeight="250px"
          [virtualScroll]="true" [virtualRowHeight]="34"
-         selectionMode="single" [(selection)]="selectedItem" [dataKey]="itemKeyName" (selectionChange)="selectionChange($event)" >
+         selectionMode="single" [(selection)]="selectedItem" (selectionChange)="selectionChange($event)" >
   <ng-template pTemplate="header" let-columns>
     <tr>
       <th id="header-{{col.header}}" *ngFor="let col of columns" [pSortableColumn]="col.field">

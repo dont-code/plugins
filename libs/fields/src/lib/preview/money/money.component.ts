@@ -20,10 +20,10 @@ import {AbstractDynamicLoaderComponent} from '@dontcode/plugin-common';
 })
 export class MoneyComponent extends AbstractDynamicLoaderComponent{
   @ViewChild('inlineView')
-  private inlineView: TemplateRef<any>;
+  private inlineView!: TemplateRef<any>;
 
   @ViewChild('fullEditView')
-  private fullEditView: TemplateRef<any>;
+  private fullEditView!: TemplateRef<any>;
 
   value:MoneyAmount = new MoneyAmount();
   control:FormControl = new FormControl(null,{updateOn:'blur'})
@@ -49,7 +49,10 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent{
 
   setForm(form: FormGroup) {
     super.setForm(form);
-    this.group.registerControl('amount', this.control);
+    if( this.group)
+      this.group.registerControl('amount', this.control);
+    else
+      throw new Error ('Group must be created before setting parent form');
 
   }
 
@@ -62,8 +65,11 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent{
     this.control.setValue(newAmount);
   }
 
-  template () {
-    return this.componentsByFormName.get('currencyCode').providesTemplates().forFullEdit;
+  template (): TemplateRef<any>|null {
+    const comp =this.componentsByFormName.get('currencyCode');
+    if (comp)
+      return comp.providesTemplates().forFullEdit;
+    else throw new Error ('Cannot find component handling currencyCode');
   }
 
   setValue(val: any) {

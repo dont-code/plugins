@@ -16,17 +16,17 @@ export class ComponentLoaderService {
   protected previewMgr:DontCodePreviewManager;
 
   protected moduleMap = new Map<string, PluginModuleInterface>();
-  protected factoryMap = new Map<{ source, name }, ComponentFactory<DynamicComponent>>();
+  protected factoryMap = new Map<{ source:string, name:string }, ComponentFactory<DynamicComponent>>();
 
   constructor(protected componentFactoryResolver: ComponentFactoryResolver) {
     this.previewMgr = dtcde.getPreviewManager();
   }
 
-  loadComponentForFieldType(type: string): Promise<ComponentFactory<DynamicComponent>> {
+  loadComponentForFieldType(type: string): Promise<ComponentFactory<DynamicComponent>|null> {
     return this.loadComponentFactory('creation/entities/fields/type', type);
   }
 
-  loadComponentFactory(schemaPosition: DontCodeModelPointer | string, currentJson?: any): Promise<ComponentFactory<DynamicComponent>> {
+  loadComponentFactory(schemaPosition: DontCodeModelPointer | string, currentJson?: any): Promise<ComponentFactory<DynamicComponent>|null> {
     let schemaPos:string = (schemaPosition as DontCodeModelPointer).schemaPosition;
     if (!schemaPos) schemaPos = schemaPosition as string;
 
@@ -39,6 +39,8 @@ export class ComponentLoaderService {
       let module = this.moduleMap.get(handlerConfig.class.source);
       if (!module) {
         module = getModuleFactory('dontcode-plugin/' + handlerConfig.class.source).create(null).instance;
+        if( !module)
+          return Promise.reject("Cannot load module for source "+handlerConfig.class.source)
         this.moduleMap.set(handlerConfig.class.source, module);
       }
       //console.log ("Applying component");

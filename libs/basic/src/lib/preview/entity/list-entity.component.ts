@@ -23,7 +23,6 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
   @Output()
   selectedItemChange = new EventEmitter<any>();
 
-  itemKeyName: string;
   initing = false;
 
   cols = new Array<PrimeColumn>();
@@ -31,7 +30,7 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
 
 
   @Input()
-  store: EntityListManager;
+  store: EntityListManager|null = null;
 
   constructor(private ref:ChangeDetectorRef, componentLoader: ComponentLoaderService) {
     super(componentLoader);
@@ -40,17 +39,21 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
   ngOnInit(): void {
   }
 
-  selectionChange (event): void {
+  selectionChange (event:any): void {
     this.selectedItemChange.emit(event);
   }
 
   initCommandFlow(provider: CommandProviderInterface, pointer: DontCodeModelPointer): any {
     this.initing=true;
+    try {
     super.initCommandFlow(provider, pointer);
 
+    if (!this.entityPointer)  throw new Error ('Cannot listen to changes without knowing a base position');
     this.decomposeJsonToMultipleChanges (this.entityPointer, provider.getJsonAt(this.entityPointer.position)); // Dont provide a special handling for initial json, but emulate a list of changes
     this.initChangeListening (); // Listen to all changes occuring after entityPointer
-    this.initing=false;
+    } finally {
+      this.initing=false;
+    }
 //    this.reloadData();
   }
 
@@ -83,28 +86,34 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
   }
 
   providesTemplates(): TemplateList {
-    return null;
+    return new TemplateList(null,null,null);
   }
 
   canProvide(key?: string): PossibleTemplateList {
-    return null;
+    return new PossibleTemplateList(false, false, false);
   }
 
   templateOf (col: PrimeColumn, value:any): TemplateRef<any> {
-    col.component.setValue(value);
-    return col.component.providesTemplates(col.type).forInlineView;
+    if( col.component) {
+      col.component.setValue(value);
+      const ref= col.component.providesTemplates(col.type).forInlineView;
+      if( ref)
+        return ref;
+    }
+    throw new Error ('No component or template to display '+col.type);
   }
 
 }
 
 class PrimeColumn {
   field:string; header:string; type:string;
-  component: DynamicComponent;
+  component: DynamicComponent|null;
 
   constructor(field: string, header: string, type:string) {
     this.field = field;
     this.header = header;
     this.type = type;
+    this.component=null;
   }
 
 }

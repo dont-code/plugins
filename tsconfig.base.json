@@ -17,6 +17,10 @@
     "baseUrl": ".",
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "paths": {
       "@dontcode/core": ["node_modules/@dontcode/core"],
       "@dontcode/plugin-basic": ["libs/basic/src"],

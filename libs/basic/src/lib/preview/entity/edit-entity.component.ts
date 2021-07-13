@@ -26,7 +26,7 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
           field.component.setValue(this.value[field.name]);
         } else {
           if (this.form) {
-            const singleVal={};
+            const singleVal:{[key:string]:any}={};
             singleVal[field.name]=this.value[field.name];
             this.form.patchValue(singleVal,{emitEvent:false});
            }
@@ -38,7 +38,7 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
   }
 
   @ViewChild('defaulteditor')
-  private defaultTemplate: TemplateRef<any>;
+  private defaultTemplate!: TemplateRef<any>;
 
   initing = false;
 
@@ -79,6 +79,7 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
     this.initing=true;
     super.initCommandFlow(provider, pointer);
 
+    if (!this.entityPointer)  throw new Error ('Cannot listen to changes without knowing a base position');
     this.decomposeJsonToMultipleChanges (this.entityPointer, provider.getJsonAt(this.entityPointer.position)); // Dont provide a special handling for initial json, but emulate a list of changes
     this.initChangeListening (); // Listen to all changes occuring after entityPointer
     this.initing=false;
@@ -152,11 +153,11 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
   }
 
   providesTemplates(): TemplateList {
-    return null;
+    return new TemplateList(null,null,null);
   }
 
   canProvide(key?: string): PossibleTemplateList {
-    return null;
+    return new PossibleTemplateList(false, false, false);
   }
 
   templateOf(field: FormElement): TemplateRef<any> {
@@ -178,9 +179,9 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
 class FormElement {
   type: string;
   name: string;
-  component: DynamicComponent;
+  component: DynamicComponent|null;
 
-  constructor(name:string,type:string, component:DynamicComponent) {
+  constructor(name:string,type:string, component:DynamicComponent|null) {
     this.name=name;
     this.type=type;
     this.component = component;

@@ -10,17 +10,17 @@ import {FormGroup} from "@angular/forms";
 export class TimeFieldsComponent extends AbstractDynamicComponent {
 
   @ViewChild('EDIT_DATE')
-  private editDateTemplate: TemplateRef<any>;
+  private editDateTemplate!: TemplateRef<any>;
   @ViewChild('READ_DATE')
-  private readDateTemplate: TemplateRef<any>;
+  private readDateTemplate!: TemplateRef<any>;
   @ViewChild('EDIT_DATE_TIME')
-  private editDateTimeTemplate: TemplateRef<any>;
+  private editDateTimeTemplate!: TemplateRef<any>;
   @ViewChild('READ_DATE_TIME')
-  private readDateTimeTemplate: TemplateRef<any>;
+  private readDateTimeTemplate!: TemplateRef<any>;
   @ViewChild('EDIT_TIME')
-  private editTimeTemplate: TemplateRef<any>;
+  private editTimeTemplate!: TemplateRef<any>;
   @ViewChild('READ_TIME')
-  private readTimeTemplate: TemplateRef<any>;
+  private readTimeTemplate!: TemplateRef<any>;
 
   providesTemplates(type:string): TemplateList {
     switch (type) {
@@ -29,9 +29,8 @@ export class TimeFieldsComponent extends AbstractDynamicComponent {
       case 'Date & Time':
         return new TemplateList(this.readDateTimeTemplate, null, this.editDateTimeTemplate);
       case 'Time':
-        return new TemplateList(this.readTimeTemplate,null,this.editTimeTemplate);
       default:
-        return null;
+        return new TemplateList(this.readTimeTemplate,null,this.editTimeTemplate);
     }
   }
 
@@ -54,7 +53,7 @@ export class TimeFieldsComponent extends AbstractDynamicComponent {
   dateSelected(form:FormGroup, event: any) {
       // One have to trigger onBlur event as it's the only one listened to by the form...
     console.log ("Selection:", event);
-    const value={};
+    const value:{[key:string]:any}={};
     value[this.name]=event;
     form.patchValue(value);
   }

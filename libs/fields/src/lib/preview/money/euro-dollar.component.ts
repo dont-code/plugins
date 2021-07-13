@@ -13,10 +13,10 @@ import {FormControl, FormGroup} from '@angular/forms';
 })
 export class EuroDollarComponent extends AbstractDynamicComponent{
   @ViewChild('inlineView')
-  private inlineView: TemplateRef<any>;
+  private inlineView!: TemplateRef<any>;
 
   @ViewChild('fullEditView')
-  private fullEditView: TemplateRef<any>;
+  private fullEditView!: TemplateRef<any>;
 
   value = new MoneyAmount();
 
@@ -29,7 +29,7 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
         this.value.currencyCode=(key==='Euro')?'EUR':'USD';
         return new TemplateList (this.inlineView, null, this.fullEditView);
       default:
-        return null;
+        return new TemplateList(null, null, null);
     }
   }
 

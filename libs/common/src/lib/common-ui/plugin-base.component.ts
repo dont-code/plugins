@@ -12,8 +12,8 @@ import {AbstractDynamicLoaderComponent} from "./abstract-dynamic-loader-componen
 @Component({template: ''})
 export abstract class PluginBaseComponent extends AbstractDynamicLoaderComponent implements PreviewHandler, OnDestroy {
   protected subscriptions = new Subscription();
-  entityPointer: DontCodeModelPointer;
-  provider: CommandProviderInterface;
+  entityPointer: DontCodeModelPointer|null=null
+  provider: CommandProviderInterface|null=null;
 
 
   constructor(loader: ComponentLoaderService) {
@@ -40,7 +40,7 @@ export abstract class PluginBaseComponent extends AbstractDynamicLoaderComponent
    * @protected
    */
   protected decomposeJsonToMultipleChanges(pointer: DontCodeModelPointer, json: any): void {
-    if (json) {
+    if ((json)&&(this.provider)) {
       let change: Change;
       const schemaManager = this.provider.getSchemaManager();
       for (const prop in json) {
@@ -55,7 +55,7 @@ export abstract class PluginBaseComponent extends AbstractDynamicLoaderComponent
               pointer.position + '/' + prop,
               json[prop],
               subPropertyPointer);
-            if (!propType) {
+            if ((!propType)&&(change.pointer)) {
               // This is not a sub property but a subItem of an array
               change.pointer.itemId = change.pointer.key;
               change.pointer.key = null;
@@ -73,12 +73,16 @@ export abstract class PluginBaseComponent extends AbstractDynamicLoaderComponent
    * @protected
    */
   protected initChangeListening() {
-    this.subscriptions.add(this.provider.receiveCommands(this.entityPointer.position).pipe(
-      map(change => {
-        this.handleChange(change);
-      }))
-      .subscribe()
-    );
+    if ((this.provider) && (this.entityPointer)) {
+      this.subscriptions.add(this.provider.receiveCommands(this.entityPointer.position).pipe(
+        map(change => {
+          this.handleChange(change);
+        }))
+        .subscribe()
+      );
+    } else {
+      throw new Error ('Cannot listen to change before initCommandFlow is called');
+    }
 
   }
 
@@ -96,8 +100,8 @@ export abstract class PluginBaseComponent extends AbstractDynamicLoaderComponent
    * @param change
    * @param key
    */
-  decodeStringField(change: Change, key: string): string {
-    if (change.pointer.key === key) {
+  decodeStringField(change: Change, key: string): string|undefined {
+    if (change.pointer?.key === key) {
       return change.value;
     } else
       return undefined;
@@ -127,20 +131,25 @@ export abstract class PluginBaseComponent extends AbstractDynamicLoaderComponent
    * @param transform
    * @private
    */
-  applyUpdatesToArrayAsync<T>(target: T[], targetMap: Map<string, number>, change: Change, property: string, transform: (position: DontCodeModelPointer, item: any) => Promise<T>, applyProperty?: (target: T, key: string, value: any) => boolean): Promise<T[]> {
+  applyUpdatesToArrayAsync<T>(target: T[], targetMap: Map<string, number>, change: Change, property: string|null, transform: (position: DontCodeModelPointer, item: any) => Promise<T>, applyProperty?: (target: T, key: string|null, value: any) => boolean): Promise<T[]> {
+    if (!this.provider)
+      throw new Error('Cannot apply updates before initCommandFlow is called');
+    if (!change.pointer) {
+      change.pointer = this.provider.calculatePointerFor(change.position);
+    }
     const itemId = change.pointer.calculateItemIdOrContainer();
-    let futureTarget: Observable<T> = null;
-    let newTarget: T = null;
+    let futureTarget: Observable<T>|null = null;
+    let newTarget: T|null = null;
     let pos = -1;
     let targetPos = -1;
 
-    if (targetMap.has(itemId)) {  // Does the target item already exist ?
-      pos = targetMap.get(itemId);
+    if ((itemId)&&(targetMap.has(itemId))) {  // Does the target item already exist ?
+      pos = targetMap.get(itemId) as number;
       newTarget = target[pos];
       futureTarget = of (newTarget);
     }
     if (change.beforeKey) {
-      targetPos = targetMap.get(change.beforeKey);
+      targetPos = targetMap.get(change.beforeKey) as number;
     }
 
     switch (change.type) {
@@ -156,12 +165,12 @@ export abstract class PluginBaseComponent extends AbstractDynamicLoaderComponent
             ))
           ) {
             // It cannot be dynamically updated by the caller, so we do a full replacement
-            const fullValue = this.provider.getJsonAt(change.pointer.containerPosition);
-            futureTarget = from (transform(this.provider.calculatePointerFor(change.pointer.containerPosition), fullValue));
+            const fullValue = this.provider.getJsonAt(change.pointer.containerPosition as string);
+            futureTarget = from (transform(this.provider.calculatePointerFor(change.pointer.containerPosition as string), fullValue));
           }
         } else {
           // The new value replace the old one
-          futureTarget = from (transform(this.provider.calculatePointerFor(change.pointer.containerPosition), change.value));
+          futureTarget = from (transform(this.provider.calculatePointerFor(change.pointer.containerPosition as string), change.value));
         }
         break;
       case ChangeType.MOVE:
@@ -176,7 +185,10 @@ export abstract class PluginBaseComponent extends AbstractDynamicLoaderComponent
               targetMap.set(key, value - 1);
             }
           });
-          targetMap.delete(itemId);
+          if (itemId)
+            targetMap.delete(itemId);
+          else
+            throw new Error ('Cannot move '+change.position+' without knowing the itemId');
           pos = -1;
         }
         break;
@@ -188,7 +200,10 @@ export abstract class PluginBaseComponent extends AbstractDynamicLoaderComponent
             targetMap.set(key, value - 1);
           }
         });
-        targetMap.delete(itemId);
+        if( itemId)
+          targetMap.delete(itemId);
+        else
+          throw new Error ('Cannot delete '+change.position+' without knowing the itemId');
         futureTarget = null;
         break;
     }
@@ -208,11 +223,18 @@ export abstract class PluginBaseComponent extends AbstractDynamicLoaderComponent
               targetMap.set(key, value + 1);
             }
           });
-          targetMap.set(itemId, targetPos);
+          if( itemId)
+            targetMap.set(itemId, targetPos);
+          else
+            throw new Error ('Cannot set targetPos '+targetPos+' without knowing the itemId');
+
         } else {
           // Insert the element at the end
           target.push(result);
-          targetMap.set(itemId, targetMap.size);
+          if( itemId)
+            targetMap.set(itemId, targetMap.size);
+          else
+            throw new Error ('Cannot set targetPos '+targetPos+' without knowing the itemId');
         }
         return target;
       })).toPromise();
