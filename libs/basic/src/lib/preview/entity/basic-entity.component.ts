@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, ViewChild} from "@angular/core";
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from "@angular/core";
 import {Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
 import {
   ComponentLoaderService,
@@ -24,7 +24,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   entityName:string='';
   selectedItem: any;
 
-  store?:EntityListManager;
+  store:EntityListManager|null=null;
 
   tabIndex = 0;
 

@@ -103,6 +103,12 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
     throw new Error ('No component or template to display '+col.type);
   }
 
+  getStoreEntities(): any[] {
+    if( this.store)
+      return this.store.entities;
+    else
+      return [];
+  }
 }
 
 class PrimeColumn {

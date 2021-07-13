@@ -22,7 +22,7 @@ export abstract class AbstractDynamicLoaderComponent extends AbstractDynamicComp
   @ViewChild(DynamicInsertPoint, {read: ViewContainerRef, static:false}) dynamicInsertPoint!: ViewContainerRef;
 
   protected componentsByFormName = new Map<string, DynamicComponent> ();
-  protected group: FormGroup|null = null;   // Manages the formGroup for all subcomponents
+  group: FormGroup|null = null;   // Manages the formGroup for all subcomponents
 
   protected constructor(protected loader: ComponentLoaderService) {
     super();
