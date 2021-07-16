@@ -39,8 +39,8 @@ export class BasicPlugin implements Plugin
       "preview-handlers": [
         {
           location: {
-            parent: DontCodeModel.ROOT,
-            id:DontCodeModel.APP_ENTITIES_NODE
+            parent: DontCodeModel.APP_ENTITIES,
+            id:''
           },
           class: {
             name:"BasicEntityComponent",
