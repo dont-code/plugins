@@ -27,11 +27,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
-      - name: Merge
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email noreply@github.com
-          git merge origin/Development --strategy=recursive --strategy-option=theirs
       - name: Cache Node.js modules
         uses: actions/cache@v2
         with:
@@ -72,6 +67,8 @@ jobs:
           path: libs/basic
       - name: Push
         run: |
+          git config user.name "GitHub Actions"
+          git config user.email noreply@github.com
           git commit -a -m "New release ${{steps.package-version.outputs.current-version}}"
           git push
       - name: Publish Common
