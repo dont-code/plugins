@@ -102,11 +102,11 @@ export abstract class AbstractDynamicLoaderComponent extends AbstractDynamicComp
         if( !this.group)
           throw new Error ('Cannot prepare a self managing control component without a FormGroup');
         component.setName(formName);
+        component.setForm(this.group);
 
         if( !component.managesFormControl()) {
             this.group.registerControl(formName, new FormControl(subValue,{updateOn:'blur'}))
         } else {
-          component.setForm(this.group);
           component.setValue(subValue);
         }
         this.componentsByFormName.set(formName, component);
