@@ -26,6 +26,8 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent{
   private fullEditView!: TemplateRef<any>;
 
   value:MoneyAmount = new MoneyAmount();
+  valueAmountDefined = false;
+
   control:FormControl = new FormControl(null,{updateOn:'blur'})
 
   constructor(protected loaderService: ComponentLoaderService) {
@@ -56,12 +58,20 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent{
 
   }
 
-  get amount (): number {
-    return this.value.amount;
+  get amount (): number|undefined {
+    if (this.valueAmountDefined)
+      return this.value.amount;
+    else
+      return;
   }
 
   set amount (newAmount){
-    this.value.amount=newAmount;
+    if (newAmount) {
+      this.value.amount=newAmount;
+      this.valueAmountDefined=true;
+    } else {
+      this.valueAmountDefined=false;
+    }
     this.control.setValue(newAmount);
   }
 
@@ -74,8 +84,12 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent{
 
   setValue(val: any) {
     super.setValue(val);
-    if (!this.value)
+    if (this.value) {
+      this.valueAmountDefined=true;
+    } else {
       this.value = new MoneyAmount();
+      this.valueAmountDefined=false;
+    }
     this.setSubFieldValue ('currencyCode',this.value.currencyCode);
   }
 
