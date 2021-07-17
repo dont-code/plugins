@@ -19,6 +19,7 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
   private fullEditView!: TemplateRef<any>;
 
   value = new MoneyAmount();
+  valueAmountDefined = false;
 
   control:FormControl = new FormControl(null,{updateOn:'blur'})
 
@@ -37,8 +38,10 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
     if( val) {
       this.value = val;
       this.control.setValue(this.value.amount, {emitEvent: false});
+      this.valueAmountDefined=true;
     } else {
       this.value = new MoneyAmount();
+      this.valueAmountDefined=false;
     }
   }
 
@@ -65,12 +68,21 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
     form.registerControl(this.name, this.control);
   }
 
-  get amount (): number {
-    return this.value.amount;
+  get amount (): number|undefined {
+    if (this.valueAmountDefined)
+      return this.value.amount;
+    else {
+      return;
+    }
   }
 
   set amount (newAmount){
-    this.value.amount=newAmount;
+    if (newAmount) {
+      this.value.amount=newAmount;
+      this.valueAmountDefined=true;
+    } else {
+      this.valueAmountDefined=false;
+    }
     this.control.setValue(newAmount);
   }
 }
