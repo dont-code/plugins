@@ -69,7 +69,10 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   connectedClass(ctx: { status: string }): string {
-    if( ctx.status!=="connected") {
+    if( ctx.status==="undefined") {
+      return "p-button-secondary";
+    }
+    else if( ctx.status!=="connected") {
       return "p-button-danger";
     }else
       return '';

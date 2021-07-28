@@ -17,7 +17,7 @@ export class ChangeListenerService {
 
 //  protected listOfEntities: Map<string, string> = new Map();
 
-  previewServiceWebSocket: WebSocketSubject<Message>;
+  previewServiceWebSocket?: WebSocketSubject<Message>;
   protected changeEmitter = new Subject<Change> ();
   protected connectionStatus: ReplaySubject<string>=new ReplaySubject<string>(1);
 
@@ -27,35 +27,40 @@ export class ChangeListenerService {
   protected channel: BroadcastChannel<Change>;
 
   constructor(@Inject(SANDBOX_CONFIG) private config:SandboxLibConfig) {
-    this.previewServiceWebSocket = webSocket(this.config.webSocketUrl);
-    this.connectionStatus.next("connected");
-    this.previewServiceWebSocket.subscribe(
-      msg => {
-        //console.log('message received: ' + msg);
-        if( msg.type===MessageType.CHANGE) {
-          if (msg.change) {
-            this.listOfChanges.push(msg.change);
-            this.changeEmitter.next(msg.change);
-          } else {
-            console.error ('Received change message without a change...');
+    if (this.config.webSocketUrl&&this.config.webSocketUrl.length>0) {
+      this.previewServiceWebSocket = webSocket(this.config.webSocketUrl);
+      this.connectionStatus.next("connected");
+      this.previewServiceWebSocket.subscribe(
+        msg => {
+          //console.log('message received: ' + msg);
+          if( msg.type===MessageType.CHANGE) {
+            if (msg.change) {
+              this.listOfChanges.push(msg.change);
+              this.changeEmitter.next(msg.change);
+            } else {
+              console.error ('Received change message without a change...');
+            }
           }
-        }
-      },
-      // Called whenever there is a message from the server
-      err => {
-        //console.log(err);
-        this.connectionStatus.next("ERROR:"+err);
-        this.sessionIdSubject.next();
+        },
+        // Called whenever there is a message from the server
+        err => {
+          //console.log(err);
+          this.connectionStatus.next("ERROR:"+err);
+          this.sessionIdSubject.next();
 
-      },
-      // Called if WebSocket API signals some kind of error
-      () => {
-        //console.log('complete');
-        this.connectionStatus.next("closed");
-        this.sessionIdSubject.next();
-      }
-      // Called when connection is closed (for whatever reason)
-    );
+        },
+        // Called if WebSocket API signals some kind of error
+        () => {
+          //console.log('complete');
+          this.connectionStatus.next("closed");
+          this.sessionIdSubject.next();
+        }
+        // Called when connection is closed (for whatever reason)
+      );
+    } else {
+      this.connectionStatus.next("undefined");
+      this.sessionIdSubject.next();
+    }
 
     // Listens as well to broadcasted events
     // console.log("Listening to debug broadcasts")
@@ -80,7 +85,9 @@ export class ChangeListenerService {
   setSessionId (newId:string|null): void {
     this.sessionId=newId;
     this.sessionIdSubject.next(newId?newId:undefined);
-    this.previewServiceWebSocket.next(new Message(MessageType.INIT, newId?newId:undefined));
+    if (this.previewServiceWebSocket) {
+      this.previewServiceWebSocket.next(new Message(MessageType.INIT, newId?newId:undefined));
+    }
   }
 
   getSessionId (): string|null  {
