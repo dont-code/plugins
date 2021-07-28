@@ -4,5 +4,7 @@ module.exports = {
     '<rootDir>/libs/screen',
     '<rootDir>/libs/common',
     '<rootDir>/libs/fields',
+    '<rootDir>/apps/plugin-tester',
+    '<rootDir>/libs/sandbox',
   ],
 };

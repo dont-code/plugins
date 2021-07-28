@@ -28,7 +28,14 @@
     "fields": {
       "tags": []
     },
-    "preview-tester": {
+    "plugin-tester": {
+      "tags": []
+    },
+    "plugin-tester-e2e": {
+      "tags": [],
+      "implicitDependencies": ["plugin-tester"]
+    },
+    "sandbox": {
       "tags": []
     },
     "screen": {
