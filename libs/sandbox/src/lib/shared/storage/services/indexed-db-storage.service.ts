@@ -125,7 +125,7 @@ export class IndexedDbStorageService implements DontCodeStoreProvider{
   }
 
   createDatabase () {
-    let dbName = "Sandbox-lib";
+    let dbName = "Dont-code Sandbox Lib";
     if( (this.config)&&(this.config.indexedDbName)&&(this.config.indexedDbName.length>0))
       dbName=this.config.indexedDbName;
     if(!IndexedDbStorageService.globalDb)

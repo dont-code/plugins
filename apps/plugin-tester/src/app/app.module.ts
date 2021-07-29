@@ -24,7 +24,8 @@ import {ScreenModule} from "@dontcode/plugin-screen";
       initialNavigation: 'enabledBlocking'
     }),
     SandboxModule.forRoot({
-      webSocketUrl: environment.webSocketUrl
+      webSocketUrl: environment.webSocketUrl,
+      indexedDbName: 'Dont-code Plugin Tester'
     }),
     BasicModule,
     FieldsModule,
