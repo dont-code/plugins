@@ -9,6 +9,7 @@ import {environment} from "../environments/environment";
 import {HttpClientModule} from "@angular/common/http";
 import {BasicModule} from "@dontcode/plugin-basic";
 import {FieldsModule} from "@dontcode/plugin-fields";
+import {ScreenModule} from "@dontcode/plugin-screen";
 
 @NgModule({
   declarations: [AppComponent],
@@ -26,7 +27,8 @@ import {FieldsModule} from "@dontcode/plugin-fields";
       webSocketUrl: environment.webSocketUrl
     }),
     BasicModule,
-    FieldsModule
+    FieldsModule,
+    ScreenModule
   ],
   providers: [],
   bootstrap: [AppComponent],

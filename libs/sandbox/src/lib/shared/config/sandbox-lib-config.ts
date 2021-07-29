@@ -1,7 +1,8 @@
 import {InjectionToken} from "@angular/core";
 
 export interface SandboxLibConfig {
-  webSocketUrl: string;
+  webSocketUrl?: string;
+  indexedDbName?: string;
 }
 
 export const SANDBOX_CONFIG = new InjectionToken<SandboxLibConfig>('SandboxLibConfig');

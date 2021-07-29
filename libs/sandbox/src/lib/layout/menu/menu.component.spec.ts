@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 
 import {MenuComponent} from "./menu.component";
 import {RouterTestingModule} from "@angular/router/testing";
-import {SANDBOX_CONFIG, SandboxModule} from "../../sandbox.module";
+import {SANDBOX_CONFIG} from "../../shared/config/sandbox-lib-config";
 import {MenuModule} from "primeng/menu";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 

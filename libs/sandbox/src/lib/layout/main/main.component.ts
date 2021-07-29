@@ -1,4 +1,12 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  OnDestroy,
+  OnInit,
+  Optional
+} from "@angular/core";
 import {combineLatest, EMPTY, Observable, Subscription} from "rxjs";
 import {map} from "rxjs/operators";
 import {ChangeProviderService} from "../../shared/command/services/change-provider.service";
@@ -27,16 +35,17 @@ export class MainComponent implements OnInit, OnDestroy {
   serverUrl = '';
 
   constructor(
-    @Inject(SANDBOX_CONFIG) private config:SandboxLibConfig,
     protected provider:ChangeProviderService,
     protected listenerService:ChangeListenerService,
-    private ref: ChangeDetectorRef
+    private ref: ChangeDetectorRef,
+    @Optional() @Inject(SANDBOX_CONFIG) private config?:SandboxLibConfig
   ) {
     this.sidePanelVisible = true;
   }
 
   ngOnInit() {
-    this.serverUrl = this.config.webSocketUrl;
+    if ((this.config)&&(this.config.webSocketUrl)&&(this.config.webSocketUrl.length>0))
+      this.serverUrl = this.config.webSocketUrl;
     this.subscriptions.add(this.provider.receiveCommands (DontCodeModel.APP_NAME).subscribe(command => {
       if( command.value) {
         this.appName = command.value;

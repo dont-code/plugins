@@ -4,8 +4,9 @@
 import {DontCodeStoreCriteria, DontCodeStoreProvider} from "@dontcode/core";
 import {Observable} from "rxjs";
 import Dexie, {Table} from "dexie";
-import {Injectable} from "@angular/core";
+import {Inject, Injectable, Optional} from "@angular/core";
 import {ValueService} from "../../values/services/value.service";
+import {SANDBOX_CONFIG, SandboxLibConfig} from "../../config/sandbox-lib-config";
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,9 @@ export class IndexedDbStorageService implements DontCodeStoreProvider{
 
   protected db!: Dexie;
 
-  constructor(protected values:ValueService) {
+  constructor(protected values:ValueService,
+              @Optional() @Inject(SANDBOX_CONFIG) private config?:SandboxLibConfig
+  ) {
     this.createDatabase();
   }
 
@@ -110,8 +113,8 @@ export class IndexedDbStorageService implements DontCodeStoreProvider{
       return result;
     }, {});
 
-    console.log("Version: " + db.verno);
-    console.log("Current Schema: ", currentSchema);
+    //console.log("Version: " + db.verno);
+    //console.log("Current Schema: ", currentSchema);
 
     // Tell Dexie about current schema:
     newDb.version(db.verno).stores(currentSchema);
@@ -122,8 +125,11 @@ export class IndexedDbStorageService implements DontCodeStoreProvider{
   }
 
   createDatabase () {
+    let dbName = "Sandbox-lib";
+    if( (this.config)&&(this.config.indexedDbName)&&(this.config.indexedDbName.length>0))
+      dbName=this.config.indexedDbName;
     if(!IndexedDbStorageService.globalDb)
-      IndexedDbStorageService.globalDb = new Dexie("Preview-UI", {allowEmptyDB:true});
+      IndexedDbStorageService.globalDb = new Dexie(dbName, {allowEmptyDB:true});
     this.db=IndexedDbStorageService.globalDb;
   }
 }

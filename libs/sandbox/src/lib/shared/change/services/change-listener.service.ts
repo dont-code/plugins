@@ -1,4 +1,4 @@
-import {Inject, Injectable} from "@angular/core";
+import {Inject, Injectable, Optional} from "@angular/core";
 import {Change, Message, MessageType} from "@dontcode/core";
 import {Observable, ReplaySubject, Subject} from "rxjs";
 import {WebSocketSubject} from "rxjs/internal-compatibility";
@@ -26,8 +26,8 @@ export class ChangeListenerService {
 
   protected channel: BroadcastChannel<Change>;
 
-  constructor(@Inject(SANDBOX_CONFIG) private config:SandboxLibConfig) {
-    if (this.config.webSocketUrl&&this.config.webSocketUrl.length>0) {
+  constructor(@Optional() @Inject(SANDBOX_CONFIG) private config?:SandboxLibConfig) {
+    if ((this.config) && (this.config.webSocketUrl)&&(this.config.webSocketUrl.length>0)) {
       this.previewServiceWebSocket = webSocket(this.config.webSocketUrl);
       this.connectionStatus.next("connected");
       this.previewServiceWebSocket.subscribe(
@@ -58,6 +58,7 @@ export class ChangeListenerService {
         // Called when connection is closed (for whatever reason)
       );
     } else {
+      console.log("No SANDBOX_CONFIG injected => Not listening to changes from servers");
       this.connectionStatus.next("undefined");
       this.sessionIdSubject.next();
     }
