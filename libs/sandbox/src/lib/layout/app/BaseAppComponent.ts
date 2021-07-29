@@ -34,7 +34,7 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy{
     this.listener.setSessionId(this.sessionId);
     this.subscription.add(this.provider.receiveCommands(DontCodeModel.APP_SHARING, DontCodeModel.APP_SHARING_WITH_NODE).pipe (mergeMap(change => {
       if (change.type!== ChangeType.DELETE) {
-        if (change.value==="no-one") {
+        if (change.value==="No-one") {
           dtcde.getStoreManager().setProvider(this.storage);
           return EMPTY;
         } else if (change.value) {
