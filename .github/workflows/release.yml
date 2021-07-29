@@ -27,6 +27,7 @@ jobs:
         with:
           node-version: '16'
           cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
       - name: Install
         run: |
           npm --version
@@ -96,8 +97,6 @@ jobs:
       - name: Publish Common
         if: ${{ success() && ( matrix.browser == 'chromium' )}}
         run: |
-          npm adduser
-          npm whoami
           npm publish dist/libs/common --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
