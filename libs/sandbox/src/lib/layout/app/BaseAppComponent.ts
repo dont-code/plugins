@@ -1,4 +1,4 @@
-import {Component, getModuleFactory, Injector, OnDestroy, OnInit} from '@angular/core';
+import {Component, getModuleFactory, Inject, Injector, OnDestroy, OnInit} from '@angular/core';
 import {ChangeType, DontCodeModel, dtcde, PluginModuleInterface} from "@dontcode/core";
 import {IndexedDbStorageService} from "../..//shared/storage/services/indexed-db-storage.service";
 import {ChangeListenerService} from "../../shared/change/services/change-listener.service";
@@ -15,7 +15,16 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy{
 
   sessionId:string|null = null;
 
-  constructor(protected storage:IndexedDbStorageService, protected listener: ChangeListenerService, protected provider: ChangeProviderService, protected injector:Injector) {
+  protected storage:IndexedDbStorageService;
+
+  protected listener: ChangeListenerService;
+
+  protected provider: ChangeProviderService;
+
+  constructor(  protected injector:Injector) {
+    this.provider = injector.get(ChangeProviderService);
+    this.storage = injector.get(IndexedDbStorageService);
+    this.listener = injector.get(ChangeListenerService);
   }
 
   ngOnInit(): void {

@@ -32,6 +32,6 @@ import {ScreenModule} from "@dontcode/plugin-screen";
     ScreenModule
   ],
   providers: [],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}
