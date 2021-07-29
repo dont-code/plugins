@@ -1,10 +1,10 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Change, ChangeType } from "@dontcode/core";
-import { DevChangePushService } from "../../../shared/dev/services/dev-change-push.service";
-import { DevTemplate, DevTemplateManagerService } from "../../../shared/dev/services/dev-template-manager.service";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Change, ChangeType} from "@dontcode/core";
+import {DevChangePushService} from "../../../shared/dev/services/dev-change-push.service";
+import {DevTemplate, DevTemplateManagerService} from "../../../shared/dev/services/dev-template-manager.service";
 import {AbstractControl, FormBuilder} from '@angular/forms';
-import { map } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import {map} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'dontcode-sandbox-insert-command',
@@ -26,7 +26,7 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
     position:[''],
     value:[null]
   });
-  filteredSteps: Array<{ position:string, value:any }> = new Array();
+  filteredSteps: Array<{ position:string, value:any }> = [];
   valueFieldLabel = "Value";
   changeTypes= [
     {label:ChangeType.ADD },
