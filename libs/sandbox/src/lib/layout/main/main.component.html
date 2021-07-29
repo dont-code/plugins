@@ -1,0 +1,38 @@
+<div *ngIf="(context$ | async) as ctx">
+  <p-toolbar id="mainToolbar">
+    <div class="p-toolbar-group-left">
+      <img src="../../../../assets/images/logo.png" width="119" height="66"/>
+      <button pButton type="button" class="p-d-md-none p-button-rounded p-button-outlined" icon="pi pi-bars" (click)="sidePanelVisible=!sidePanelVisible"></button>
+    </div>
+    <h1>Preview {{appName}}</h1>
+    <div class="p-toolbar-group-right">
+      <button pButton type="button" class="p-button-rounded p-button-outlined" icon="pi pi-external-link" (click)="openDevUrl()"></button>
+      <button pButton type="button" class="p-button-rounded p-button-outlined" [ngClass]="connectedClass(ctx)" icon="pi pi-sort" (mouseenter)="op.show($event)" ></button>
+      <p-overlayPanel #op [showCloseIcon]="false" [style]="{width: '500px'}">
+        <ng-template pTemplate>
+          <div class="p-grid">
+            <div class="p-col-2">Server:</div>
+            <div class="p-col-10">{{serverUrl}}</div>
+            <div class="p-col-2">Session:</div>
+            <div class="p-col-10">{{ctx.sessionId}}</div>
+          </div>
+        </ng-template>
+      </p-overlayPanel>
+    </div>
+  </p-toolbar>
+  <div class="p-d-md-none">
+    <p-sidebar id="mainSidePanel" [style]="{width:'15em'}" [(visible)]="sidePanelVisible" [modal]="false" [closeOnEscape]="true" [showCloseIcon]="true">
+      <img src="../../../../assets/images/logo.png" width="119" height="66"/>
+      <dontcode-sandbox-menu></dontcode-sandbox-menu>
+    </p-sidebar>
+  </div>
+  <div class="p-grid">
+    <div class="p-col p-d-none p-d-md-block p-md-3">
+      <dontcode-sandbox-menu id="mainMenu"></dontcode-sandbox-menu>
+    </div>
+    <div class="p-col p-md-9">
+      <router-outlet> </router-outlet>
+    </div>
+  </div>
+
+</div>

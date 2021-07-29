@@ -27,6 +27,7 @@
       "@dontcode/plugin-common": ["libs/common/src"],
       "@dontcode/plugin-fields": ["libs/fields/src"],
       "@dontcode/plugin-screen": ["libs/screen/src"],
+      "@dontcode/sandbox": ["libs/sandbox/src"],
       "rxjs": ["node_modules/rxjs"],
       "rxjs/*": ["node_modules/rxjs/*"]
     }

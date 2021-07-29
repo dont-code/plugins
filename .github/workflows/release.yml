@@ -15,23 +15,18 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        browser: [chromium, chrome, firefox]
 
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
           ref: master
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+      - name: Use Node.js 16
+        uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
-          registry-url: 'https://registry.npmjs.org'
-      - name: Cache Node.js modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
-          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          node-version: '16'
+          cache: 'npm'
       - name: Install
         run: |
           npm install @dontcode/core@latest
@@ -39,6 +34,9 @@ jobs:
       - name: Version
         run: npm version patch
         working-directory: libs/common
+      - name: Version
+        run: npm version patch
+        working-directory: libs/sandbox
       - name: Version
         run: npm version patch
         working-directory: libs/screen
@@ -51,15 +49,32 @@ jobs:
       - name: Build
         run: |
           npm run nx run common:build -- --prod
+          npm run nx run sandbox:build -- --prod
           npm run nx run basic:build -- --prod
           npm run nx run fields:build -- --prod
           npm run nx run screen:build -- --prod
       - name: Unit tests
         run: |
           npm run nx run common:test
+          npm run nx run sandbox:test
           npm run nx run screen:test
           npm run nx run basic:test
           npm run nx run fields:test
+      - name: E2E Tests on ${{matrix.browser}}
+        run: |
+          npm run ng e2e -- --project=plugin-tester-e2e --browser ${{matrix.browser}}
+      - uses: actions/upload-artifact@v2
+        # Test run screenshots only on failure
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: dist/cypress/apps/plugin-tester-e2e/screenshots
+        # Test run video was always captured, so this action uses "always()" condition
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: cypress-videos
+          path: dist/cypress/apps/plugin-tester-e2e/videos
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
@@ -73,6 +88,10 @@ jobs:
           git push
       - name: Publish Common
         run: npm publish dist/libs/common --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish Sandbox
+        run: npm publish dist/libs/sandbox --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish Screen

@@ -16,22 +16,17 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x]
+        browser: [chromium, chrome, firefox]
 
     steps:
       - uses: actions/checkout@v2
         with:
           ref: Development
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+      - name: Use Node.js 16
+        uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
-          registry-url: 'https://registry.npmjs.org'
-      - name: Cache Node.js modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
-          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          node-version: '16'
+          cache: 'npm'
       - name: Install
         run: |
           npm install @dontcode/core@latest --no-optional
@@ -39,6 +34,7 @@ jobs:
       - name: Build
         run: |
           npm run nx run common:build -- --prod
+          npm run nx run sandbox:build -- --prod
           npm run nx run basic:build -- --prod
           npm run nx run screen:build -- --prod
           npm run nx run fields:build -- --prod
@@ -49,6 +45,23 @@ jobs:
       - name: Unit tests
         run: |
           npm run nx run common:test
+          npm run nx run sandbox:test
           npm run nx run screen:test
           npm run nx run basic:test
           npm run nx run fields:test
+          npm run nx run plugin-tester:test
+      - name: E2E Tests on ${{matrix.browser}}
+        run: |
+          npm run ng e2e -- --project=plugin-tester-e2e --browser ${{matrix.browser}}
+      - uses: actions/upload-artifact@v2
+        # Test run screenshots only on failure
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: dist/cypress/apps/plugin-tester-e2e/screenshots
+        # Test run video was always captured, so this action uses "always()" condition
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: cypress-videos
+          path: dist/cypress/apps/plugin-tester-e2e/videos
