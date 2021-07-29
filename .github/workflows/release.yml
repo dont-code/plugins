@@ -95,7 +95,10 @@ jobs:
           git push
       - name: Publish Common
         if: ${{ success() && ( matrix.browser == 'chromium' )}}
-        run: npm publish dist/libs/common --access public
+        run: |
+          npm adduser
+          npm whoami
+          npm publish dist/libs/common --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish Sandbox

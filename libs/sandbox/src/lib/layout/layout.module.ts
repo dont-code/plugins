@@ -20,3 +20,4 @@ import {OverlayPanelModule} from "primeng/overlaypanel";
 export class LayoutModule { }
 
 export * from "./main/main.component";
+export * from "./app/BaseAppComponent";

@@ -22,3 +22,4 @@ export class SharedModule { }
 
 export * from './dynamic/directives/dynamic-insert.directive';
 export * from './dynamic/components/default-viewer.component';
+export * from './storage/services/indexed-db-storage.service';
