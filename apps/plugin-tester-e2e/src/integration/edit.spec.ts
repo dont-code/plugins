@@ -7,7 +7,7 @@ import {
   getTabWithName
 } from "../support/edit.po";
 
-describe('edit', () => {
+describe('Edit', () => {
   beforeEach(() => {
     cy.visit('/');
   });

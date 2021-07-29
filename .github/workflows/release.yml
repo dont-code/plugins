@@ -33,18 +33,23 @@ jobs:
           npm install @dontcode/core@latest
           npm ci
       - name: Version
+        if: ${{ matrix.browser == 'chromium' }}
         run: npm version patch
         working-directory: libs/common
       - name: Version
+        if: ${{ matrix.browser == 'chromium' }}
         run: npm version patch
         working-directory: libs/sandbox
       - name: Version
+        if: ${{ matrix.browser == 'chromium' }}
         run: npm version patch
         working-directory: libs/screen
       - name: Version
+        if: ${{ matrix.browser == 'chromium' }}
         run: npm version patch
         working-directory: libs/basic
       - name: Version
+        if: ${{ matrix.browser == 'chromium' }}
         run: npm version patch
         working-directory: libs/fields
       - name: Build

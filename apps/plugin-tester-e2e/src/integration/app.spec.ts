@@ -12,7 +12,7 @@ import {
 } from "../support/app.po";
 import {getTableHeader} from "../support/edit.po";
 
-describe('preview-ui', () => {
+describe('Plugin tester', () => {
   beforeEach(() => cy.visit('/'));
 
   it('should display standard layout', () => {

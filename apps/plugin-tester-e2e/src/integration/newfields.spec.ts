@@ -8,7 +8,7 @@ import {
   getTabWithName
 } from "../support/edit.po";
 
-describe('preview-ui', () => {
+describe('New fields', () => {
   beforeEach(() => cy.visit('/'));
 
   it('should display images and url',  () => {
