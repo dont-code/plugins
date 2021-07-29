@@ -14,7 +14,7 @@ import {
   selectType
 } from "../support/app.po";
 
-describe('debug', () => {
+describe('Debug', () => {
   beforeEach(() => {
     /*cy.getService(ChangeProviderService).then ((service:ChangeProviderService) => {
       console.log('stubbing');
