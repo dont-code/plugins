@@ -15,17 +15,17 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy{
 
   sessionId:string|null = null;
 
-  @Inject(IndexedDbStorageService)
-  protected storage!:IndexedDbStorageService;
+  protected storage:IndexedDbStorageService;
 
-  @Inject(ChangeListenerService)
-  protected listener!: ChangeListenerService;
+  protected listener: ChangeListenerService;
 
-  @Inject(ChangeProviderService)
-  protected provider!: ChangeProviderService;
+  protected provider: ChangeProviderService;
 
-  @Inject(Injector)
-  protected injector!:Injector;
+  constructor(  protected injector:Injector) {
+    this.provider = injector.get(ChangeProviderService);
+    this.storage = injector.get(IndexedDbStorageService);
+    this.listener = injector.get(ChangeListenerService);
+  }
 
   ngOnInit(): void {
     dtcde.getStoreManager().setProvider(this.storage);
