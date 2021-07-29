@@ -88,22 +88,27 @@ jobs:
           git commit -a -m "New release ${{steps.package-version.outputs.current-version}}"
           git push
       - name: Publish Common
+        if: ${{ success() && ( matrix.browser == 'chromium' )}}
         run: npm publish dist/libs/common --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish Sandbox
+        if: ${{ success() && ( matrix.browser == 'chromium' )}}
         run: npm publish dist/libs/sandbox --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish Screen
+        if: ${{ success() && ( matrix.browser == 'chromium' )}}
         run: npm publish dist/libs/screen --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish Basic
+        if: ${{ success() && ( matrix.browser == 'chromium' )}}
         run: npm publish dist/libs/basic --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish Fields
+        if: ${{ success() && ( matrix.browser == 'chromium' )}}
         run: npm publish dist/libs/fields --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
