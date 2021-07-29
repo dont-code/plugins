@@ -29,6 +29,7 @@ jobs:
           cache: 'npm'
       - name: Install
         run: |
+          npm --version
           npm install @dontcode/core@latest --no-optional
           npm ci
       - name: Build
