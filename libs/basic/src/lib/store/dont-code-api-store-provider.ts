@@ -20,8 +20,8 @@ export class DontCodeApiStoreProvider implements DontCodeStoreProvider {
     if( apiUrl)
       this.apiUrl = apiUrl;
     else {
-      this.apiUrl = '';
-      console.log ('DONTCODE_STORE_API_URL token not provided, hence cannot save to Api services');
+      this.apiUrl = 'https://test.dont-code.net/data';
+      console.log ('DONTCODE_STORE_API_URL token not provided, hence using default test.dont-code.net/data url.');
     }
     this.modelMgr = dtcde.getModelManager();
   }
