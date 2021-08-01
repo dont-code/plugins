@@ -29,6 +29,8 @@ function getAngular () {
     .then((win) => {
       // Grab a reference to the global ng object
       angular = (win as any).ng;
+      console.log("Angular=", angular);
+
       return angular;
     });
 }

@@ -14,8 +14,10 @@ describe('Edit', () => {
 
   it ('should display list', () => {
     cy.clearPreviewUIDbCollection('A Name').then (() => {
+      cy.intercept('GET','/assets/dev/templates.json').as('LoadTemplate');
       getSubMenuWithText('Dev').click();// Move to dev page
 
+      cy.wait('@LoadTemplate');
       clickAutoComplete("template");
       selectPopupChoiceWithText("Create Complete Entity A"); // Create Entity name
       getSendButton().click();
@@ -63,8 +65,10 @@ describe('Edit', () => {
 
   it ('should manage currency & money', () => {
     cy.clearPreviewUIDbCollection('Book').then (() => {
+      cy.intercept('GET','/assets/dev/templates.json').as('LoadTemplate');
       getSubMenuWithText('Dev').click();// Move to dev page
 
+      cy.wait('@LoadTemplate');
       clickAutoComplete("template");
       selectPopupChoiceWithText("International Bookstore"); // Create Entity name
       getSendButton().click();
@@ -105,7 +109,7 @@ describe('Edit', () => {
       getListRowWithText ("CA$9,090");
 
       getListRowWithText ("Book 2").click();
-      getListRowWithText ("Book 2").click();
+      //getListRowWithText ("Book 2").click();
       getInputWithName('EUR').clear().type('9870');
       getDropdownWithName('currencyCode').click();
       getDropdownFilter().type ('dinar');

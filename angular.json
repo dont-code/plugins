@@ -172,6 +172,12 @@
               "./node_modules/primeicons/primeicons.css"
             ],
             "scripts": [],
+            "preserveSymlinks": true,
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
             "namedChunks": true,
             "extraWebpackConfig": "apps/plugin-tester/webpack.config.js",
             "commonChunk": false
@@ -197,10 +203,9 @@
                 }
               ],
               "outputHashing": "all"
-            },
-            "development": {
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "ngx-build-plus:dev-server",
@@ -256,7 +261,7 @@
           "options": {
             "cypressConfig": "apps/plugin-tester-e2e/cypress.json",
             "tsConfig": "apps/plugin-tester-e2e/tsconfig.e2e.json",
-            "devServerTarget": "plugin-tester:serve:development"
+            "devServerTarget": "plugin-tester:serve"
           },
           "configurations": {
             "production": {

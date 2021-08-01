@@ -13,8 +13,10 @@ describe('New fields', () => {
 
   it('should display images and url',  () => {
     cy.clearPreviewUIDbCollection("Recipe").then (() => {
+      cy.intercept('GET','/assets/dev/templates.json').as('LoadTemplate');
       // First load the Task Manager app
       getSubMenuWithText('Dev').click();// Move to dev page
+      cy.wait('@LoadTemplate');
       clickAutoComplete("template");
       selectPopupChoiceWithText("Recipe Collection");
       getSendButton().click();
@@ -37,8 +39,10 @@ describe('New fields', () => {
 
   it('should support date and time', () => {
     cy.clearPreviewUIDbCollection("Test Task").then (() => {
+      cy.intercept('GET','/assets/dev/templates.json').as('LoadTemplate');
         // First load the Task Manager app
       getSubMenuWithText('Dev').click();// Move to dev page
+      cy.wait('@LoadTemplate');
       clickAutoComplete("template");
       selectPopupChoiceWithText("Task Manager Application"); // Create Entity name
       getSendButton().click();

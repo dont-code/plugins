@@ -26,10 +26,12 @@ describe('Debug', () => {
   });
 
   it('should enable application name change', () => {
+    cy.intercept('GET','/assets/dev/templates.json').as('LoadTemplate');
     getToolbar().should('contain.text','No Name');
     getSubMenu(3).should ('contain.text', 'Dev');
     getSubMenu(3).click();    // Move to dev page
 
+    cy.wait('@LoadTemplate');
     clickAutoComplete("template");
     selectPopupChoice(1); // Change App Name
     getSendButton ().click();
@@ -37,8 +39,10 @@ describe('Debug', () => {
 
   });
   it('should add Entity Menu', () => {
+    cy.intercept('GET','/assets/dev/templates.json').as('LoadTemplate');
     getSubMenuWithText('Dev').click();// Move to dev page
 
+    cy.wait('@LoadTemplate');
     clickAutoComplete("template");
     selectPopupChoiceWithText("Change Entity A Name"); // Create Entity name
     getValueTextArea().clear().type("NewItem");
@@ -50,10 +54,12 @@ describe('Debug', () => {
 
 
   it('should manage move and delete', () => {
+    cy.intercept('GET','/assets/dev/templates.json').as('LoadTemplate');
     getSubMenuWithText('Dev').click();// Move to dev page
 
     // Creates A,B,C
 
+    cy.wait('@LoadTemplate');
     clickAutoComplete("template");
     selectPopupChoiceWithText("Change Entity A Name"); // Create Entity name
     getValueTextArea().clear().type("A Name");

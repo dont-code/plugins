@@ -47,7 +47,7 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
         this.listTemplates=allTemplates;
       })).subscribe());
 
-    this.subscriptions.add(this.templateForm.get("template")!.valueChanges.pipe(
+    this.subscriptions.add(this.templateForm.get("template")?.valueChanges.pipe(
       map(templ => {
         const stepControl:AbstractControl=this.templateForm.get("step")!;
         const typeControl:AbstractControl=this.templateForm.get("type")!;
