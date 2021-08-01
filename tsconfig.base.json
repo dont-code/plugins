@@ -29,7 +29,8 @@
       "@dontcode/plugin-screen": ["libs/screen/src"],
       "@dontcode/sandbox": ["libs/sandbox/src"],
       "rxjs": ["node_modules/rxjs"],
-      "rxjs/*": ["node_modules/rxjs/*"]
+      "rxjs/*": ["node_modules/rxjs/*"],
+      "@angular/*": [ "node_modules/@angular/*" ]
     }
   },
   "exclude": ["node_modules", "tmp"]

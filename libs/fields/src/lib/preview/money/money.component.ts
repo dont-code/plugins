@@ -1,14 +1,12 @@
-import {Component, Injector, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, Injector, TemplateRef, ViewChild} from '@angular/core';
 import {MoneyAmount} from '@dontcode/core';
 import {
-  AbstractDynamicComponent,
+  AbstractDynamicLoaderComponent,
   ComponentLoaderService,
-  DynamicComponent,
   PossibleTemplateList,
   TemplateList
 } from '@dontcode/plugin-common';
 import {FormControl, FormGroup} from '@angular/forms';
-import {AbstractDynamicLoaderComponent} from '@dontcode/plugin-common';
 
 /**
  * Display or edit a country value
@@ -30,8 +28,8 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent{
 
   control:FormControl = new FormControl(null,{updateOn:'blur'})
 
-  constructor(protected loaderService: ComponentLoaderService) {
-    super(loaderService );
+  constructor(injector:Injector, loaderService: ComponentLoaderService) {
+    super(loaderService, injector );
   }
 
   providesTemplates (key?: string): TemplateList {

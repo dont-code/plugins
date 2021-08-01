@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, Inject, Injector, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer} from "@dontcode/core";
 import {
   ComponentLoaderService,
@@ -47,12 +47,12 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
 
   formConfig = {};
 
-  constructor(private ref:ChangeDetectorRef, protected fb:FormBuilder, componentLoader: ComponentLoaderService) {
-    super(componentLoader);
+  constructor(private ref:ChangeDetectorRef, protected fb:FormBuilder, injector:Injector, componentLoader: ComponentLoaderService) {
+    super(componentLoader, injector);
   }
 
   ngOnInit(): void {
-    this.form = this.fb.group({}, {updateOn:'blur'});
+   this.form = this.fb.group({}, {updateOn:'blur'});
     this.form.valueChanges.subscribe(change => {
       if (this.value) {
         for (const changeKey in change) {

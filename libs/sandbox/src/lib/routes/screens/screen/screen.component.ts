@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ComponentFactoryResolver, OnInit, ViewChild} from "@angular/core";
+import {AfterViewInit, Component, ComponentFactoryResolver, Injector, OnInit, ViewChild} from "@angular/core";
 import {ActivatedRoute, Params} from "@angular/router";
 import {map} from "rxjs/operators";
 import {EMPTY, Observable} from "rxjs";
@@ -19,8 +19,9 @@ export class ScreenComponent extends DynamicBaseComponent implements OnInit, Aft
 
   constructor(route:ActivatedRoute,
               componentFactoryResolver: ComponentFactoryResolver,
-              provider:ChangeProviderService) {
-    super(route, componentFactoryResolver, provider);
+              provider:ChangeProviderService,
+              injector: Injector) {
+    super(route, componentFactoryResolver, injector, provider );
   }
 
   ngOnInit():void {

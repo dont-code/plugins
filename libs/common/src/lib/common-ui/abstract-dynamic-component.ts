@@ -4,7 +4,7 @@ import {PossibleTemplateList, TemplateList} from "./template-list";
 
 /**
  * A component that can be dynamically loaded by the dont-code framework.
- * It can integrate with the reactive form
+ * It can integrate with a reactive form
  */
 export abstract class AbstractDynamicComponent implements DynamicComponent {
 

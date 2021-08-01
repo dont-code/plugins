@@ -1,5 +1,5 @@
 import {from, Observable, of, Subscription} from "rxjs";
-import {Component, Injector, OnDestroy} from "@angular/core";
+import {Component, Inject, Injector, OnDestroy} from "@angular/core";
 import {Change, ChangeType, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
 import {map} from "rxjs/operators";
 import {ComponentLoaderService} from "../common-dynamic/component-loader.service";
@@ -16,8 +16,8 @@ export abstract class PluginBaseComponent extends AbstractDynamicLoaderComponent
   provider: CommandProviderInterface|null=null;
 
 
-  constructor(loader: ComponentLoaderService) {
-    super(loader);
+  constructor(loader: ComponentLoaderService, injector:Injector) {
+    super(loader, injector);
   }
 
   ngOnDestroy(): void {

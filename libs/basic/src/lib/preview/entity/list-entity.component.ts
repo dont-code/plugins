@@ -1,4 +1,14 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, TemplateRef} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Inject,
+  Injector,
+  Input,
+  OnInit,
+  Output,
+  TemplateRef
+} from '@angular/core';
 import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
 import {
   ComponentLoaderService,
@@ -32,8 +42,8 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
   @Input()
   store: EntityListManager|null = null;
 
-  constructor(private ref:ChangeDetectorRef, componentLoader: ComponentLoaderService) {
-    super(componentLoader);
+  constructor(private ref:ChangeDetectorRef, injector:Injector, @Inject(ComponentLoaderService) componentLoader: ComponentLoaderService) {
+    super(componentLoader, injector);
   }
 
   ngOnInit(): void {

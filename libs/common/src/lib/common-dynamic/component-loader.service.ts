@@ -1,4 +1,4 @@
-import {ComponentFactory, ComponentFactoryResolver, getModuleFactory, Injectable} from '@angular/core';
+import {ComponentFactory, ComponentFactoryResolver, getModuleFactory, Injectable, Injector} from '@angular/core';
 import {DontCodeModelPointer, DontCodePreviewManager, dtcde, PluginModuleInterface} from '@dontcode/core';
 import {DynamicComponent} from "../common-ui/dynamic-component";
 
@@ -18,7 +18,7 @@ export class ComponentLoaderService {
   protected moduleMap = new Map<string, PluginModuleInterface>();
   protected factoryMap = new Map<{ source:string, name:string }, ComponentFactory<DynamicComponent>>();
 
-  constructor(protected componentFactoryResolver: ComponentFactoryResolver) {
+  constructor(protected componentFactoryResolver: ComponentFactoryResolver, protected injector:Injector) {
     this.previewMgr = dtcde.getPreviewManager();
   }
 
@@ -38,13 +38,13 @@ export class ComponentLoaderService {
 
       let module = this.moduleMap.get(handlerConfig.class.source);
       if (!module) {
-        module = getModuleFactory('dontcode-plugin/' + handlerConfig.class.source).create(null).instance;
+        module = getModuleFactory('dontcode-plugin/' + handlerConfig.class.source).create(this.injector).instance;
         if( !module)
           return Promise.reject("Cannot load module for source "+handlerConfig.class.source)
         this.moduleMap.set(handlerConfig.class.source, module);
       }
       //console.log ("Applying component");
-      let componentFactory = this.factoryMap.get(handlerConfig.class);
+      let componentFactory = this.factoryMap.get(handlerConfig.class) || null;
       if (!componentFactory) {
         componentFactory = this.componentFactoryResolver.resolveComponentFactory(module.exposedPreviewHandlers().get(handlerConfig.class.name)) as ComponentFactory<DynamicComponent>;
         this.factoryMap.set(handlerConfig.class, componentFactory);

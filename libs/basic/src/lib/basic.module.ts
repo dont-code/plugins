@@ -45,4 +45,7 @@ export class BasicModule implements PluginModuleInterface {
 }
 
 export * from './preview/entity/basic-entity.component';
+export * from './preview/fields/basic-fields.component';
+export * from './preview/time/time-fields.component';
+export * from './preview/web/web-fields.component';
 export * from './store/dont-code-api-store-provider';

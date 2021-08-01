@@ -16,8 +16,8 @@ export class DontCodeApiStoreProvider implements DontCodeStoreProvider {
   apiUrl: string;
   modelMgr: DontCodeModelManager;
 
-  constructor(protected http:HttpClient, @Inject(DONTCODE_STORE_API_URL) apiUrl: string) {
-    this.apiUrl = apiUrl;
+  constructor(@Inject(HttpClient) protected http:HttpClient, @Inject(DONTCODE_STORE_API_URL) apiUrl?: string) {
+    this.apiUrl = ''//apiUrl;
     this.modelMgr = dtcde.getModelManager();
   }
 

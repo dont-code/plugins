@@ -26,7 +26,10 @@
               "libs/basic/tsconfig.lib.json",
               "libs/basic/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/basic/**/*"]
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/basic/**/*"
+            ]
           }
         },
         "test": {
@@ -35,7 +38,9 @@
             "jestConfig": "libs/basic/jest.config.js",
             "passWithNoTests": true
           },
-          "outputs": ["coverage/libs/basic"]
+          "outputs": [
+            "coverage/libs/basic"
+          ]
         }
       },
       "schematics": {
@@ -69,7 +74,10 @@
               "libs/common/tsconfig.lib.json",
               "libs/common/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/common/**/*"]
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/common/**/*"
+            ]
           }
         },
         "test": {
@@ -78,7 +86,9 @@
             "jestConfig": "libs/common/jest.config.js",
             "passWithNoTests": true
           },
-          "outputs": ["coverage/libs/common"]
+          "outputs": [
+            "coverage/libs/common"
+          ]
         }
       },
       "schematics": {
@@ -116,7 +126,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/fields"],
+          "outputs": [
+            "coverage/libs/fields"
+          ],
           "options": {
             "jestConfig": "libs/fields/jest.config.js",
             "passWithNoTests": true
@@ -131,8 +143,10 @@
       "prefix": "dontcode",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "outputs": ["{options.outputPath}"],
+          "builder": "ngx-build-plus:browser",
+          "outputs": [
+            "{options.outputPath}"
+          ],
           "options": {
             "outputPath": "dist/apps/plugin-tester",
             "index": "apps/plugin-tester/src/index.html",
@@ -157,7 +171,10 @@
               "./node_modules/primeng/resources/primeng.min.css",
               "./node_modules/primeicons/primeicons.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "namedChunks": true,
+            "extraWebpackConfig": "apps/plugin-tester/webpack.config.js",
+            "commonChunk": false
           },
           "configurations": {
             "production": {
@@ -182,32 +199,29 @@
               "outputHashing": "all"
             },
             "development": {
-              "buildOptimizer": false,
-              "optimization": false,
-              "vendorChunk": true,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
             }
-          },
-          "defaultConfiguration": "production"
+          }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "ngx-build-plus:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "plugin-tester:build:production"
-            },
-            "development": {
-              "browserTarget": "plugin-tester:build:development"
+              "browserTarget": "plugin-tester:build:production",
+              "extraWebpackConfig": "apps/plugin-tester/webpack.prod.config.js"
             }
           },
-          "defaultConfiguration": "development"
+          "options": {
+            "browserTarget": "plugin-tester:build",
+            "extraWebpackConfig": "apps/plugin-tester/webpack.config.js",
+            "port": 3000
+          }
+
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "ngx-build-plus:extract-i18n",
           "options": {
-            "browserTarget": "plugin-tester:build"
+            "browserTarget": "plugin-tester:build",
+            "extraWebpackConfig": "apps/plugin-tester/webpack.config.js"
           }
         },
         "lint": {
@@ -220,11 +234,14 @@
           }
         },
         "test": {
-          "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/plugin-tester"],
+          "builder": "ngx-build-plus:karma",
+          "outputs": [
+            "coverage/apps/plugin-tester"
+          ],
           "options": {
             "jestConfig": "apps/plugin-tester/jest.config.js",
-            "passWithNoTests": true
+            "passWithNoTests": true,
+            "extraWebpackConfig": "apps/plugin-tester/webpack.config.js"
           }
         }
       }
@@ -250,7 +267,9 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/plugin-tester-e2e/**/*.{js,ts}"]
+            "lintFilePatterns": [
+              "apps/plugin-tester-e2e/**/*.{js,ts}"
+            ]
           }
         }
       }
@@ -275,7 +294,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/sandbox"],
+          "outputs": [
+            "coverage/libs/sandbox"
+          ],
           "options": {
             "jestConfig": "libs/sandbox/jest.config.js",
             "passWithNoTests": true
@@ -317,7 +338,10 @@
               "libs/screen/tsconfig.lib.json",
               "libs/screen/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/screen/**/*"]
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/screen/**/*"
+            ]
           }
         },
         "test": {
@@ -326,7 +350,9 @@
             "jestConfig": "libs/screen/jest.config.js",
             "passWithNoTests": true
           },
-          "outputs": ["coverage/libs/screen"]
+          "outputs": [
+            "coverage/libs/screen"
+          ]
         }
       },
       "schematics": {

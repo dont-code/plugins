@@ -3,7 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ComponentFactoryResolver,
-  getModuleFactory,
+  getModuleFactory, Injector,
   OnDestroy,
   OnInit,
   Type
@@ -25,6 +25,7 @@ export abstract class DynamicBaseComponent implements OnInit, OnDestroy {
 
   protected constructor(protected route:ActivatedRoute,
                         protected componentFactoryResolver: ComponentFactoryResolver,
+                        protected injector: Injector,
                         protected provider:ChangeProviderService) { }
 
   ngOnInit(): void {
@@ -40,7 +41,7 @@ export abstract class DynamicBaseComponent implements OnInit, OnDestroy {
       console.log("Importing from ", handler.class.source);
       try {
         // First lets try if the plugin is imported during the compilation
-        const module:PluginModuleInterface=getModuleFactory('dontcode-plugin/'+handler.class.source).create(null).instance;
+        const module:PluginModuleInterface=getModuleFactory('dontcode-plugin/'+handler.class.source).create(this.injector).instance;
         return of(this.applyComponent(module.exposedPreviewHandlers().get(handler.class.name), host));
       } catch (e) {
         // Nope, fallback to dynamically loading it
@@ -64,7 +65,7 @@ export abstract class DynamicBaseComponent implements OnInit, OnDestroy {
     const viewContainerRef = host.viewContainerRef;
     viewContainerRef.clear();
 
-    const componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(componentFactory,undefined,this.injector);
     const handler = componentRef.instance as PreviewHandler;
     return handler;
   }

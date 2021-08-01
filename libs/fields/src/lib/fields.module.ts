@@ -36,3 +36,5 @@ export class FieldsModule implements PluginModuleInterface{
 
 export * from './preview/country/country.component';
 export * from './preview/currency/currency.component';
+export * from './preview/money/money.component';
+export * from './preview/money/euro-dollar.component';

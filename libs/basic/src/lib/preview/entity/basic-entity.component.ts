@@ -1,4 +1,12 @@
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from "@angular/core";
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  Injector,
+  ViewChild
+} from "@angular/core";
 import {Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
 import {
   ComponentLoaderService,
@@ -8,9 +16,9 @@ import {
   PossibleTemplateList,
   TemplateList
 } from "@dontcode/plugin-common";
+import {map} from "rxjs/operators";
 import {ListEntityComponent} from "./list-entity.component";
 import {EditEntityComponent} from "./edit-entity.component";
-import {map} from "rxjs/operators";
 
 
 @Component({
@@ -34,8 +42,8 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   @ViewChild(EditEntityComponent)
   edit!: EditEntityComponent;
 
-  constructor(protected entityService:EntityStoreService, private ref:ChangeDetectorRef, componentLoader: ComponentLoaderService) {
-    super(componentLoader);
+  constructor(protected entityService:EntityStoreService, private ref:ChangeDetectorRef, componentLoader: ComponentLoaderService, injector:Injector) {
+    super(componentLoader, injector);
   }
 
 

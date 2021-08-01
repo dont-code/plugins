@@ -1,6 +1,14 @@
 import {AbstractDynamicComponent} from "./abstract-dynamic-component";
 import {DynamicComponent} from "./dynamic-component";
-import {AfterViewInit, Component, ComponentFactory, Directive, ViewChild, ViewContainerRef} from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  ComponentFactory,
+  Directive,
+  Inject, Injector,
+  ViewChild,
+  ViewContainerRef
+} from "@angular/core";
 import {DontCodeModelPointer} from "@dontcode/core";
 import {FormControl, FormGroup} from "@angular/forms";
 import {ComponentLoaderService} from "../common-dynamic/component-loader.service";
@@ -24,7 +32,7 @@ export abstract class AbstractDynamicLoaderComponent extends AbstractDynamicComp
   protected componentsByFormName = new Map<string, DynamicComponent> ();
   group: FormGroup|null = null;   // Manages the formGroup for all subcomponents
 
-  protected constructor(protected loader: ComponentLoaderService) {
+  protected constructor(protected loader: ComponentLoaderService, protected injector: Injector) {
     super();
   }
 
@@ -94,7 +102,7 @@ export abstract class AbstractDynamicLoaderComponent extends AbstractDynamicComp
 
   prepareComponent (factory: ComponentFactory<DynamicComponent>, formName:string|null, subValue:any): DynamicComponent {
     if( factory && this.dynamicInsertPoint) {
-      const componentRef = this.dynamicInsertPoint.createComponent(factory);
+      const componentRef = this.dynamicInsertPoint.createComponent(factory, undefined, this.injector);
       const component = componentRef.instance as DynamicComponent;
 
         // Manages dynamic forms if needed
