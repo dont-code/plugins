@@ -109,7 +109,7 @@ describe('Edit', () => {
       getListRowWithText ("CA$9,090");
 
       getListRowWithText ("Book 2").click();
-      //getListRowWithText ("Book 2").click();
+      getListRowWithText ("Book 2").click();
       getInputWithName('EUR').clear().type('9870');
       getDropdownWithName('currencyCode').click();
       getDropdownFilter().type ('dinar');
