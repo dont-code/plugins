@@ -234,7 +234,7 @@
           }
         },
         "test": {
-          "builder": "ngx-build-plus:karma",
+          "builder": "@nrwl/jest:jest",
           "outputs": [
             "coverage/apps/plugin-tester"
           ],
