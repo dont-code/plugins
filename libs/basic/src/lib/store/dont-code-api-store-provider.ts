@@ -17,7 +17,12 @@ export class DontCodeApiStoreProvider implements DontCodeStoreProvider {
   modelMgr: DontCodeModelManager;
 
   constructor(@Inject(HttpClient) protected http:HttpClient, @Inject(DONTCODE_STORE_API_URL) apiUrl?: string) {
-    this.apiUrl = ''//apiUrl;
+    if( apiUrl)
+      this.apiUrl = apiUrl;
+    else {
+      this.apiUrl = '';
+      console.log ('DONTCODE_STORE_API_URL token not provided, hence cannot save to Api services');
+    }
     this.modelMgr = dtcde.getModelManager();
   }
 
