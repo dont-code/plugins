@@ -1,6 +1,20 @@
-import {ComponentFactory, ComponentFactoryResolver, getModuleFactory, Injectable, Injector} from '@angular/core';
-import {DontCodeModelPointer, DontCodePreviewManager, dtcde, PluginModuleInterface} from '@dontcode/core';
+import {
+  ComponentFactory,
+  ComponentFactoryResolver,
+  getModuleFactory, Inject,
+  Injectable,
+  Injector, Type,
+  ViewContainerRef
+} from '@angular/core';
+import {
+  CommandProviderInterface,
+  DontCodeModelPointer,
+  DontCodePreviewManager,
+  dtcde,
+  PluginModuleInterface, PreviewHandler
+} from '@dontcode/core';
 import {DynamicComponent} from "../common-ui/dynamic-component";
+import {COMMAND_PROVIDER} from "../common-global/globals";
 
 /**
  * Manages the dynamic loading of components able to display a data located at a specific pointer position
@@ -18,17 +32,23 @@ export class ComponentLoaderService {
   protected moduleMap = new Map<string, PluginModuleInterface>();
   protected factoryMap = new Map<{ source:string, name:string }, ComponentFactory<DynamicComponent>>();
 
-  constructor(protected componentFactoryResolver: ComponentFactoryResolver, protected injector:Injector) {
+  constructor(protected componentFactoryResolver: ComponentFactoryResolver, protected injector:Injector, @Inject(COMMAND_PROVIDER) protected provider?:CommandProviderInterface) {
     this.previewMgr = dtcde.getPreviewManager();
   }
 
-  loadComponentForFieldType(type: string): Promise<ComponentFactory<DynamicComponent>|null> {
+  loadComponentFactoryForFieldType(type: string): Promise<ComponentFactory<DynamicComponent>|null> {
     return this.loadComponentFactory('creation/entities/fields/type', type);
   }
 
   loadComponentFactory(schemaPosition: DontCodeModelPointer | string, currentJson?: any): Promise<ComponentFactory<DynamicComponent>|null> {
     let schemaPos:string = (schemaPosition as DontCodeModelPointer).schemaPosition;
-    if (!schemaPos) schemaPos = schemaPosition as string;
+    if (schemaPos) {
+      if (!currentJson) {
+        currentJson = this.provider?.getJsonAt((schemaPosition as DontCodeModelPointer).position);
+      }
+    } else {
+      schemaPos = schemaPosition as string;
+    }
 
     const handlerConfig = this.previewMgr.retrieveHandlerConfig(schemaPos, currentJson);
 
@@ -54,6 +74,26 @@ export class ComponentLoaderService {
       return Promise.resolve(null);
     }
 
+  }
+
+  createGivenComponent (componentClass: Type<DynamicComponent>, insertPoint:ViewContainerRef, position: DontCodeModelPointer|null) : DynamicComponent {
+    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentClass) as ComponentFactory<DynamicComponent>;
+    if (!componentFactory)
+      throw new Error ("Cannot find ComponentFactory for Component class "+componentClass.name);
+    return this.createComponent(componentFactory, insertPoint, position);
+  }
+
+  createComponent (factory: ComponentFactory<DynamicComponent>, insertPoint:ViewContainerRef, position: DontCodeModelPointer|null) : DynamicComponent{
+    const componentRef = insertPoint.createComponent(factory, undefined, this.injector);
+    const component = componentRef.instance as DynamicComponent;
+
+    if ((component as unknown as PreviewHandler).initCommandFlow)    // It's a previewHandler
+    {
+      if (!position)  throw new Error("Component "+component.constructor.name+" is a PreviewHandler and parent position is missing.");
+      if (!this.provider)  throw new Error("Component "+component.constructor.name+" is a PreviewHandler and CommandProviderInterface is missing.");
+      (component as unknown as PreviewHandler).initCommandFlow (this.provider, position);
+    }
+  return component;
   }
 
 }

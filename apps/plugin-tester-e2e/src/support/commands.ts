@@ -81,7 +81,7 @@ Cypress.Commands.add('clearPreviewUIDbCollection', (collection:string) => {
 
   return new Promise<number>((resolve, reject) => {
     console.log("Checking DB Version");
-    const checkversionrequest = window.indexedDB.open('Preview-UI');
+    const checkversionrequest = window.indexedDB.open('Dont-code Plugin Tester');
 
     checkversionrequest.addEventListener('success', (evt) =>{
       console.log("In Check Version");

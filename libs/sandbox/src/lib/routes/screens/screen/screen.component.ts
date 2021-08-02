@@ -1,36 +1,34 @@
-import {AfterViewInit, Component, ComponentFactoryResolver, Injector, OnInit, ViewChild} from "@angular/core";
+import {AfterViewInit, Component, Injector, OnInit} from "@angular/core";
 import {ActivatedRoute, Params} from "@angular/router";
 import {map} from "rxjs/operators";
 import {EMPTY, Observable} from "rxjs";
-import {CommandProviderInterface} from "@dontcode/core";
-import {DynamicBaseComponent} from "../../../shared/dynamic/components/dynamic-base.component";
 import {ChangeProviderService} from "../../../shared/command/services/change-provider.service";
-import {DynamicInsertDirective} from "../../../shared/dynamic/directives/dynamic-insert.directive";
+import {ComponentLoaderService, PluginBaseComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
+import {DefaultViewerComponent} from "@dontcode/sandbox";
+import {DontCodeModelPointer} from "@dontcode/core";
 
 @Component({
   selector: 'dontcode-sandbox-screen',
   templateUrl: './screen.component.html',
   styleUrls: ['./screen.component.css']
 })
-export class ScreenComponent extends DynamicBaseComponent implements OnInit, AfterViewInit {
+export class ScreenComponent extends PluginBaseComponent implements OnInit, AfterViewInit {
   screenName$:Observable<Params> = EMPTY;
 
-  @ViewChild(DynamicInsertDirective, {static:true}) host!: DynamicInsertDirective;
-
-  constructor(route:ActivatedRoute,
-              componentFactoryResolver: ComponentFactoryResolver,
-              provider:ChangeProviderService,
+  constructor(protected route:ActivatedRoute,
+              public provider:ChangeProviderService,
+              loader: ComponentLoaderService,
               injector: Injector) {
-    super(route, componentFactoryResolver, injector, provider );
+    super( loader, injector );
   }
 
   ngOnInit():void {
-    super.ngOnInit();
+    //super.ngOnInit();
     this.screenName$ = this.route.params;
   }
 
   ngAfterViewInit(): void {
-    this.screenName$ = this.route.params;
+    super.ngAfterViewInit();
 
     this.subscriptions.add(this.route.url.pipe (
       map (segments => {
@@ -41,25 +39,34 @@ export class ScreenComponent extends DynamicBaseComponent implements OnInit, Aft
           else
             position = position + '/' + value.path;
         });
-        console.log("Searching for component handling route ", position);
+        console.log("Searching for component handling route", position);
 
         if(!position) throw new Error ("No position in route to screen");
-        const schemaPointer = this.provider.calculatePointerFor(position);
-        this.subscriptions.add(this.loadComponent(schemaPointer.schemaPosition, this.host).pipe(
-          map(component => {
-            return { position, component };
-          }),
-          map(context => {
-            // We shouldn't need to convert this.provider to CommandProviderInterface,
-            // But otherwise we get an ts error
-            context.component.initCommandFlow(this.provider as unknown as CommandProviderInterface,
-              schemaPointer);
-          })
-        ).subscribe(() => {
-          //console.log("Loaded");
-        }));
+        let component = null;
+        try {
+        const pointer = this.provider.calculatePointerFor(position);
+
+        this.loader.loadComponentFactory(pointer, this.provider.getJsonAt(position)).then (factory => {
+          if( factory) {
+            component = this.loader.createComponent(factory, this.dynamicInsertPoint, pointer);
+          } else {
+              // Display the default viewer component if no factory are found...
+            component = this.loader.createGivenComponent(DefaultViewerComponent, this.dynamicInsertPoint, pointer);
+          }
+        });
+        } catch (error) {
+          console.warn('Error creating component for '+position+':',error);
+          component = this.loader.createGivenComponent(DefaultViewerComponent, this.dynamicInsertPoint,
+            new DontCodeModelPointer(position, position,undefined,undefined, null,null));
+        }
       })
     ).subscribe());
   }
 
+  providesTemplates(key?: string): TemplateList {
+    throw new Error("Method not implemented.");
+  }
+  canProvide(key?: string): PossibleTemplateList {
+    throw new Error("Method not implemented.");
+  }
 }

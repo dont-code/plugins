@@ -14,22 +14,24 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { InputTextareaModule } from "primeng/inputtextarea";
 import { ButtonModule } from "primeng/button";
 import { DropdownModule } from "primeng/dropdown";
+import {PluginCommonModule} from "@dontcode/plugin-common";
 
 
 @NgModule({
   declarations: [ListCommandsComponent, HomeComponent, InsertCommandComponent, DebugPageComponent, ScreenComponent],
-  imports: [
-    CommonModule,
-    SharedModule,
-    AccordionModule,
-    AutoCompleteModule,
-    PanelModule,
-    InputTextModule,
-    ReactiveFormsModule,
-    InputTextareaModule,
-    ButtonModule,
-    DropdownModule
-  ],
+    imports: [
+        CommonModule,
+        SharedModule,
+        AccordionModule,
+        AutoCompleteModule,
+        PanelModule,
+        InputTextModule,
+        ReactiveFormsModule,
+        InputTextareaModule,
+        ButtonModule,
+        DropdownModule,
+        PluginCommonModule
+    ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class RoutesModule { }

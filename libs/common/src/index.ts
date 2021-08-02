@@ -1,4 +1,5 @@
 export * from './lib/plugin-common.module';
+export * from './lib/common-global/globals';
 export * from './lib/common-ui/plugin-base.component';
 export * from './lib/common-ui/template-list';
 export * from './lib/common-ui/dynamic-component';
