@@ -4,7 +4,7 @@
       <img src="assets/images/logo.png" width="119" height="66"/>
       <button pButton type="button" class="p-d-md-none p-button-rounded p-button-outlined" icon="pi pi-bars" (click)="sidePanelVisible=!sidePanelVisible"></button>
     </div>
-    <h1>Preview {{appName}}</h1>
+    <h1>{{appName}}</h1>
     <div class="p-toolbar-group-right">
       <button pButton type="button" class="p-button-rounded p-button-outlined" icon="pi pi-external-link" (click)="openDevUrl()"></button>
       <button pButton type="button" class="p-button-rounded p-button-outlined" [ngClass]="connectedClass(ctx)" icon="pi pi-sort" (mouseenter)="op.show($event)" ></button>

@@ -48,9 +48,9 @@ export class MainComponent implements OnInit, OnDestroy {
       this.serverUrl = this.config.webSocketUrl;
     this.subscriptions.add(this.provider.receiveCommands (DontCodeModel.APP_NAME).subscribe(command => {
       if( command.value) {
-        this.appName = command.value;
+        this.appName = this.generateApplicationName (command.value);
       } else {
-        this.appName = 'No Name';
+        this.appName = this.generateApplicationName ('No Name');
       }
         this.ref.detectChanges();
     }));
@@ -85,5 +85,13 @@ export class MainComponent implements OnInit, OnDestroy {
       return "p-button-danger";
     }else
       return '';
+  }
+
+  protected generateApplicationName(subName: string) {
+    if (this.config?.applicationName) {
+      return this.config?.applicationName+' '+subName;
+    } else {
+      return subName;
+    }
   }
 }
