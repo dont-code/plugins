@@ -1,14 +1,6 @@
 import {AbstractDynamicComponent} from "./abstract-dynamic-component";
 import {DynamicComponent} from "./dynamic-component";
-import {
-  AfterViewInit,
-  Component,
-  ComponentFactory,
-  Directive,
-  Inject, Injector,
-  ViewChild,
-  ViewContainerRef
-} from "@angular/core";
+import {AfterViewInit, Component, Directive, Injector, ViewChild, ViewContainerRef} from "@angular/core";
 import {DontCodeModelPointer} from "@dontcode/core";
 import {FormControl, FormGroup} from "@angular/forms";
 import {ComponentLoaderService} from "../common-dynamic/component-loader.service";
@@ -45,9 +37,10 @@ export abstract class AbstractDynamicLoaderComponent extends AbstractDynamicComp
   }
 
   loadSubField(type:string, formName:string, subValue:any): Promise<DynamicComponent> {
-    return this.loader.loadComponentForFieldType(type).then (componentFactory => {
+    return this.loader.loadComponentFactoryForFieldType(type).then (componentFactory => {
       if (componentFactory) {
-        const comp= this.prepareComponent (componentFactory, formName, subValue);
+        const comp= this.loader.createComponent(componentFactory, this.dynamicInsertPoint, null);
+        this.prepareComponent (comp, formName, subValue);
         return comp;
       } else {
         throw Error ('No handler found for field '+type);
@@ -88,23 +81,24 @@ export abstract class AbstractDynamicLoaderComponent extends AbstractDynamicComp
   }
     /**
    * Loads the component that will handle the display and edit for the item at the specified position
-   * @param schemaPosition: Either the schemaPosition as string or as DontCodeModelPointer
+   * @param position: Either the schemaPosition as string or as DontCodeModelPointer
    * @param currentJson
    */
-  loadSubComponent(schemaPosition: DontCodeModelPointer|string, currentJson?: any): Promise<DynamicComponent|null> {
-    return this.loader.loadComponentFactory(schemaPosition, currentJson).then (componentFactory => {
-      if( componentFactory)
-        return this.prepareComponent(componentFactory, null, currentJson);
-      else
+  loadSubComponent(position: DontCodeModelPointer, currentJson?: any): Promise<DynamicComponent|null> {
+    return this.loader.loadComponentFactory(position, currentJson).then (componentFactory => {
+      if( componentFactory && this.dynamicInsertPoint) {
+        const component = this.loader.createComponent (componentFactory, this.dynamicInsertPoint, position);
+        return this.prepareComponent(component, null, currentJson);
+      } else {
+        //console.warn('No ComponentFactory or missing <dtcde-dynamic></dtcde-dynamic> in template');
         return null;
+      }
+
     });
   }
 
-  prepareComponent (factory: ComponentFactory<DynamicComponent>, formName:string|null, subValue:any): DynamicComponent {
-    if( factory && this.dynamicInsertPoint) {
-      const componentRef = this.dynamicInsertPoint.createComponent(factory, undefined, this.injector);
-      const component = componentRef.instance as DynamicComponent;
 
+  prepareComponent (component: DynamicComponent, formName:string|null, subValue:any): DynamicComponent {
         // Manages dynamic forms if needed
       if (formName) {
         if( !this.group)
@@ -120,9 +114,6 @@ export abstract class AbstractDynamicLoaderComponent extends AbstractDynamicComp
         this.componentsByFormName.set(formName, component);
       }
       return component;
-    } else {
-      throw new Error ('No ComponentFactory or missing <dtcde-dynamic></dtcde-dynamic> in template');
-    }
 
   }
 

@@ -1,7 +1,7 @@
 import {DontCodeModelManager, DontCodeStoreCriteria, DontCodeStoreProvider, dtcde} from "@dontcode/core";
 import {Observable, of, throwError} from "rxjs";
 import {HttpClient} from "@angular/common/http";
-import {Inject, Injectable, InjectionToken} from "@angular/core";
+import {Inject, Injectable, InjectionToken, Optional} from "@angular/core";
 import { map } from "rxjs/operators";
 
 export const DONTCODE_STORE_API_URL = new InjectionToken<string>('DontCodeStoreApiUrl');
@@ -16,7 +16,7 @@ export class DontCodeApiStoreProvider implements DontCodeStoreProvider {
   apiUrl: string;
   modelMgr: DontCodeModelManager;
 
-  constructor(@Inject(HttpClient) protected http:HttpClient, @Inject(DONTCODE_STORE_API_URL) apiUrl?: string) {
+  constructor(@Inject(HttpClient) protected http:HttpClient, @Optional() @Inject(DONTCODE_STORE_API_URL) apiUrl?: string) {
     if( apiUrl)
       this.apiUrl = apiUrl;
     else {

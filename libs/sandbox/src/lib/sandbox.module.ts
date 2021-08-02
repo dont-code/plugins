@@ -1,5 +1,5 @@
 import {ModuleWithProviders, NgModule} from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {SharedModule} from "./shared/shared.module";
 import {LayoutModule} from "./layout/layout.module";
 import {RoutesModule} from "./routes/routes.module";
@@ -8,6 +8,8 @@ import {RouterModule, Routes} from "@angular/router";
 import {HomeComponent} from "./routes/home/home.component";
 import {DebugPageComponent} from "./routes/debug/debug-page/debug-page.component";
 import {ScreenComponent} from "./routes/screens/screen/screen.component";
+import {ChangeProviderService} from "./shared/command/services/change-provider.service";
+import {COMMAND_PROVIDER} from "@dontcode/plugin-common";
 
 const sandboxRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -18,7 +20,8 @@ const sandboxRoutes: Routes = [
 
 @NgModule({
   imports: [CommonModule, SharedModule,LayoutModule, RoutesModule, RouterModule.forChild(sandboxRoutes)],
-  exports: [SharedModule, LayoutModule]
+  exports: [SharedModule, LayoutModule],
+  providers: [{provide:COMMAND_PROVIDER, useExisting:ChangeProviderService}]
 })
 export class SandboxModule {
   static forRoot(config: SandboxLibConfig): ModuleWithProviders<SandboxModule> {
