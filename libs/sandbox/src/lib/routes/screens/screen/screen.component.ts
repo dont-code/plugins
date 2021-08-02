@@ -4,7 +4,7 @@ import {map} from "rxjs/operators";
 import {EMPTY, Observable} from "rxjs";
 import {ChangeProviderService} from "../../../shared/command/services/change-provider.service";
 import {ComponentLoaderService, PluginBaseComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
-import {DefaultViewerComponent} from "@dontcode/sandbox";
+import {DefaultViewerComponent} from "../../../shared/dynamic/components/default-viewer.component";
 import {DontCodeModelPointer} from "@dontcode/core";
 
 @Component({
