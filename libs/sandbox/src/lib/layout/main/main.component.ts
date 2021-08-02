@@ -29,7 +29,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
   protected subscriptions = new Subscription();
 
-  appName = 'No Name';
+  appName = 'Plugin Tester';
 
   sidePanelVisible: boolean;
   serverUrl = '';
@@ -44,6 +44,9 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    if (this.config?.applicationName)
+      this.appName = this.config?.applicationName;
+
     if ((this.config)&&(this.config.webSocketUrl)&&(this.config.webSocketUrl.length>0))
       this.serverUrl = this.config.webSocketUrl;
     this.subscriptions.add(this.provider.receiveCommands (DontCodeModel.APP_NAME).subscribe(command => {
