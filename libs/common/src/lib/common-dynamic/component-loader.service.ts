@@ -3,7 +3,7 @@ import {
   ComponentFactoryResolver,
   getModuleFactory, Inject,
   Injectable,
-  Injector, Type,
+  Injector, Optional, Type,
   ViewContainerRef
 } from '@angular/core';
 import {
@@ -32,7 +32,7 @@ export class ComponentLoaderService {
   protected moduleMap = new Map<string, PluginModuleInterface>();
   protected factoryMap = new Map<{ source:string, name:string }, ComponentFactory<DynamicComponent>>();
 
-  constructor(protected componentFactoryResolver: ComponentFactoryResolver, protected injector:Injector, @Inject(COMMAND_PROVIDER) protected provider?:CommandProviderInterface) {
+  constructor(protected componentFactoryResolver: ComponentFactoryResolver, protected injector:Injector, @Optional() @Inject(COMMAND_PROVIDER) protected provider?:CommandProviderInterface) {
     this.previewMgr = dtcde.getPreviewManager();
   }
 

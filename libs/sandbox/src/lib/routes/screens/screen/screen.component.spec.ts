@@ -5,7 +5,6 @@ import { of } from "rxjs";
 import { ActivatedRoute, UrlSegment } from "@angular/router";
 import { DefaultViewerComponent } from "../../../shared/dynamic/components/default-viewer.component";
 import { BrowserDynamicTestingModule } from "@angular/platform-browser-dynamic/testing";
-import { DynamicInsertDirective } from "../../../shared/dynamic/directives/dynamic-insert.directive";
 
 describe('ScreenComponent', () => {
   let component: ScreenComponent;
@@ -13,7 +12,7 @@ describe('ScreenComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ScreenComponent, DefaultViewerComponent, DynamicInsertDirective],
+      declarations: [ ScreenComponent, DefaultViewerComponent],
       providers: [{
         provide: ActivatedRoute, useValue: {
           url: of([new UrlSegment("#/creation/screens/aa", {})]),
