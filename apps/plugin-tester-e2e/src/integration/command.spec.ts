@@ -7,7 +7,7 @@ describe('commands', () => {
   });
 
   it('should display updated name', () => {
-    getToolbar().should('contain.text','No Name');
+    getToolbar().should('contain.text','Plugin Tester');
     cy.findNgComponent('dontcode-sandbox-main').then((comp: MainComponent) => {
       comp.appName = 'Testing Name';
       cy.applyChanges(comp);

@@ -27,7 +27,7 @@ describe('Debug', () => {
 
   it('should enable application name change', () => {
     cy.intercept('GET','/assets/dev/templates.json').as('LoadTemplate');
-    getToolbar().should('contain.text','No Name');
+    getToolbar().should('contain.text','Plugin Tester');
     getSubMenu(3).should ('contain.text', 'Dev');
     getSubMenu(3).click();    // Move to dev page
 
