@@ -4,6 +4,9 @@
   "peerDependencies": {
     "@angular/common": "^12.1.1",
     "@angular/core": "^12.1.1",
+    "primeflex": "^2.0.0",
+    "primeicons": "^4.1.0",
+    "primeng": "^12.0.0",
     "@dontcode/core": "^0.3.8",
     "@dontcode/plugin-common": "^0.3.14",
     "rxjs": "^6.6.7"
