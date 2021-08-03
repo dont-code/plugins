@@ -27,7 +27,8 @@ import {ScreenModule} from "@dontcode/plugin-screen";
       webSocketUrl: environment.webSocketUrl,
       indexedDbName: 'Dont-code Plugin Tester',
       applicationName: 'Plugin Tester',
-      theme:'orange'
+      theme:'orange',
+      templateFileUrl: 'assets/dev/templates.json'
     }),
     BasicModule,
     FieldsModule,
