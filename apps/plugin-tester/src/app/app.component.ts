@@ -12,4 +12,3 @@ export class AppComponent extends BaseAppComponent{
 
 }
 
-console.log (dtcde.getModelManager());

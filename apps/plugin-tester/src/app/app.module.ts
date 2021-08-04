@@ -26,7 +26,9 @@ import {ScreenModule} from "@dontcode/plugin-screen";
     SandboxModule.forRoot({
       webSocketUrl: environment.webSocketUrl,
       indexedDbName: 'Dont-code Plugin Tester',
-      applicationName: 'Plugin Tester'
+      applicationName: 'Plugin Tester',
+      theme:'orange',
+      templateFileUrl: 'assets/dev/templates.json'
     }),
     BasicModule,
     FieldsModule,

@@ -97,4 +97,12 @@ export class MainComponent implements OnInit, OnDestroy {
       return subName;
     }
   }
+
+  themedLogo() : string {
+    if (this.config?.theme) {
+      return 'assets/images/logo-'+this.config?.theme+'.png';
+    } else {
+      return 'assets/images/logo.png';
+    }
+  }
 }

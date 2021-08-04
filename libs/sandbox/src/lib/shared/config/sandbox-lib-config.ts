@@ -4,6 +4,8 @@ export interface SandboxLibConfig {
   webSocketUrl?: string;
   indexedDbName?: string;
   applicationName?: string;
+  theme?: string;
+  templateFileUrl?: string;
 }
 
 export const SANDBOX_CONFIG = new InjectionToken<SandboxLibConfig>('SandboxLibConfig');
