@@ -30,7 +30,7 @@ import {ScreenModule} from "@dontcode/plugin-screen";
       theme:'orange',
       templateFileUrl: 'assets/dev/templates.json'
     }),
-    BasicModule,
+    //BasicModule,
     FieldsModule,
     ScreenModule
   ],

@@ -1,1 +1,9 @@
-<p>No handler found for position {{position}} and schemaPosition {{schemaPosition}}</p>
+<ng-container *ngIf="!isEntity()">
+  <p>No handler found for position {{entityPointer?.position}} and schemaPosition {{entityPointer?.schemaPosition}}</p>
+</ng-container>
+<ng-container *ngIf="isEntity()">
+  <p>Displaying information about the {{entityName}} entity:</p>
+  <div *ngFor="let field of fields">
+    {{field.name}}:
+  </div>
+</ng-container>

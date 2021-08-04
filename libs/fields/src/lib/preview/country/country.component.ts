@@ -29,10 +29,6 @@ export class CountryComponent extends AbstractDynamicComponent implements OnInit
     }
   }
 
-  setName(name: string): void {
-    this.name = name;
-    }
-
   providesTemplates (): TemplateList {
     return new TemplateList(this.inlineView, null, this.fullEditView);
   }

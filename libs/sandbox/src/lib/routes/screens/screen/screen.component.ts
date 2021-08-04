@@ -47,6 +47,7 @@ export class ScreenComponent extends PluginBaseComponent implements OnInit, Afte
         const pointer = this.provider.calculatePointerFor(position);
 
         this.loader.loadComponentFactory(pointer, this.provider.getJsonAt(position)).then (factory => {
+          this.dynamicInsertPoint.clear();
           if( factory) {
             component = this.loader.createComponent(factory, this.dynamicInsertPoint, pointer);
           } else {
