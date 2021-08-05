@@ -40,12 +40,12 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
   @ViewChild('defaulteditor')
   private defaultTemplate!: TemplateRef<any>;
 
-  initing = false;
+  //initing = false;
 
   fields = new Array<FormElement>();
   fieldsMap = new Map<string, number>();
 
-  formConfig = {};
+  //formConfig = {};
 
   constructor(private ref:ChangeDetectorRef, protected fb:FormBuilder, injector:Injector, componentLoader: ComponentLoaderService) {
     super(componentLoader, injector);
@@ -76,13 +76,13 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
   }
 
   initCommandFlow(provider: CommandProviderInterface, pointer: DontCodeModelPointer): any {
-    this.initing=true;
+    //this.initing=true;
     super.initCommandFlow(provider, pointer);
 
     if (!this.entityPointer)  throw new Error ('Cannot listen to changes without knowing a base position');
     this.decomposeJsonToMultipleChanges (this.entityPointer, provider.getJsonAt(this.entityPointer.position)); // Dont provide a special handling for initial json, but emulate a list of changes
     this.initChangeListening (); // Listen to all changes occuring after entityPointer
-    this.initing=false;
+    //this.initing=false;
     this.rebuildForm();
   }
 

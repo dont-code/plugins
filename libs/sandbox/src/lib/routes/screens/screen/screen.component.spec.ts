@@ -1,10 +1,13 @@
-import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
+import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 
-import { ScreenComponent } from "./screen.component";
-import { of } from "rxjs";
-import { ActivatedRoute, UrlSegment } from "@angular/router";
-import { DefaultViewerComponent } from "../../../shared/dynamic/components/default-viewer.component";
-import { BrowserDynamicTestingModule } from "@angular/platform-browser-dynamic/testing";
+import {ScreenComponent} from "./screen.component";
+import {of} from "rxjs";
+import {ActivatedRoute, UrlSegment} from "@angular/router";
+import {DefaultViewerComponent} from "../../../shared/dynamic/components/default-viewer.component";
+import {BrowserDynamicTestingModule} from "@angular/platform-browser-dynamic/testing";
+import {InputTextModule} from "primeng/inputtext";
+import {ReactiveFormsModule} from "@angular/forms";
+import {PluginCommonModule} from "@dontcode/plugin-common";
 
 describe('ScreenComponent', () => {
   let component: ScreenComponent;
@@ -13,17 +16,18 @@ describe('ScreenComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ScreenComponent, DefaultViewerComponent],
+      imports:[InputTextModule, ReactiveFormsModule, PluginCommonModule],
       providers: [{
         provide: ActivatedRoute, useValue: {
-          url: of([new UrlSegment("#/creation/screens/aa", {})]),
+          url: of([new UrlSegment("creation/screens/aa", {})]),
           snapshot: {
-            url: [new UrlSegment("#/creation/screens/aa", {})]
+            url: [new UrlSegment("creation/screens/aa", {})]
           }
         }
       }]
 
-    }).overrideModule(BrowserDynamicTestingModule, {set: {entryComponents:[DefaultViewerComponent]}})
-    .compileComponents();
+    });/*.overrideModule(BrowserDynamicTestingModule, {set: {entryComponents:[DefaultViewerComponent]}})
+    .compileComponents();*/
   }));
 
   beforeEach(() => {

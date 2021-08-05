@@ -10,10 +10,10 @@ import country from 'all-country-data';
   styleUrls: ['./currency.component.css']
 })
 export class CurrencyComponent extends  AbstractDynamicComponent implements OnInit{
-  @ViewChild('inlineView')
+  @ViewChild('inlineView',{static:true})
   private inlineView!: TemplateRef<any>;
 
-  @ViewChild('fullEditView')
+  @ViewChild('fullEditView',{static:true})
   private fullEditView!: TemplateRef<any>;
 
   currencies = new Array<{ currency:string, currencyCode:string }>();

@@ -17,10 +17,10 @@ import {FormControl, FormGroup} from '@angular/forms';
   styleUrls: ['./money.component.css']
 })
 export class MoneyComponent extends AbstractDynamicLoaderComponent{
-  @ViewChild('inlineView')
+  @ViewChild('inlineView',{static:true})
   private inlineView!: TemplateRef<any>;
 
-  @ViewChild('fullEditView')
+  @ViewChild('fullEditView',{static:true})
   private fullEditView!: TemplateRef<any>;
 
   value:MoneyAmount = new MoneyAmount();

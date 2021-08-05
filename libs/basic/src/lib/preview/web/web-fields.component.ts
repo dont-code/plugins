@@ -8,13 +8,13 @@ import {AbstractDynamicComponent, DynamicComponent, PossibleTemplateList, Templa
 })
 export class WebFieldsComponent extends AbstractDynamicComponent {
 
-  @ViewChild('EDIT_URL')
+  @ViewChild('EDIT_URL',{static:true})
   private editUrlTemplate!: TemplateRef<any>;
-  @ViewChild('READ_URL')
+  @ViewChild('READ_URL',{static:true})
   private readUrlTemplate!: TemplateRef<any>;
-  @ViewChild('EDIT_IMAGE')
+  @ViewChild('EDIT_IMAGE',{static:true})
   private editImageTemplate!: TemplateRef<any>;
-  @ViewChild('READ_IMAGE')
+  @ViewChild('READ_IMAGE',{static:true})
   private readImageTemplate!: TemplateRef<any>;
 
   providesTemplates(type:string): TemplateList {

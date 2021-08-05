@@ -4,7 +4,8 @@ import {PossibleTemplateList, TemplateList} from "./template-list";
 
 /**
  * A component that can be dynamically loaded by the dont-code framework.
- * It can integrate with a reactive form
+ * It can integrate with a reactive form.
+ * To listen to model change, you have to derive from PluginBaseComponent instead.
  */
 export abstract class AbstractDynamicComponent implements DynamicComponent {
 

@@ -12,10 +12,10 @@ import {FormControl, FormGroup} from '@angular/forms';
   styleUrls: ['./euro-dollar.component.css']
 })
 export class EuroDollarComponent extends AbstractDynamicComponent{
-  @ViewChild('inlineView')
+  @ViewChild('inlineView',{static:true})
   private inlineView!: TemplateRef<any>;
 
-  @ViewChild('fullEditView')
+  @ViewChild('fullEditView',{static:true})
   private fullEditView!: TemplateRef<any>;
 
   value = new MoneyAmount();

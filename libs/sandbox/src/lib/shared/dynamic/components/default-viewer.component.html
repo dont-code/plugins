@@ -1,1 +1,32 @@
-<p>No handler found for position {{position}} and schemaPosition {{schemaPosition}}</p>
+<dtcde-dynamic></dtcde-dynamic>
+<ng-container *ngIf="!isEntity()">
+  <p>No handler found for position {{entityPointer?.position}} and schemaPosition {{entityPointer?.schemaPosition}}</p>
+</ng-container>
+<ng-container *ngIf="isEntity()">
+  <p>You can edit the {{entityName}} entity:</p>
+
+  <form [formGroup]="form">
+    <div class="p-fluid">
+      <div class="p-field p-grid" *ngFor="let field of fields">
+        <label [for]="field.name" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">{{field.name}}</label>
+        <div class="p-col-12 p-md-10">
+          <ng-container *ngIf="field.component">
+            <ng-container *ngTemplateOutlet="editTemplateOf(field, getData(field.name))"></ng-container>
+          </ng-container>
+          <ng-container *ngIf="!field.component">
+            <input [name]="field.name" [formControlName]="field.name" pInputText />
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <p>The values of the {{entityName}} entity are:</p>
+  <div *ngFor="let field of fields">
+    Value of {{field.name}}:
+    <ng-container *ngIf="field.component">
+      <ng-container *ngTemplateOutlet="templateOf(field, getData(field.name))"></ng-container>
+    </ng-container>
+    <ng-container *ngIf="!field.component">{{getData(field.name)}}</ng-container>
+  </div>
+</ng-container>
