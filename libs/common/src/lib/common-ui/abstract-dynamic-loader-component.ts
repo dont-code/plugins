@@ -33,17 +33,19 @@ export abstract class AbstractDynamicLoaderComponent extends AbstractDynamicComp
     if (this.name) {
       this.group = new FormGroup({},{updateOn:'blur'});
       this.form.registerControl(this.name, this.group);
+    } else {
+      this.group=this.form; // No need to create a subgroup
     }
   }
 
-  loadSubField(type:string, formName:string, subValue:any): Promise<DynamicComponent> {
+  loadSubField(type:string, formName:string, subValue:any): Promise<DynamicComponent|null> {
     return this.loader.loadComponentFactoryForFieldType(type).then (componentFactory => {
       if (componentFactory) {
         const comp= this.loader.createComponent(componentFactory, this.dynamicInsertPoint, null);
         this.prepareComponent (comp, formName, subValue);
         return comp;
       } else {
-        throw Error ('No handler found for field '+type);
+        return null;
       }
     });
   }

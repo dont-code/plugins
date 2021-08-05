@@ -12,10 +12,10 @@ import countryDataEn from 'i18n-iso-countries/langs/en.json'
   styleUrls: ['./country.component.css']
 })
 export class CountryComponent extends AbstractDynamicComponent implements OnInit{
-  @ViewChild('inlineView')
+  @ViewChild('inlineView',{static:true})
   private inlineView!: TemplateRef<any>;
 
-  @ViewChild('fullEditView')
+  @ViewChild('fullEditView',{static:true})
   private fullEditView!: TemplateRef<any>;
 
   countries = new Array<{ name:string, alpha2code:string }>();
