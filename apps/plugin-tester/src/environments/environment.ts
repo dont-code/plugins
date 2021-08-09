@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   webSocketUrl:'',
-  storeApiUrl: 'http://localhost:8084/data'
+  storeApiUrl: 'http://localhost:8084/data',
+  documentApiUrl: 'http://localhost:8084/documents'
 };
 
 /*

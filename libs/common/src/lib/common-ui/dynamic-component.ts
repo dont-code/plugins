@@ -9,6 +9,12 @@ export interface DynamicComponent {
 
   getValue (): any;
 
+  /**
+   * Sets the position of the parent component in the data model
+   * @param position
+   */
+  setParentPosition (position:string): void;
+
   canProvide (key?:string): PossibleTemplateList;
   /**
    * Returns the list of templates the component is providing

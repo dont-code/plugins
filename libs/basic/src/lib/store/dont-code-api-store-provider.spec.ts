@@ -2,7 +2,8 @@ import {TestBed} from '@angular/core/testing';
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
 import {DONTCODE_STORE_API_URL, DontCodeApiStoreProvider} from "./dont-code-api-store-provider";
 import {HttpClient} from "@angular/common/http";
-import { dtcde } from '@dontcode/core';
+import { dtcde, UploadedDocumentInfo } from '@dontcode/core';
+import {toArray} from "rxjs/internal/operators";
 
 
 describe('DontCode Api Store Manager', () => {
@@ -98,6 +99,34 @@ describe('DontCode Api Store Manager', () => {
       call.flush(null, { status: 404, statusText: "Element not found"});
 
     });
+
+  });
+
+  it('can store documents', (done) => {
+    expect(storeProvider).toBeDefined();
+
+    const toUpload = [
+      new File (['Test file'], 'testFile.txt'),
+      new File (['Test File2'], 'testFile2.txt')
+    ];
+
+    // Try to get an entity from a not existing model
+    storeProvider.storeDocuments(toUpload).pipe(toArray()).subscribe({
+      next:(responses => {
+        expect(responses).toHaveLength(2);
+      }),
+      complete: (() => {
+        done();
+      }),
+      error: (err => {
+        done("Error ", err);
+      })
+    });
+    let call=httpTestingController.expectOne("/testData/documents");
+    call.flush([
+      {documentName: 'testFile.txt', isUrl:true, documentId:'/testData/documents/13434'} as UploadedDocumentInfo,
+      {documentName: 'testFile2.txt', isUrl:true, documentId:'/testData/documents/13445'} as UploadedDocumentInfo
+    ]);
 
   });
 

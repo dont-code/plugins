@@ -20,9 +20,10 @@ import {TimeFieldsComponent} from "./preview/time/time-fields.component";
 import {WebFieldsComponent} from "./preview/web/web-fields.component";
 import {CalendarModule} from "primeng/calendar";
 import {TooltipModule} from "primeng/tooltip";
+import {FileUploadModule} from "primeng/fileupload";
 
 @NgModule({
-  imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ToolbarModule, ButtonModule, PluginCommonModule, ReactiveFormsModule, CalendarModule, TooltipModule],
+    imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ToolbarModule, ButtonModule, PluginCommonModule, ReactiveFormsModule, CalendarModule, TooltipModule, FileUploadModule],
   declarations: [BasicEntityComponent, ListEntityComponent, EditEntityComponent, BasicFieldsComponent, TimeFieldsComponent, WebFieldsComponent],
   providers: [DontCodeApiStoreProvider],
   id:'dontcode-plugin/basic'

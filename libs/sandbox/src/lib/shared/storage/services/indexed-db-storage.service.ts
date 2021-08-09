@@ -1,7 +1,7 @@
 /**
  * Allow storing of entities in the browser local database
  */
-import {DontCodeStoreCriteria, DontCodeStoreProvider} from "@dontcode/core";
+import {DontCodeStoreCriteria, DontCodeStoreProvider, UploadedDocumentInfo} from "@dontcode/core";
 import {Observable} from "rxjs";
 import Dexie, {Table} from "dexie";
 import {Inject, Injectable, Optional} from "@angular/core";
@@ -11,14 +11,14 @@ import {SANDBOX_CONFIG, SandboxLibConfig} from "../../config/sandbox-lib-config"
 @Injectable({
   providedIn: 'root'
 })
-export class IndexedDbStorageService implements DontCodeStoreProvider{
+export class IndexedDbStorageService implements DontCodeStoreProvider {
 
   protected static globalDb: Dexie;
 
   protected db!: Dexie;
 
-  constructor(protected values:ValueService,
-              @Optional() @Inject(SANDBOX_CONFIG) private config?:SandboxLibConfig
+  constructor(protected values: ValueService,
+              @Optional() @Inject(SANDBOX_CONFIG) private config?: SandboxLibConfig
   ) {
     this.createDatabase();
   }
@@ -49,6 +49,12 @@ export class IndexedDbStorageService implements DontCodeStoreProvider{
     });
   }
 
+  canStoreDocument(position?: string): boolean {
+    return false;
+  }
+  storeDocuments(toStore: File[], position?: string): Observable<UploadedDocumentInfo> {
+    throw new Error("Impossible to store documents in IndexedDB.");
+  }
 
   storeEntity(position: string, entity: any): Promise<any> {
     return this.ensurePositionCanBeStored(position, true).then(table => {
@@ -132,4 +138,6 @@ export class IndexedDbStorageService implements DontCodeStoreProvider{
       IndexedDbStorageService.globalDb = new Dexie(dbName, {allowEmptyDB:true});
     this.db=IndexedDbStorageService.globalDb;
   }
+
+
 }
