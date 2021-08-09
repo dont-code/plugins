@@ -1,28 +1,16 @@
 [{
-  "name": "Change App Name",
+  "name": "Create Empty App",
   "type": "ADD",
   "position": "creation/name",
   "value": "New Name"
 },
   {
-    "name": "Create Entity A",
+    "name": "Create Empty Entity",
     "type": "ADD",
     "position": "creation/entities/a",
     "value": {
       "name":"A Name"
     }
-  },
-  {
-    "name": "Change Entity A Name",
-    "type": "UPDATE",
-    "position": "creation/entities/a/name",
-    "value": "An Updated Name"
-  },
-  {
-    "name": "Move Entity b",
-    "type": "MOVE",
-    "position": "creation/entities/b",
-    "value": "a"
   },
   {
     "name": "Create String Field",
@@ -34,12 +22,6 @@
     }
   },
   {
-    "name": "Set Field Name",
-    "type": "UPDATE",
-    "position": "creation/entities/a/fields/b/name",
-    "value": "fieldName"
-  },
-  {
     "name": "Create Country Field",
     "type": "ADD",
     "position": "creation/entities/a/fields/c",
@@ -47,12 +29,6 @@
       "name": "Country",
       "type": "Country"
     }
-  },
-  {
-    "name": "Change Screen A Name",
-    "type": "UPDATE",
-    "position": "creation/screens/a/name",
-    "value": "SA Name"
   },
   {
     "name": "Create Complete Entity A",
@@ -89,52 +65,6 @@
     ]
   },
   {
-    "name": "Move Field b",
-    "type": "MOVE",
-    "position": "creation/entities/a/fields/b",
-    "value": "a"
-  },
-  {
-    "name": "Move Field a",
-    "type": "MOVE",
-    "position": "creation/entities/a/fields/a",
-    "value": "c"
-  },
-  {
-    "name": "Empty Application",
-    "type": "RESET",
-    "position": "creation",
-    "value": null
-  },
-  {
-    "name": "Task Manager Application",
-    "type": "RESET",
-    "position": "/",
-    "value": {
-      "creation": {
-        "name": "Test Task Manager",
-        "entities": {
-          "a": {
-            "name": "Test Task",
-            "fields": {
-              "a": {
-                "name": "Name"
-              },
-              "b": {
-                "name": "Done",
-                "type": "Boolean"
-              },
-              "c": {
-                "name": "Due Date",
-                "type": "Date"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  {
     "name": "Recipe Collection",
     "type": "RESET",
     "position": "/",
@@ -158,7 +88,7 @@
               },
               "d": {
                 "name": "Stars",
-                "type": "Numeric"
+                "type": "Rating"
               }
             }
           }
@@ -230,5 +160,75 @@
     "position": "creation/sharing/with",
     "value": "Dont-code users"
 
+  },
+  {
+    "name": "Reset",
+    "type": "RESET",
+    "position": "creation",
+    "value": null
+  },
+  {
+    "name": "Task Manager Application",
+    "type": "RESET",
+    "position": "/",
+    "value": {
+      "creation": {
+        "name": "Test Task Manager",
+        "entities": {
+          "a": {
+            "name": "Test Task",
+            "fields": {
+              "a": {
+                "name": "Name"
+              },
+              "b": {
+                "name": "Done",
+                "type": "Boolean"
+              },
+              "c": {
+                "name": "Due Date",
+                "type": "Date"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Set Field Name",
+    "type": "UPDATE",
+    "position": "creation/entities/a/fields/b/name",
+    "value": "fieldName"
+  },
+  {
+    "name": "Change Entity A Name",
+    "type": "UPDATE",
+    "position": "creation/entities/a/name",
+    "value": "An Updated Name"
+  },
+  {
+    "name": "Move Entity b",
+    "type": "MOVE",
+    "position": "creation/entities/b",
+    "value": "a"
+  },
+  {
+    "name": "Move Field b",
+    "type": "MOVE",
+    "position": "creation/entities/a/fields/b",
+    "value": "a"
+  },
+  {
+    "name": "Move Field a",
+    "type": "MOVE",
+    "position": "creation/entities/a/fields/a",
+    "value": "c"
+  },
+  {
+    "name": "Change Screen A Name",
+    "type": "UPDATE",
+    "position": "creation/screens/a/name",
+    "value": "SA Name"
   }
 ]

@@ -18,15 +18,36 @@ export class FieldsPlugin implements Plugin
             id: 'type'
           },
           update: {
-            enum: [
-              'Country',
-              'Currency'
+            enum: [{
+              Social: {
+                enum: [
+                  'Rating'
+                  ]
+              }
+            }
             ]
           },
           replace: false
         }]
       }],
       'preview-handlers': [
+        {
+          location: {
+            parent: DontCodeModel.APP_FIELDS,
+            id: 'type',
+            values: [{
+              Social: {
+                enum: [
+                  'Rating'
+                ]
+              }
+            }]
+          },
+          class: {
+            name:'RatingComponent',
+            source:'fields'
+          }
+        },
         {
           location: {
             parent: DontCodeModel.APP_FIELDS,

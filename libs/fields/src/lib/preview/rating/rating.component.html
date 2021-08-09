@@ -1,0 +1,6 @@
+<ng-template #inlineView ><p-rating *ngIf="value" [readonly]="true" [ngModel]="value" [cancel]="false"></p-rating></ng-template>
+<ng-template #fullEditView>
+  <ng-container *ngIf="form" [formGroup]="form">
+    <p-rating [readonly]="false" [formControlName]="name"></p-rating>
+  </ng-container>
+</ng-template>
