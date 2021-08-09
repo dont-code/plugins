@@ -56,7 +56,7 @@ describe('Plugin tester', () => {
     getSubMenuWithText('Dev').click();// Move to dev page
 
     clickAutoComplete("template");
-    selectPopupChoiceWithText("Empty Application"); // Create Entity name
+    selectPopupChoiceWithText("Reset"); // Create Entity name
     getSendButton().click();
     getToolbar().should('contain.text','No Name');
     getSubMenus().should('have.length', 4);

@@ -66,13 +66,13 @@ describe('Debug', () => {
     getSendButton().click();
 
     clickAutoComplete("template");
-    selectPopupChoiceWithText("Create Entity A"); // Create Entity
+    selectPopupChoiceWithText("Create Empty Entity"); // Create Entity
     getStep().clear().type("creation/entities/b")
     getValueTextArea ().clear().type ("{{}\"name\":\"B Name\"}");
     getSendButton ().click();
 
     clickAutoComplete("template");
-    selectPopupChoiceWithText("Create Entity A"); // Create Entity
+    selectPopupChoiceWithText("Create Empty Entity"); // Create Entity
     getStep().clear().type("creation/entities/c")
     getValueTextArea ().clear().type ("{{}\"name\":\"C Name\"}");
     getSendButton ().click();

@@ -5,7 +5,7 @@ import {
   getInputWithName,
   getLinkWithUrl,
   getListRowWithText,
-  getTabWithName
+  getTabWithName, getRatingWithName, getRating
 } from "../support/edit.po";
 
 describe('New fields', () => {
@@ -26,12 +26,15 @@ describe('New fields', () => {
       getInputWithName('Name').type('Test Recipe');
       getInputWithName('Image').type ('https://test.dont-code.net/poweredby.png');
       getInputWithName('Link').type ('https://test.dont-code.net');
+      getRatingWithName ('Stars', 4).click();
       getButtonWithName ('save').click();
 
       getTabWithName ('List').click();
       getListRowWithText ( "Test Recipe");
       getImageWithClass ('inline-image').should ('have.attr', 'src', 'https://test.dont-code.net/poweredby.png');
       getLinkWithUrl ('https://test.dont-code.net');
+      getRating ( 3).should('have.class', 'pi-star');
+      getRating ( 4).should('have.class', 'pi-star-o');
 
     });
 

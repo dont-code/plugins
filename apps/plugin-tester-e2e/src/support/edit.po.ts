@@ -13,4 +13,6 @@ export const getDropdownListItemWithName = (content: string) => cy.get('.p-dropd
 export const getImageWithClass = (clazz:string) => cy.get('img[class*="'+clazz+'"]');
 export const getLinkWithUrl = (url:string) => cy.get ('a[href="'+url+'"]')
 
+export const getRatingWithName = (name:string, rate:number) => cy.get('p-rating[ng-reflect-name="'+name+'"] > .p-rating >:nth-child('+rate+'), p-rating[name="'+name+'"] > .p-rating > :nth-child('+rate+')');
+export const getRating = (rate:number) => cy.get('.p-rating > :nth-child('+rate+')');
 export const getDatePicker = (dayOfMonth:string) => cy.get('table[class*="p-datepicker-calendar"] > tbody > tr').contains('td', dayOfMonth);
