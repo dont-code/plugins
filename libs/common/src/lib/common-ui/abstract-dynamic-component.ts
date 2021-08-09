@@ -13,6 +13,8 @@ export abstract class AbstractDynamicComponent implements DynamicComponent {
   value: any;
   form!: FormGroup;
 
+  parentPosition:string|null=null;
+
   setName(name: string): void {
     this.name = name;
   }
@@ -23,6 +25,10 @@ export abstract class AbstractDynamicComponent implements DynamicComponent {
 
   setValue(val: any): void {
     this.value=val;
+  }
+
+  setParentPosition(position: string) {
+    this.parentPosition=position;
   }
 
   abstract providesTemplates(key?: string): TemplateList;

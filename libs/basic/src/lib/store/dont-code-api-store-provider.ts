@@ -1,10 +1,18 @@
-import {DontCodeModelManager, DontCodeStoreCriteria, DontCodeStoreProvider, dtcde} from "@dontcode/core";
-import {Observable, of, throwError} from "rxjs";
-import {HttpClient} from "@angular/common/http";
+import {
+  DontCodeModelManager,
+  DontCodeStoreCriteria,
+  DontCodeStoreProvider,
+  dtcde,
+  UploadedDocumentInfo
+} from "@dontcode/core";
+import {from, Observable, throwError} from "rxjs";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Inject, Injectable, InjectionToken, Optional} from "@angular/core";
-import { map } from "rxjs/operators";
+import {map, mergeMap} from "rxjs/operators";
 
 export const DONTCODE_STORE_API_URL = new InjectionToken<string>('DontCodeStoreApiUrl');
+export const DONTCODE_STORE_DOC_URL = new InjectionToken<string>('DontCodeStoreDocUrl');
+
 /**
  * A Store Provider that uses the DontCode API to store / read application data
  */
@@ -14,14 +22,21 @@ export const DONTCODE_STORE_API_URL = new InjectionToken<string>('DontCodeStoreA
 export class DontCodeApiStoreProvider implements DontCodeStoreProvider {
 
   apiUrl: string;
+  docUrl: string;
   modelMgr: DontCodeModelManager;
 
-  constructor(@Inject(HttpClient) protected http:HttpClient, @Optional() @Inject(DONTCODE_STORE_API_URL) apiUrl?: string) {
-    if( apiUrl)
+  constructor(protected http: HttpClient, @Optional() @Inject(DONTCODE_STORE_API_URL) apiUrl?: string, @Optional() @Inject(DONTCODE_STORE_DOC_URL) docUrl?: string) {
+    if (apiUrl)
       this.apiUrl = apiUrl;
     else {
       this.apiUrl = 'https://test.dont-code.net/data';
-      console.log ('DONTCODE_STORE_API_URL token not provided, hence using default test.dont-code.net/data url.');
+      console.log('DONTCODE_STORE_API_URL token not provided, hence using default test.dont-code.net/data url.');
+    }
+    if (docUrl)
+      this.docUrl = docUrl;
+    else {
+      this.docUrl = 'https://test.dont-code.net/documents';
+      console.log('DONTCODE_STORE_DOC_URL token not provided, hence using default test.dont-code.net/documents url.');
     }
     this.modelMgr = dtcde.getModelManager();
   }
@@ -71,5 +86,29 @@ export class DontCodeApiStoreProvider implements DontCodeStoreProvider {
           }
         ));
     }
+
+  canStoreDocument(position?: string): boolean {
+    return true;
+  }
+
+  storeDocuments(toStore: File[], position?: string): Observable<UploadedDocumentInfo> {
+    const myFormData = new FormData();
+    const headers = new HttpHeaders();
+    headers.append('Content-Type', 'multipart/form-data');
+    headers.append('Accept', 'application/json');
+    let count=0;
+    // store files details into formdata
+    toStore.forEach( file => {
+      myFormData.append('document#'+count, file);
+      count++;
+    });
+    //HTTP Angular service, which will send call to Laravel API With headers and myformdata
+    return this.http.post<UploadedDocumentInfo[]>(this.docUrl, myFormData, { headers: headers }).pipe(
+      mergeMap (value => {
+        console.log(value);
+        return from (value);
+      })
+    );
+  }
 
 }

@@ -7,7 +7,7 @@ import {SandboxModule} from "@dontcode/sandbox";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {environment} from "../environments/environment";
 import {HttpClientModule} from "@angular/common/http";
-import {BasicModule, DONTCODE_STORE_API_URL} from "@dontcode/plugin-basic";
+import {BasicModule, DONTCODE_STORE_API_URL, DONTCODE_STORE_DOC_URL} from "@dontcode/plugin-basic";
 import {FieldsModule} from "@dontcode/plugin-fields";
 import {ScreenModule} from "@dontcode/plugin-screen";
 
@@ -37,6 +37,9 @@ import {ScreenModule} from "@dontcode/plugin-screen";
   providers: [{
     provide: DONTCODE_STORE_API_URL,
     useValue: environment.storeApiUrl
+  },{
+    provide: DONTCODE_STORE_DOC_URL,
+    useValue: environment.documentApiUrl
   }],
   bootstrap: [AppComponent]
 })

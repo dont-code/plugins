@@ -1,12 +1,15 @@
-import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {AbstractDynamicComponent, DynamicComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
+import {dtcde} from "@dontcode/core";
+import {Subscriber} from "rxjs";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'plugins-web-fields',
   templateUrl: './web-fields.component.html',
   styleUrls: ['./web-fields.component.css']
 })
-export class WebFieldsComponent extends AbstractDynamicComponent {
+export class WebFieldsComponent extends AbstractDynamicComponent implements OnDestroy{
 
   @ViewChild('EDIT_URL',{static:true})
   private editUrlTemplate!: TemplateRef<any>;
@@ -16,6 +19,12 @@ export class WebFieldsComponent extends AbstractDynamicComponent {
   private editImageTemplate!: TemplateRef<any>;
   @ViewChild('READ_IMAGE',{static:true})
   private readImageTemplate!: TemplateRef<any>;
+
+  protected subscriber = new Subscriber ();
+
+  constructor(protected ref:ChangeDetectorRef) {
+    super();
+  }
 
   providesTemplates(type:string): TemplateList {
     switch (type) {
@@ -50,4 +59,22 @@ export class WebFieldsComponent extends AbstractDynamicComponent {
       return url;
   }
 
+  supportsImageUpload (): boolean{
+    return dtcde.getStoreManager().canStoreDocument (this.parentPosition||undefined);
+  }
+
+  uploadImage(event: any) {
+    console.log("Uploading image", event);
+     this.subscriber.add(dtcde.getStoreManager().storeDocuments (event.files,this.parentPosition||undefined).pipe(map (loaded => {
+      console.log("File uploaded:", loaded.documentId);
+      this.form.get(this.name)?.setValue(loaded.documentId);
+      this.ref.markForCheck();
+      this.ref.detectChanges();
+    })
+     ).subscribe());
+  }
+
+  ngOnDestroy() {
+    this.subscriber.unsubscribe();
+  }
 }
