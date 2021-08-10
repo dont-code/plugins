@@ -10,3 +10,6 @@ import { CommonModule } from '@angular/common';
   ]
 })
 export class ChangeModule { }
+
+export * from './services/IdeProject';
+export * from './services/change-listener.service';

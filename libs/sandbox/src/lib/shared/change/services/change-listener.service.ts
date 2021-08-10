@@ -1,11 +1,13 @@
 import {Inject, Injectable, Optional} from "@angular/core";
-import {Change, Message, MessageType} from "@dontcode/core";
+import {Change, ChangeType, Message, MessageType} from "@dontcode/core";
 import {Observable, ReplaySubject, Subject} from "rxjs";
 import {WebSocketSubject} from "rxjs/internal-compatibility";
 import {webSocket} from "rxjs/webSocket";
 import {BroadcastChannel} from "broadcast-channel";
 import {DevChangePushService} from "../../dev/services/dev-change-push.service";
 import {SANDBOX_CONFIG, SandboxLibConfig} from "../../config/sandbox-lib-config";
+import {HttpClient} from "@angular/common/http";
+import {IdeProject} from "./IdeProject";
 
 
 @Injectable({
@@ -18,6 +20,7 @@ export class ChangeListenerService {
 //  protected listOfEntities: Map<string, string> = new Map();
 
   previewServiceWebSocket?: WebSocketSubject<Message>;
+  projectUrl?:string;
   protected changeEmitter = new Subject<Change> ();
   protected connectionStatus: ReplaySubject<string>=new ReplaySubject<string>(1);
 
@@ -26,7 +29,7 @@ export class ChangeListenerService {
 
   protected channel: BroadcastChannel<Change>;
 
-  constructor(@Optional() @Inject(SANDBOX_CONFIG) private config?:SandboxLibConfig) {
+  constructor(protected http: HttpClient, @Optional() @Inject(SANDBOX_CONFIG) private config?:SandboxLibConfig) {
     if ((this.config) && (this.config.webSocketUrl)&&(this.config.webSocketUrl.length>0)) {
       this.previewServiceWebSocket = webSocket(this.config.webSocketUrl);
       this.connectionStatus.next("connected");
@@ -58,9 +61,13 @@ export class ChangeListenerService {
         // Called when connection is closed (for whatever reason)
       );
     } else {
-      console.log("No SANDBOX_CONFIG injected => Not listening to changes from servers");
+      console.log("No SANDBOX_CONFIG WebSocketUrl injected => Not listening to changes from servers");
       this.connectionStatus.next("undefined");
       this.sessionIdSubject.next();
+    }
+
+    if( (this.config)&&(this.config.projectUrl)&&(this.config.projectUrl.length>0)) {
+      this.projectUrl=this.config.projectUrl;
     }
 
     // Listens as well to broadcasted events
@@ -89,6 +96,25 @@ export class ChangeListenerService {
     if (this.previewServiceWebSocket) {
       this.previewServiceWebSocket.next(new Message(MessageType.INIT, newId?newId:undefined));
     }
+  }
+
+  loadProject (projectId:string): Promise<IdeProject> {
+      if (this.sessionId) {
+        throw new Error("Cannot load a project while in a session with Builder. Please load the project ");
+      }
+
+      if (this.projectUrl){
+         return this.http.get<IdeProject>(this.projectUrl + '/' + encodeURIComponent(projectId), {responseType: 'json'}).toPromise().then (project => {
+           // Create a new Reset change
+           const resetChange = new Change(ChangeType.RESET, "/", project.content);
+           this.listOfChanges.push(resetChange);
+           this.changeEmitter.next(resetChange);
+           return project;
+           }
+         );
+      }else {
+        return Promise.reject(new Error ("Cannot call project api as No projectUrl provided in SANDBOX_CONFIG"));
+      }
   }
 
   getSessionId (): string|null  {
