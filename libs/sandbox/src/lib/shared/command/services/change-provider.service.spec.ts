@@ -4,12 +4,15 @@ import { TestBed } from '@angular/core/testing';
 import { ChangeProviderService } from './change-provider.service';
 import { Change } from '@dontcode/core';
 import { Subscription } from 'rxjs';
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('CommandProviderService', () => {
   let service: ChangeProviderService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      imports:[HttpClientTestingModule]
+    });
     service = TestBed.inject(ChangeProviderService);
   });
 

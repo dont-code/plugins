@@ -8,6 +8,7 @@ import {BrowserDynamicTestingModule} from "@angular/platform-browser-dynamic/tes
 import {InputTextModule} from "primeng/inputtext";
 import {ReactiveFormsModule} from "@angular/forms";
 import {PluginCommonModule} from "@dontcode/plugin-common";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('ScreenComponent', () => {
   let component: ScreenComponent;
@@ -16,7 +17,7 @@ describe('ScreenComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ScreenComponent, DefaultViewerComponent],
-      imports:[InputTextModule, ReactiveFormsModule, PluginCommonModule],
+      imports:[InputTextModule, ReactiveFormsModule, HttpClientTestingModule, PluginCommonModule],
       providers: [{
         provide: ActivatedRoute, useValue: {
           url: of([new UrlSegment("creation/screens/aa", {})]),

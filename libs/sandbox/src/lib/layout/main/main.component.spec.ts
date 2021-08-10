@@ -9,6 +9,7 @@ import {ToolbarModule} from "primeng/toolbar";
 import {OverlayPanelModule} from "primeng/overlaypanel";
 import {SidebarModule} from "primeng/sidebar";
 import {MenuModule} from "primeng/menu";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('MainComponent', () => {
   let component: MainComponent;
@@ -18,7 +19,8 @@ describe('MainComponent', () => {
     TestBed.configureTestingModule({
       declarations: [MainComponent, MenuComponent],
       imports: [
-        BrowserAnimationsModule, RouterTestingModule, ToolbarModule, OverlayPanelModule, SidebarModule, MenuModule
+        BrowserAnimationsModule, RouterTestingModule, HttpClientTestingModule,
+        ToolbarModule, OverlayPanelModule, SidebarModule, MenuModule
       ],
       providers: [{
         provide:SANDBOX_CONFIG, useValue:{
