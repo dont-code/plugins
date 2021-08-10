@@ -29,9 +29,6 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy{
 
   ngOnInit(): void {
     dtcde.getStoreManager().setProvider(this.storage);
-    this.sessionId = (window as any).dontCodeId;
-    console.log("Browser opened with SessionId =", this.sessionId)
-    this.listener.setSessionId(this.sessionId);
     this.subscription.add(this.provider.receiveCommands(DontCodeModel.APP_SHARING, DontCodeModel.APP_SHARING_WITH_NODE).pipe (mergeMap(change => {
       if (change.type!== ChangeType.DELETE) {
         if (change.value==="No-one") {
@@ -53,6 +50,10 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy{
     })).subscribe({ error (error) {
         console.log ("Cannot load StoreProvider due to", error);
       }}));
+
+    this.sessionId = (window as any).dontCodeConfig?.sessionId;
+    console.log("Browser opened with SessionId =", this.sessionId)
+    this.listener.setSessionId(this.sessionId);
   }
 
   loadStoreManager (position: string) : Observable<any> {
@@ -67,7 +68,7 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy{
         // First lets try if the plugin is imported during the compilation
         const module: PluginModuleInterface = getModuleFactory('dontcode-plugin/' + handler.class.source).create(null).instance;
         const providerClass =  module.exposedPreviewHandlers().get(handler.class.name);
-        console.log("Provider Class found", providerClass);
+        console.log("Provider Class found", handler.class.name);
 
         return of(providerClass);
 

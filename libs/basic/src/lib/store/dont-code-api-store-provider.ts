@@ -11,7 +11,7 @@ import {Inject, Injectable, InjectionToken, Optional} from "@angular/core";
 import {map, mergeMap} from "rxjs/operators";
 
 export const DONTCODE_STORE_API_URL = new InjectionToken<string>('DontCodeStoreApiUrl');
-export const DONTCODE_STORE_DOC_URL = new InjectionToken<string>('DontCodeStoreDocUrl');
+export const DONTCODE_DOC_API_URL = new InjectionToken<string>('DontCodeStoreDocUrl');
 
 /**
  * A Store Provider that uses the DontCode API to store / read application data
@@ -25,7 +25,7 @@ export class DontCodeApiStoreProvider implements DontCodeStoreProvider {
   docUrl: string;
   modelMgr: DontCodeModelManager;
 
-  constructor(protected http: HttpClient, @Optional() @Inject(DONTCODE_STORE_API_URL) apiUrl?: string, @Optional() @Inject(DONTCODE_STORE_DOC_URL) docUrl?: string) {
+  constructor(protected http: HttpClient, @Optional() @Inject(DONTCODE_STORE_API_URL) apiUrl?: string, @Optional() @Inject(DONTCODE_DOC_API_URL) docUrl?: string) {
     if (apiUrl)
       this.apiUrl = apiUrl;
     else {
