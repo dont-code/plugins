@@ -10,6 +10,11 @@ import {HttpClientModule} from "@angular/common/http";
 import {BasicModule, DONTCODE_STORE_API_URL, DONTCODE_DOC_API_URL} from "@dontcode/plugin-basic";
 import {FieldsModule} from "@dontcode/plugin-fields";
 import {ScreenModule} from "@dontcode/plugin-screen";
+import {
+  basicDocumentApiUrlConfig,
+  basicStoreApiUrlConfig,
+  SANDBOX_CONFIG
+} from "../../../../libs/sandbox/src/lib/shared/config/sandbox-lib-config";
 
 @NgModule({
   declarations: [AppComponent],
@@ -35,6 +40,17 @@ import {ScreenModule} from "@dontcode/plugin-screen";
     BasicModule,
     FieldsModule,
     ScreenModule
+  ],
+  providers: [
+    {
+      provide: DONTCODE_STORE_API_URL,
+      useFactory:basicStoreApiUrlConfig,
+      deps:[SANDBOX_CONFIG]
+    },{
+      provide: DONTCODE_DOC_API_URL,
+      useFactory:basicDocumentApiUrlConfig,
+      deps:[SANDBOX_CONFIG]
+    }
   ],
   bootstrap: [AppComponent]
 })
