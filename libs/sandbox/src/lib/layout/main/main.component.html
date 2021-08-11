@@ -22,7 +22,7 @@
   </p-toolbar>
   <div class="p-d-md-none">
     <p-sidebar id="mainSidePanel" [style]="{width:'15em'}" [(visible)]="sidePanelVisible" [modal]="false" [closeOnEscape]="true" [showCloseIcon]="true">
-      <img src="../../../../assets/images/logo.png" width="119" height="66"/>
+      <img [src]="themedLogo ()" width="119" height="66"/>
       <dontcode-sandbox-menu></dontcode-sandbox-menu>
     </p-sidebar>
   </div>

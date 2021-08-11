@@ -4,6 +4,7 @@ import {dtcde} from "@dontcode/core";
 import {Subscriber} from "rxjs";
 import {map} from "rxjs/operators";
 import {ConfirmationService} from "primeng/api";
+import {FileUpload} from "primeng/fileupload";
 
 @Component({
   selector: 'plugins-web-fields',
@@ -20,6 +21,9 @@ export class WebFieldsComponent extends AbstractDynamicComponent implements OnDe
   private editImageTemplate!: TemplateRef<any>;
   @ViewChild('READ_IMAGE',{static:true})
   private readImageTemplate!: TemplateRef<any>;
+
+  @ViewChild(FileUpload)
+  private fileUpload!:FileUpload;
 
   protected subscriber = new Subscriber ();
 
@@ -65,30 +69,42 @@ export class WebFieldsComponent extends AbstractDynamicComponent implements OnDe
   }
 
   uploadImage(event: any) {
-    this.confirm.confirm({
+  /*  this.confirm.confirm({
       header:'Confirm',
       message: 'Uploading:'+JSON.stringify(event, null, 4),
-      accept: ()=>{
+      accept: ()=>{*/
         console.log("Uploading image", event);
         this.form.get(this.name)?.setValue(undefined);
         this.subscriber.add(dtcde.getStoreManager().storeDocuments (event.files,this.parentPosition||undefined).pipe(map (loaded => {
             console.log("File uploaded:", loaded.documentId);
             this.form.get(this.name)?.setValue(loaded.documentId);
-            this.ref.markForCheck();
-            this.ref.detectChanges();
+            return loaded;
           })
         ).subscribe({
+          /*next: (value) => {
+            this.confirm.confirm({
+              header: 'Uploaded',
+              message: 'Uploaded:'+JSON.stringify(value, null, 4)
+            });
+          },*/
           error: (error)=> {
+            this.fileUpload.clear();
+            this.ref.markForCheck();
+            this.ref.detectChanges();
             this.confirm.confirm({
               header: 'Error',
               message: 'Error:'+JSON.stringify(error, null, 4)
             });
-
+          },
+          complete: () => {
+            this.fileUpload.clear();
+            this.ref.markForCheck();
+            this.ref.detectChanges();
           }
         }));
 
-      }
-    });
+ //     }
+ //   });
   }
 
   ngOnDestroy() {
