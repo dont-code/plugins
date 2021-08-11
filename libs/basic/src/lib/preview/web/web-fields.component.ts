@@ -9,7 +9,8 @@ import {FileUpload} from "primeng/fileupload";
 @Component({
   selector: 'plugins-web-fields',
   templateUrl: './web-fields.component.html',
-  styleUrls: ['./web-fields.component.css']
+  styleUrls: ['./web-fields.component.css'],
+  providers: [ConfirmationService]
 })
 export class WebFieldsComponent extends AbstractDynamicComponent implements OnDestroy{
 

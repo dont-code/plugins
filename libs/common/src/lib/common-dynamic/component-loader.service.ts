@@ -3,7 +3,7 @@ import {
   ComponentFactoryResolver,
   getModuleFactory, Inject,
   Injectable,
-  Injector, Optional, Type,
+  Injector, NgModuleRef, Optional, Type,
   ViewContainerRef
 } from '@angular/core';
 import {
@@ -29,18 +29,18 @@ export class ComponentLoaderService {
 
   protected previewMgr:DontCodePreviewManager;
 
-  protected moduleMap = new Map<string, PluginModuleInterface>();
-  protected factoryMap = new Map<{ source:string, name:string }, ComponentFactory<DynamicComponent>>();
+  protected moduleMap = new Map<string, NgModuleRef<PluginModuleInterface>>();
+  protected factoryMap = new Map<{ source:string, name:string }, FactoryBuilder>();
 
   constructor(protected componentFactoryResolver: ComponentFactoryResolver, protected injector:Injector, @Optional() @Inject(COMMAND_PROVIDER) protected provider?:CommandProviderInterface) {
     this.previewMgr = dtcde.getPreviewManager();
   }
 
-  loadComponentFactoryForFieldType(type: string): Promise<ComponentFactory<DynamicComponent>|null> {
+  loadComponentFactoryForFieldType(type: string): Promise<FactoryBuilder|null> {
     return this.loadComponentFactory('creation/entities/fields/type', type);
   }
 
-  loadComponentFactory(schemaPosition: DontCodeModelPointer | string, currentJson?: any): Promise<ComponentFactory<DynamicComponent>|null> {
+  loadComponentFactory(schemaPosition: DontCodeModelPointer | string, currentJson?: any): Promise<FactoryBuilder|null> {
     let schemaPos:string = (schemaPosition as DontCodeModelPointer).schemaPosition;
     if (schemaPos) {
       if (!currentJson) {
@@ -56,18 +56,21 @@ export class ComponentLoaderService {
       console.log("Importing from ", handlerConfig.class.source);
       // First lets try if the plugin is imported during the compilation
 
-      let module = this.moduleMap.get(handlerConfig.class.source);
-      if (!module) {
-        module = getModuleFactory('dontcode-plugin/' + handlerConfig.class.source).create(this.injector).instance;
-        if( !module)
+      let moduleRef = this.moduleMap.get(handlerConfig.class.source);
+      if (!moduleRef) {
+        moduleRef = getModuleFactory('dontcode-plugin/' + handlerConfig.class.source).create(this.injector);
+        if( !moduleRef)
           return Promise.reject("Cannot load module for source "+handlerConfig.class.source)
-        this.moduleMap.set(handlerConfig.class.source, module);
+        this.moduleMap.set(handlerConfig.class.source, moduleRef);
       }
       //console.log ("Applying component");
       let componentFactory = this.factoryMap.get(handlerConfig.class) || null;
       if (!componentFactory) {
-        componentFactory = this.componentFactoryResolver.resolveComponentFactory(module.exposedPreviewHandlers().get(handlerConfig.class.name)) as ComponentFactory<DynamicComponent>;
-        this.factoryMap.set(handlerConfig.class, componentFactory);
+        const factory = this.componentFactoryResolver.resolveComponentFactory(moduleRef.instance.exposedPreviewHandlers().get(handlerConfig.class.name)) as ComponentFactory<DynamicComponent>;
+        if( factory) {
+          componentFactory={moduleRef:moduleRef, factory:factory};
+          this.factoryMap.set(handlerConfig.class, componentFactory);
+        }
       }
       return Promise.resolve(componentFactory);
     } else {
@@ -80,11 +83,14 @@ export class ComponentLoaderService {
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentClass) as ComponentFactory<DynamicComponent>;
     if (!componentFactory)
       throw new Error ("Cannot find ComponentFactory for Component class "+componentClass.name);
-    return this.createComponent(componentFactory, insertPoint, position);
+    return this.createComponent({factory: componentFactory}, insertPoint, position);
   }
 
-  createComponent (factory: ComponentFactory<DynamicComponent>, insertPoint:ViewContainerRef, position: DontCodeModelPointer|null) : DynamicComponent{
-    const componentRef = insertPoint.createComponent(factory, undefined, this.injector);
+  createComponent (builder: FactoryBuilder, insertPoint:ViewContainerRef, position: DontCodeModelPointer|null) : DynamicComponent{
+    let injector = this.injector;
+    if (builder.moduleRef)
+      injector = builder.moduleRef.injector;
+    const componentRef = insertPoint.createComponent(builder.factory, undefined, injector,undefined,builder.moduleRef);
     const component = componentRef.instance as DynamicComponent;
 
     if ((component as unknown as PreviewHandler).initCommandFlow)    // It's a previewHandler
@@ -96,4 +102,12 @@ export class ComponentLoaderService {
   return component;
   }
 
+}
+
+/**
+ * Everything needed to create a new component.
+ */
+export type FactoryBuilder = {
+ moduleRef?:NgModuleRef<PluginModuleInterface>,
+ factory:ComponentFactory<DynamicComponent>
 }
