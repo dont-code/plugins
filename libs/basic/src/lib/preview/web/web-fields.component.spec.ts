@@ -1,11 +1,11 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {InputTextModule} from "primeng/inputtext";
-import {InputNumberModule} from "primeng/inputnumber";
-import {CheckboxModule} from "primeng/checkbox";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {WebFieldsComponent} from "./web-fields.component";
 import {TooltipModule} from "primeng/tooltip";
+import {ConfirmDialogModule} from "primeng/confirmdialog";
+import {ConfirmationService} from "primeng/api";
 
 describe('WebFieldsComponent', () => {
   let component: WebFieldsComponent;
@@ -14,7 +14,8 @@ describe('WebFieldsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ WebFieldsComponent ],
-      imports: [InputTextModule, TooltipModule, ReactiveFormsModule, FormsModule]
+      imports: [InputTextModule, TooltipModule, ReactiveFormsModule, FormsModule, ConfirmDialogModule],
+      providers: [ConfirmationService]
     })
     .compileComponents();
   });

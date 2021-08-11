@@ -8,7 +8,7 @@ import {
 import {from, Observable, throwError} from "rxjs";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Inject, Injectable, InjectionToken, Optional} from "@angular/core";
-import {map, mergeMap} from "rxjs/operators";
+import {flatMap, map, mergeAll, mergeMap} from "rxjs/operators";
 
 export const DONTCODE_STORE_API_URL = new InjectionToken<string>('DontCodeStoreApiUrl');
 export const DONTCODE_DOC_API_URL = new InjectionToken<string>('DontCodeStoreDocUrl');
@@ -104,10 +104,7 @@ export class DontCodeApiStoreProvider implements DontCodeStoreProvider {
     });
     //HTTP Angular service, which will send call to Laravel API With headers and myformdata
     return this.http.post<UploadedDocumentInfo[]>(this.docUrl, myFormData, { headers: headers }).pipe(
-      mergeMap (value => {
-        console.log(value);
-        return from (value);
-      })
+      mergeAll ()
     );
   }
 

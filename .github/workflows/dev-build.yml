@@ -16,8 +16,7 @@ jobs:
 
     strategy:
       matrix:
-#        browser: [chromium, chrome, firefox]
-        browser: [chromium]
+        browser: [chromium, chrome, firefox]
 
     steps:
       - uses: actions/checkout@v2
@@ -40,17 +39,17 @@ jobs:
           npm run nx run basic:build -- --prod
           npm run nx run screen:build -- --prod
           npm run nx run fields:build -- --prod
-#      - name: Unit tests
-#        run: |
-#          npm run nx run common:test
-#          npm run nx run sandbox:test
-#          npm run nx run screen:test
-#          npm run nx run basic:test
-#          npm run nx run fields:test
-#          npm run nx run plugin-tester:test
-#      - name: E2E Tests on ${{matrix.browser}}
-#        run: |
-#          npm run ng e2e -- --project=plugin-tester-e2e --browser ${{matrix.browser}}
+      - name: Unit tests
+        run: |
+          npm run nx run common:test
+          npm run nx run sandbox:test
+          npm run nx run screen:test
+          npm run nx run basic:test
+          npm run nx run fields:test
+          npm run nx run plugin-tester:test
+      - name: E2E Tests on ${{matrix.browser}}
+        run: |
+          npm run ng e2e -- --project=plugin-tester-e2e --browser ${{matrix.browser}}
       - uses: actions/upload-artifact@v2
         # Test run screenshots only on failure
         if: failure()
