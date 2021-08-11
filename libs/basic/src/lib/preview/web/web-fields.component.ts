@@ -3,6 +3,7 @@ import {AbstractDynamicComponent, DynamicComponent, PossibleTemplateList, Templa
 import {dtcde} from "@dontcode/core";
 import {Subscriber} from "rxjs";
 import {map} from "rxjs/operators";
+import {ConfirmationService} from "primeng/api";
 
 @Component({
   selector: 'plugins-web-fields',
@@ -22,7 +23,7 @@ export class WebFieldsComponent extends AbstractDynamicComponent implements OnDe
 
   protected subscriber = new Subscriber ();
 
-  constructor(protected ref:ChangeDetectorRef) {
+  constructor(protected confirm:ConfirmationService, protected ref:ChangeDetectorRef) {
     super();
   }
 
@@ -64,14 +65,25 @@ export class WebFieldsComponent extends AbstractDynamicComponent implements OnDe
   }
 
   uploadImage(event: any) {
+    this.confirm.confirm({
+      message: 'Uploading:'+JSON.stringify(event, null, 4)
+    });
     console.log("Uploading image", event);
+    this.form.get(this.name)?.setValue(undefined);
      this.subscriber.add(dtcde.getStoreManager().storeDocuments (event.files,this.parentPosition||undefined).pipe(map (loaded => {
       console.log("File uploaded:", loaded.documentId);
       this.form.get(this.name)?.setValue(loaded.documentId);
       this.ref.markForCheck();
       this.ref.detectChanges();
     })
-     ).subscribe());
+     ).subscribe({
+       error: (error)=> {
+         this.confirm.confirm({
+           message: 'Error:'+JSON.stringify(error, null, 4)
+         });
+
+       }
+     }));
   }
 
   ngOnDestroy() {
