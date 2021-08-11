@@ -67,8 +67,10 @@ export class ComponentLoaderService {
       let componentFactory = this.factoryMap.get(handlerConfig.class) || null;
       if (!componentFactory) {
         const factory = this.componentFactoryResolver.resolveComponentFactory(moduleRef.instance.exposedPreviewHandlers().get(handlerConfig.class.name)) as ComponentFactory<DynamicComponent>;
-
-        this.factoryMap.set(handlerConfig.class, {moduleRef:moduleRef, factory:factory});
+        if( factory) {
+          componentFactory={moduleRef:moduleRef, factory:factory};
+          this.factoryMap.set(handlerConfig.class, componentFactory);
+        }
       }
       return Promise.resolve(componentFactory);
     } else {
