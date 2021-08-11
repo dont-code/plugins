@@ -21,11 +21,13 @@ import {WebFieldsComponent} from "./preview/web/web-fields.component";
 import {CalendarModule} from "primeng/calendar";
 import {TooltipModule} from "primeng/tooltip";
 import {FileUploadModule} from "primeng/fileupload";
+import {ConfirmDialogModule} from "primeng/confirmdialog";
+import {ConfirmationService} from "primeng/api";
 
 @NgModule({
-    imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ToolbarModule, ButtonModule, PluginCommonModule, ReactiveFormsModule, CalendarModule, TooltipModule, FileUploadModule],
+    imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ToolbarModule, ButtonModule, PluginCommonModule, ReactiveFormsModule, CalendarModule, TooltipModule, FileUploadModule, ConfirmDialogModule],
   declarations: [BasicEntityComponent, ListEntityComponent, EditEntityComponent, BasicFieldsComponent, TimeFieldsComponent, WebFieldsComponent],
-  providers: [DontCodeApiStoreProvider],
+  providers: [DontCodeApiStoreProvider, ConfirmationService],
   id:'dontcode-plugin/basic'
 })
 export class BasicModule implements PluginModuleInterface {

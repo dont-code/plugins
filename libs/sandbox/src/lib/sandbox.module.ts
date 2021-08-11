@@ -28,16 +28,7 @@ const sandboxRoutes: Routes = [
   imports: [CommonModule, SharedModule,LayoutModule, RoutesModule, RouterModule.forChild(sandboxRoutes)],
   exports: [SharedModule, LayoutModule],
   providers: [
-    {provide:COMMAND_PROVIDER, useExisting:ChangeProviderService},
-    {
-      provide: DONTCODE_STORE_API_URL,
-      useFactory:basicStoreApiUrlConfig,
-      deps:[SANDBOX_CONFIG]
-    },{
-      provide: DONTCODE_DOC_API_URL,
-      useFactory:basicDocumentApiUrlConfig,
-      deps:[SANDBOX_CONFIG]
-    }
+    {provide:COMMAND_PROVIDER, useExisting:ChangeProviderService}
   ]
 })
 export class SandboxModule {
