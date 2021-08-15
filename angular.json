@@ -203,6 +203,14 @@
                 }
               ],
               "outputHashing": "all"
+            },
+            "online": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/plugin-tester/src/environments/environment.ts",
+                  "with": "apps/plugin-tester/src/environments/environment.online.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": ""
@@ -213,6 +221,10 @@
             "production": {
               "browserTarget": "plugin-tester:build:production",
               "extraWebpackConfig": "apps/plugin-tester/webpack.prod.config.js"
+            },
+            "online": {
+              "browserTarget": "plugin-tester:build:online",
+              "extraWebpackConfig": "apps/plugin-tester/webpack.online.config.js"
             }
           },
           "options": {

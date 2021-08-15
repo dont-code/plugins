@@ -1,10 +1,13 @@
 <dtcde-dynamic></dtcde-dynamic>
 <p-table [columns]="cols" [value]="getStoreEntities()"
          styleClass="p-datatable-striped"
-         [scrollable]="true" [rows]="100" scrollHeight="250px"
-         [virtualScroll]="true" [virtualRowHeight]="34"
+         [scrollable]="true" scrollHeight="flex" scrollDirection="both"
          selectionMode="single" [(selection)]="selectedItem" (selectionChange)="selectionChange($event)" >
-  <ng-template pTemplate="header" let-columns>
+  <ng-template pTemplate="colgroup" let-columns>
+    <colgroup>
+      <col *ngFor="let col of columns" style="width:10em">
+    </colgroup>
+  </ng-template>  <ng-template pTemplate="header" let-columns>
     <tr>
       <th id="header-{{col.header}}" *ngFor="let col of columns" [pSortableColumn]="col.field">
         {{col.header}} <p-sortIcon [field]="col.field"></p-sortIcon>
