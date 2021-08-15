@@ -1,6 +1,6 @@
 {
   "name": "@dontcode/plugin-screen",
-  "version": "0.3.26",
+  "version": "0.3.27",
   "peerDependencies": {
     "@angular/common": "^12.1.1",
     "@angular/core": "^12.1.1",
