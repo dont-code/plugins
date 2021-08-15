@@ -1,7 +1,7 @@
 <div *ngIf="(context$ | async) as ctx">
   <p-toolbar id="mainToolbar">
     <div class="p-toolbar-group-left">
-      <img [src]="themedLogo ()" width="119" height="66"/>
+      <a href="https://dont-code.net/apps.html"><img [src]="themedLogo ()" width="119" height="66"/></a>
       <button pButton type="button" class="p-d-md-none p-button-rounded p-button-outlined" icon="pi pi-bars" (click)="sidePanelVisible=!sidePanelVisible"></button>
     </div>
     <h1>{{appName}}</h1>
@@ -22,7 +22,7 @@
   </p-toolbar>
   <div class="p-d-md-none">
     <p-sidebar id="mainSidePanel" [style]="{width:'15em'}" [(visible)]="sidePanelVisible" [modal]="false" [closeOnEscape]="true" [showCloseIcon]="true">
-      <img [src]="themedLogo ()" width="119" height="66"/>
+     <a href="https://dont-code.net/apps.html"><img [src]="themedLogo ()" width="119" height="66"/></a>
       <dontcode-sandbox-menu></dontcode-sandbox-menu>
     </p-sidebar>
   </div>
