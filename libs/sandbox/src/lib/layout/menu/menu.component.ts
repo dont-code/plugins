@@ -23,10 +23,14 @@ export class MenuComponent implements OnInit, OnDestroy {
     {label:'Application Menu', items:new Array<any>()}
   );
   subscriptions = new Subscription();
+  runtime = false;
 
   constructor(protected provider: ChangeProviderService,
               private ref: ChangeDetectorRef, public router: Router,
               public ngZone:NgZone) {
+    const config =(window as any).dontCodeConfig;
+    if( config?.runtime===true || config?.projectId!=null)
+      this.runtime = true;
     this.menus = this.generateMenu ();
   }
 
@@ -58,18 +62,27 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   getDynamicMenu (): Array<MenuItem> {
-    if( this.templateMenus[1].items)
-      return this.templateMenus[1].items;
-    else
-      return [];
+      if( this.templateMenus[1].items)
+        return this.templateMenus[1].items;
+      else
+        return [];
   }
 
   generateMenu (): Array<any> {
     // Create a new menu object to update UI
     const ret= new Array<any>();
-    this.templateMenus.forEach(value => {
-      ret.push(value);
-    });
+    if( !this.runtime) {
+      this.templateMenus.forEach(value => {
+        ret.push(value);
+      });
+    } else {
+      this.getDynamicMenu().forEach(value => {
+        ret.push(value);
+      });
+      if( ret.length===0) {
+        ret.push(this.templateMenus[1]);
+      }
+    }
     return ret;
   }
 
