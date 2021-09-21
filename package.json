@@ -30,7 +30,7 @@
   },
   "private": true,
   "dependencies": {
-    "@angular-architects/module-federation-runtime": "^12.4.0",
+    "@angular-architects/module-federation-runtime": "^12.5.2",
     "@angular/animations": "^12.1.1",
     "@angular/cdk": "^12.1.1",
     "@angular/common": "^12.1.1",
@@ -61,7 +61,7 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-architects/module-federation": "^12.4.0",
+    "@angular-architects/module-federation": "^12.5.2",
     "@angular-devkit/build-angular": "^12.1.1",
     "@angular-eslint/eslint-plugin": "^12.2.2",
     "@angular-eslint/eslint-plugin-template": "^12.2.2",
