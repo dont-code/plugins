@@ -8,6 +8,18 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
   </head>
   <body class="p-input-filled">
+    <script type="text/javascript">
+      // Storing the sessionId parameter before Angular removes it
+      const queryString = location.search;
+      let params = new URLSearchParams(queryString)
+      window.dontCodeConfig =
+        {
+          sessionId:params.get("sessionId"),
+          projectId:params.get("projectId"),
+          runtime:params.get("runtime")==='true'
+        }
+      // console.log("Request =",window.dontCodeId);
+    </script>
     <dontcode-tester-root></dontcode-tester-root>
   </body>
 </html>
