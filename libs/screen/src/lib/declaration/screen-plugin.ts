@@ -26,7 +26,7 @@ export class ScreenPlugin implements Plugin
           "props": {
             "entity": {
               "type": "string",
-              "format": "#/creation/entities"
+              "format": "$.creation.entities[*]"
             }
           },
           "replace": true
