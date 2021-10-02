@@ -1,12 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Inject,
-  Injector,
-  ViewChild
-} from "@angular/core";
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, ViewChild} from "@angular/core";
 import {Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
 import {
   ComponentLoaderService,
@@ -99,7 +91,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
    * @param change
    * @protected
    */
-  protected handleChange (change: Change ) {
+  handleChange (change: Change ) {
     //console.log("Changed Entity",change.position);
     if( !change.pointer) {
       if(this.provider) {

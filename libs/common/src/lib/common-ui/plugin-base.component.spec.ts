@@ -372,7 +372,7 @@ class TestProviderInterface implements CommandProviderInterface {
   template: ``
 })
 class TestBaseComponent extends PluginBaseComponent {
-  protected handleChange(change: Change) {
+  handleChange(change: Change) {
   }
 
   providesTemplates(): TemplateList {

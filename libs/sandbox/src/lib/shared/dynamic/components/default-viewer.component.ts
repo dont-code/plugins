@@ -42,7 +42,7 @@ export class DefaultViewerComponent extends PluginBaseComponent implements OnIni
   }
 
 
-  protected handleChange(change: Change) {
+  handleChange(change: Change) {
     super.handleChange(change);
     if (this.entityPointer) {
       if (change?.pointer?.schemaPosition === DontCodeModel.APP_FIELDS) {
