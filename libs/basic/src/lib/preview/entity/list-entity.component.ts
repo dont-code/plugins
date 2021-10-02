@@ -70,9 +70,8 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
   /**
    * Make the appropriate display updates whenever a change is received
    * @param change
-   * @protected
    */
-  protected handleChange (change: Change ) {
+  handleChange (change: Change ) {
     //console.log("Changed Entity",change.position);
 
     this.applyUpdatesToArrayAsync (this.cols, this.colsMap, change, null, (position,value) => {

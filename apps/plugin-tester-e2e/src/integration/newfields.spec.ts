@@ -61,7 +61,7 @@ describe('New fields', () => {
       getButtonWithName ('new').click();
       getInputWithName('Name').type('Second Task');
       getInputWithName('Due Date').click();
-      getDatePicker ("6").click();
+      getDatePicker ("16").click();
       getButtonWithName ('save').click();
 
       getTabWithName ('List').click();

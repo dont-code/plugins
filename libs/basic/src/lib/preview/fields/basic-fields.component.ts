@@ -1,5 +1,5 @@
-import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {AbstractDynamicComponent, DynamicComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
+import {Component, TemplateRef, ViewChild} from '@angular/core';
+import {AbstractDynamicComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
 
 @Component({
   selector: 'plugins-basic-fields',

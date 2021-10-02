@@ -91,7 +91,7 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
    * @param change
    * @protected
    */
-  protected handleChange(change: Change) {
+  handleChange(change: Change) {
     this.applyUpdatesToArrayAsync (this.fields, this.fieldsMap, change, null, (position,value) => {
       return this.loadSubComponent(position, value).then(component => {
         if( component) {

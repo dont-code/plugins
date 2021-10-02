@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { CommandProviderInterface, DontCodeModelPointer, PreviewHandler } from "@dontcode/core";
-import { Subject } from "rxjs";
-import { takeUntil } from "rxjs/operators";
+import { Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
+import {Subject} from "rxjs";
+import {takeUntil} from "rxjs/operators";
 
 @Component({
   selector: 'plugins-screen',
@@ -12,7 +12,8 @@ export class ScreenComponent implements OnInit, OnDestroy, PreviewHandler {
 
   unsubscriber = new Subject();
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }
@@ -37,5 +38,10 @@ export class ScreenComponent implements OnInit, OnDestroy, PreviewHandler {
     this.unsubscriber.complete();
     this.unsubscriber = new Subject();
   }
+
+  handleChange(change: Change): void {
+    // No need to update anything
+  }
+
 
 }
