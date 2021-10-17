@@ -1,6 +1,5 @@
-import {Change, ChangeType, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
-import {map} from "rxjs/operators";
-import {from, Observable, of, Subscription} from "rxjs";
+import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
+import {Subscription} from "rxjs";
 import {PluginHandlerHelper} from "./plugin-handler-helper";
 
 /**
@@ -20,7 +19,7 @@ export class AbstractPluginHandler implements PreviewHandler {
   initCommandFlow(provider: CommandProviderInterface, pointer: DontCodeModelPointer): any {
     this.entityPointer = pointer;
     this.provider = provider;
-    this.pluginHelper.initCommandFlow(provider, pointer, this.handleChange);
+    this.pluginHelper.initCommandFlow(provider, pointer, this);
   }
 
   protected initChangeListening() {
@@ -38,16 +37,39 @@ export class AbstractPluginHandler implements PreviewHandler {
   }
 
   /**
-   * Calls handleChange each time a change event for any element below this (as per the model's position) is received
-   * @protected
+   * Updates the array of T elements by applying the changes received and calling the transform method
+   * @param cols
+   * @param colsMap
+   * @param change
+   * @param property
+   * @param transform
+   * @private
    */
+  applyUpdatesToArray<T>(target: T[], targetMap: Map<string, number>, change: Change, property: string, transform: (position: DontCodeModelPointer, item: any) => T, applyProperty?: (target: T, key: string, value: any) => boolean): Promise<T[]> {
+    return this.applyUpdatesToArrayAsync(target, targetMap, change, property, (key, item) => {
+      return Promise.resolve( transform(key, item));
+    } );
+  }
+
+  /**
+   * Updates the array of T elements by applying the changes received and calling the transform method
+   * @param cols
+   * @param colsMap
+   * @param change
+   * @param property
+   * @param transform
+   * @private
+   */
+  applyUpdatesToArrayAsync<T>(target: T[], targetMap: Map<string, number>, change: Change, property: string|null, transform: (position: DontCodeModelPointer, item: any) => Promise<T>, applyProperty?: (target: T, key: string|null, value: any) => boolean): Promise<T[]> {
+    return this.pluginHelper.applyUpdatesToArrayAsync(target, targetMap, change, property, transform, applyProperty);
+  }
 
   /**
    * This is where components react to changes received
    * @param change
    * @protected
    */
-  protected handleChange(change: Change) {
+  handleChange(change: Change) {
 
   }
 
