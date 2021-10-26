@@ -14,7 +14,7 @@ import {
   basicDocumentApiUrlConfig,
   basicStoreApiUrlConfig,
   SANDBOX_CONFIG
-} from "../../../../libs/sandbox/src/lib/shared/config/sandbox-lib-config";
+} from "@dontcode/sandbox";
 
 @NgModule({
   declarations: [AppComponent],
