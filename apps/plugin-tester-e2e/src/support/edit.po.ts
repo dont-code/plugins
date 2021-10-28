@@ -6,6 +6,7 @@ export const getCheckWithName = (name:string) => cy.get('p-checkbox[ng-reflect-n
 export const getTabWithName = (name:string) => cy.get('a[role="tab"] > span').contains(name);
 export const getListRow = (row:number) => cy.get('table > tbody > :nth-child('+row+')');
 export const getListRowWithText = (text:string) => cy.get('table > tbody > tr').contains('tr', text);
+export const getColumn = (row:Cypress.Chainable, num:number) => row.find(':nth-child('+num+')');
 
 export const getDropdownWithName = (name:string) => cy.get('p-dropdown[ng-reflect-name="'+name+'"], p-dropdown[name="'+name+'"]');
 export const getDropdownFilter = () => cy.get('input[class*="p-dropdown-filter"]');
