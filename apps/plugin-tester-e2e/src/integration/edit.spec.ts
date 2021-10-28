@@ -1,7 +1,7 @@
 import {clickAutoComplete, getSendButton, getSubMenuWithText, selectPopupChoiceWithText} from "../support/app.po";
 import {
   getButtonWithName,
-  getCheckWithName, getDropdownFilter, getDropdownListItemWithName, getDropdownWithName,
+  getCheckWithName, getColumn, getDropdownFilter, getDropdownListItemWithName, getDropdownWithName,
   getInputWithName, getListRow, getListRowWithText,
   getTableHeader,
   getTabWithName
@@ -121,10 +121,15 @@ describe('Edit', () => {
 
       getSubMenuWithText('Dev').click();// Move to dev page
       getSubMenuWithText('Book').click();// Returns to list page
-      getListRowWithText( "€4,321");
       getListRowWithText ( "€9,870");
       getListRowWithText ( "DZD9,090");
       getListRowWithText ( "CUP");
+      getListRowWithText( "€4,321").click(); // Move to edit
+      getInputWithName('EUR').clear(); // Empty the amount
+      getButtonWithName ('save').click();
+
+      getColumn (getListRowWithText("$1,234"), 3).should ("be.empty");
+
 
     },(reason) => {
       console.log ("Erreur", reason);

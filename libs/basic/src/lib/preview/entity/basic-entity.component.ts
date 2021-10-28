@@ -145,9 +145,14 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
 
   saveEntity() {
     if( this.selectedItem) {
+        // Ensure all fields are ok
+      this.edit.form.updateValueAndValidity({onlySelf:true, emitEvent:false});
       this.store?.store (this.selectedItem).then(value => {
         console.log("Entity with Id ", value, " stored");
         this.selectedItem = value;
+        this.tabIndex=0;
+        this.ref.markForCheck();
+        this.ref.detectChanges();
       });
     }
   }

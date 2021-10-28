@@ -3,19 +3,13 @@ import {CommonModule} from '@angular/common';
 import {SharedModule} from "./shared/shared.module";
 import {LayoutModule} from "./layout/layout.module";
 import {RoutesModule} from "./routes/routes.module";
-import {
-  basicDocumentApiUrlConfig,
-  basicStoreApiUrlConfig,
-  SANDBOX_CONFIG,
-  SandboxLibConfig
-} from "./shared/config/sandbox-lib-config";
+import {SANDBOX_CONFIG, SandboxLibConfig} from "./shared/config/sandbox-lib-config";
 import {RouterModule, Routes} from "@angular/router";
 import {HomeComponent} from "./routes/home/home.component";
 import {DebugPageComponent} from "./routes/debug/debug-page/debug-page.component";
 import {ScreenComponent} from "./routes/screens/screen/screen.component";
 import {ChangeProviderService} from "./shared/command/services/change-provider.service";
 import {COMMAND_PROVIDER} from "@dontcode/plugin-common";
-import {DONTCODE_DOC_API_URL, DONTCODE_STORE_API_URL} from "@dontcode/plugin-basic";
 
 const sandboxRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -47,3 +41,4 @@ export class SandboxModule {
 
 export * from './layout/layout.module';
 export * from './shared/shared.module';
+export * from './shared/config/sandbox-lib-config';

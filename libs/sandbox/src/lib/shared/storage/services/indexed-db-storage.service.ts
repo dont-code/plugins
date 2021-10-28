@@ -58,7 +58,14 @@ export class IndexedDbStorageService implements DontCodeStoreProvider {
 
   storeEntity(position: string, entity: any): Promise<any> {
     return this.ensurePositionCanBeStored(position, true).then(table => {
-      return table.put(entity);
+      return table.put(entity).then(key => {
+        if ((entity._id) && (entity._id!==key)) {
+          return Promise.reject("Stored entity with id "+key+" different from "+entity._id);
+        } else {
+          return entity;
+        }
+
+      });
     });
   }
 

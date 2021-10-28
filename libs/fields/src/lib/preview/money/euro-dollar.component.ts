@@ -19,6 +19,7 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
   private fullEditView!: TemplateRef<any>;
 
   value = new MoneyAmount();
+  // We cannot set a null value when amount field is empty, so we have this boolean to tell us it should be null
   valueAmountDefined = false;
 
   control:FormControl = new FormControl(null,{updateOn:'blur'})
@@ -66,6 +67,12 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
   setForm(form: FormGroup) {
     super.setForm(form);
     form.registerControl(this.name, this.control);
+  }
+
+  getValue(): any {
+    if( this.valueAmountDefined)
+      return this.value;
+    else return null;
   }
 
   get amount (): number|undefined {
