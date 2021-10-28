@@ -2,7 +2,6 @@ import {TestBed} from '@angular/core/testing';
 import {IndexedDbStorageService} from "./indexed-db-storage.service";
 import {ValueService} from "../../values/services/value.service";
 import {map, takeLast} from "rxjs/operators";
-import Dexie from "dexie";
 
 describe('DevTemplateManagerService', () => {
   let service: IndexedDbStorageService;
