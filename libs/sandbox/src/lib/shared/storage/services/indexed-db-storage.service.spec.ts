@@ -28,7 +28,7 @@ describe('DevTemplateManagerService', () => {
         count:10,
         valid:true
       }).then (value => {
-        return service.loadEntity('creation/entities/a', value);
+        return service.loadEntity('creation/entities/a', value._id);
       }).then(value => {
         expect (value.code).toEqual('testA');
         done();
@@ -45,9 +45,9 @@ describe('DevTemplateManagerService', () => {
       code:'testB',
       count:10,
       valid:true
-    }).then (key => {
-      return service.deleteEntity('creation/entities/b', key).then(deleted => {
-        return {key, deleted};
+    }).then (entity => {
+      return service.deleteEntity('creation/entities/b', entity._id).then(deleted => {
+        return {key: entity._id, deleted};
       });
     }).then(value => {
       expect (value.deleted).toEqual(true);

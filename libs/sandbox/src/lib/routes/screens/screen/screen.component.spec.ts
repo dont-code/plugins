@@ -4,7 +4,6 @@ import {ScreenComponent} from "./screen.component";
 import {of} from "rxjs";
 import {ActivatedRoute, UrlSegment} from "@angular/router";
 import {DefaultViewerComponent} from "../../../shared/dynamic/components/default-viewer.component";
-import {BrowserDynamicTestingModule} from "@angular/platform-browser-dynamic/testing";
 import {InputTextModule} from "primeng/inputtext";
 import {ReactiveFormsModule} from "@angular/forms";
 import {PluginCommonModule} from "@dontcode/plugin-common";
