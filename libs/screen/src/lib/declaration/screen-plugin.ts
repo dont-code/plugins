@@ -14,7 +14,7 @@ export class ScreenPlugin implements Plugin
         "description": "A screen displaying a list of items",
         "changes": [{
           "location": {
-            "parent": "#/definitions/screen",
+            "parent": "#/$defs/screen",
             "id": "type",
             "after": "name"
           },
@@ -32,7 +32,7 @@ export class ScreenPlugin implements Plugin
           "replace": true
         }, {
           "location": {
-            "parent": "/definitions/screen",
+            "parent": "#/$defs/screen",
             "id": "type",
             "after": "name"
           },

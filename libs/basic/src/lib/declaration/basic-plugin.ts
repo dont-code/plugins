@@ -14,7 +14,7 @@ export class BasicPlugin implements Plugin
         "description": "Screens to directly list, edit, remove entities",
         "changes": [{
           "location": {
-            "parent": "#/definitions",
+            "parent": "#/$defs",
             "id":"entity"
           },
           "replace": false
@@ -25,7 +25,7 @@ export class BasicPlugin implements Plugin
           "description": "Stores application data in Dont-code project storage",
           "changes": [{
             "location": {
-              "parent": "#/definitions/sharing",
+              "parent": "#/$defs/sharing",
               "id":"with"
             },
             "replace": false,
