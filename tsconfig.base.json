@@ -22,6 +22,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
+      "@angular/*": ["node_modules/@angular/*"],
       "@dontcode/core": ["node_modules/@dontcode/core"],
       "@dontcode/plugin-basic": ["libs/basic/src"],
       "@dontcode/plugin-common": ["libs/common/src"],
@@ -29,8 +30,7 @@
       "@dontcode/plugin-screen": ["libs/screen/src"],
       "@dontcode/sandbox": ["libs/sandbox/src"],
       "rxjs": ["node_modules/rxjs"],
-      "rxjs/*": ["node_modules/rxjs/*"],
-      "@angular/*": [ "node_modules/@angular/*" ]
+      "rxjs/*": ["node_modules/rxjs/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

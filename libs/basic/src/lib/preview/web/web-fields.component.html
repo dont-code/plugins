@@ -2,11 +2,11 @@
 <ng-template #EDIT_URL><ng-container [formGroup]="form"><input [name]="name" [formControlName]="name" pInputText /></ng-container></ng-template>
 <ng-template #EDIT_IMAGE>
   <ng-container [formGroup]="form">
-    <div class="p-grid">
-      <div class="p-col-2">
+    <div class="grid">
+      <div class="col-2">
         <p-fileUpload *ngIf="supportsImageUpload()" mode="basic" chooseLabel="Browse" [name]="name+'-img'" [auto]="true" [multiple]="false" accept="image/*" [customUpload]="true" (uploadHandler)="uploadImage ($event)"></p-fileUpload>
       </div>
-      <div class="p-col-10">
+      <div class="col-10">
         <input [name]="name" [formControlName]="name" pInputText />
       </div>
     </div>

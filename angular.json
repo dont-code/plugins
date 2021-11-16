@@ -26,10 +26,7 @@
               "libs/basic/tsconfig.lib.json",
               "libs/basic/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/basic/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/basic/**/*"]
           }
         },
         "test": {
@@ -38,16 +35,15 @@
             "jestConfig": "libs/basic/jest.config.js",
             "passWithNoTests": true
           },
-          "outputs": [
-            "coverage/libs/basic"
-          ]
+          "outputs": ["coverage/libs/basic"]
         }
       },
       "schematics": {
         "@nrwl/angular:component": {
           "style": "scss"
         }
-      }
+      },
+      "tags": []
     },
     "common": {
       "projectType": "library",
@@ -74,10 +70,7 @@
               "libs/common/tsconfig.lib.json",
               "libs/common/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/common/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/common/**/*"]
           }
         },
         "test": {
@@ -86,16 +79,15 @@
             "jestConfig": "libs/common/jest.config.js",
             "passWithNoTests": true
           },
-          "outputs": [
-            "coverage/libs/common"
-          ]
+          "outputs": ["coverage/libs/common"]
         }
       },
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
         }
-      }
+      },
+      "tags": []
     },
     "fields": {
       "projectType": "library",
@@ -122,19 +114,19 @@
               "libs/fields/src/**/*.ts",
               "libs/fields/src/**/*.html"
             ]
-          }
+          },
+          "outputs": ["{options.outputFile}"]
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/fields"
-          ],
+          "outputs": ["coverage/libs/fields"],
           "options": {
             "jestConfig": "libs/fields/jest.config.js",
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "plugin-tester": {
       "projectType": "application",
@@ -144,9 +136,7 @@
       "architect": {
         "build": {
           "builder": "ngx-build-plus:browser",
-          "outputs": [
-            "{options.outputPath}"
-          ],
+          "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/apps/plugin-tester",
             "index": "apps/plugin-tester/src/index.html",
@@ -165,7 +155,7 @@
             ],
             "styles": [
               "apps/plugin-tester/src/styles.scss",
-              "./node_modules/flag-icon-css/css/flag-icon.css",
+              "./node_modules/flag-icon-css/css/flag-icons.css",
               "./node_modules/primeflex/primeflex.css",
               "./node_modules/primeng/resources/themes/saga-blue/theme.css",
               "./node_modules/primeng/resources/primeng.min.css",
@@ -232,7 +222,6 @@
             "extraWebpackConfig": "apps/plugin-tester/webpack.config.js",
             "port": 3000
           }
-
         },
         "extract-i18n": {
           "builder": "ngx-build-plus:extract-i18n",
@@ -248,20 +237,20 @@
               "apps/plugin-tester/src/**/*.ts",
               "apps/plugin-tester/src/**/*.html"
             ]
-          }
+          },
+          "outputs": ["{options.outputFile}"]
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/apps/plugin-tester"
-          ],
+          "outputs": ["coverage/apps/plugin-tester"],
           "options": {
             "jestConfig": "apps/plugin-tester/jest.config.js",
             "passWithNoTests": true,
             "extraWebpackConfig": "apps/plugin-tester/webpack.config.js"
           }
         }
-      }
+      },
+      "tags": []
     },
     "plugin-tester-e2e": {
       "root": "apps/plugin-tester-e2e",
@@ -284,12 +273,13 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "apps/plugin-tester-e2e/**/*.{js,ts}"
-            ]
-          }
+            "lintFilePatterns": ["apps/plugin-tester-e2e/**/*.{js,ts}"]
+          },
+          "outputs": ["{options.outputFile}"]
         }
-      }
+      },
+      "tags": [],
+      "implicitDependencies": ["plugin-tester"]
     },
     "sandbox": {
       "projectType": "library",
@@ -311,9 +301,7 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/sandbox"
-          ],
+          "outputs": ["coverage/libs/sandbox"],
           "options": {
             "jestConfig": "libs/sandbox/jest.config.js",
             "passWithNoTests": true
@@ -326,9 +314,11 @@
               "libs/sandbox/src/**/*.ts",
               "libs/sandbox/src/**/*.html"
             ]
-          }
+          },
+          "outputs": ["{options.outputFile}"]
         }
-      }
+      },
+      "tags": []
     },
     "screen": {
       "projectType": "library",
@@ -355,10 +345,7 @@
               "libs/screen/tsconfig.lib.json",
               "libs/screen/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/screen/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/screen/**/*"]
           }
         },
         "test": {
@@ -367,37 +354,15 @@
             "jestConfig": "libs/screen/jest.config.js",
             "passWithNoTests": true
           },
-          "outputs": [
-            "coverage/libs/screen"
-          ]
+          "outputs": ["coverage/libs/screen"]
         }
       },
       "schematics": {
         "@nrwl/angular:component": {
           "style": "scss"
         }
-      }
-    }
-  },
-  "cli": {
-    "defaultCollection": "@nrwl/angular",
-    "analytics": "2d0f7d7c-317a-4984-8934-a6583d864a70"
-  },
-  "defaultProject": "common",
-  "schematics": {
-    "@nrwl/angular:application": {
-      "style": "scss",
-      "linter": "eslint",
-      "unitTestRunner": "jest",
-      "e2eTestRunner": "cypress"
-    },
-    "@nrwl/angular:library": {
-      "style": "scss",
-      "linter": "eslint",
-      "unitTestRunner": "jest"
-    },
-    "@nrwl/angular:component": {
-      "style": "scss"
+      },
+      "tags": []
     }
   }
 }

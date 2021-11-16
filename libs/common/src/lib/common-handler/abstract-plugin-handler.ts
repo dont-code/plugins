@@ -5,7 +5,7 @@ import {PluginHandlerHelper} from "./plugin-handler-helper";
 /**
  * Helps develop a plugin handler that is not an Angular Component. For an Angular Component handling model changes, please use PluginBaseComponent
  */
-export class AbstractPluginHandler implements PreviewHandler {
+export abstract class AbstractPluginHandler implements PreviewHandler {
   protected subscriptions = new Subscription();
   protected pluginHelper = new PluginHandlerHelper();
   protected entityPointer: DontCodeModelPointer | null = null
@@ -69,9 +69,6 @@ export class AbstractPluginHandler implements PreviewHandler {
    * @param change
    * @protected
    */
-  handleChange(change: Change) {
-
-  }
-
+  abstract handleChange(change: Change): void;
 
 }

@@ -1,22 +1,18 @@
 <dtcde-dynamic></dtcde-dynamic>
 <p-table [columns]="cols" [value]="getStoreEntities()"
-         styleClass="p-datatable-striped"
+         styleClass="p-datatable-striped" responsiveLayout="scroll"
          [scrollable]="true" scrollHeight="flex" scrollDirection="both"
          selectionMode="single" [(selection)]="selectedItem" (selectionChange)="selectionChange($event)" >
-  <ng-template pTemplate="colgroup" let-columns>
-    <colgroup>
-      <col *ngFor="let col of columns" style="width:10em">
-    </colgroup>
-  </ng-template>  <ng-template pTemplate="header" let-columns>
+  <ng-template pTemplate="header" let-columns>
     <tr>
-      <th id="header-{{col.header}}" *ngFor="let col of columns" [pSortableColumn]="col.field">
+      <th id="header-{{col.header}}" *ngFor="let col of columns" [pSortableColumn]="col.field" style="width:10em">
         {{col.header}} <p-sortIcon [field]="col.field"></p-sortIcon>
       </th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-rowData let-columns="columns">
     <tr [pSelectableRow]="rowData">
-      <td *ngFor="let col of columns">
+      <td *ngFor="let col of columns" style="width:10em">
         <ng-container *ngIf="col.component">
           <ng-container *ngTemplateOutlet="templateOf(col, rowData[col.field])"></ng-container>
         </ng-container>

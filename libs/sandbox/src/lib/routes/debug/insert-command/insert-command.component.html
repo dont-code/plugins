@@ -1,31 +1,31 @@
 <p-accordion>
   <p-accordionTab header="Add Command" [selected]="openAddCommand">
-    <div class="p-fluid p-formgrid p-grid" [formGroup]="templateForm">
-      <div class="p-field p-col-12 p-md-9">
+    <div class="p-fluid formgrid grid" [formGroup]="templateForm">
+      <div class="field col-12 md:col-9">
         <span class="p-float-label">
           <p-autoComplete id="template" formControlName="template" [suggestions]="filteredTemplates" field="name" [dropdown]="true" (completeMethod)="searchTemplate($event)">
           </p-autoComplete>
           <label for="template">Select a Template</label>
         </span>
       </div>
-      <div class="p-field p-col-12 p-md-3">
+      <div class="field col-12 md:col-3">
         <p-button id="sendButton" label="Send" (click)="sendCommand()"></p-button>
       </div>
-      <div class="p-field p-col-12 p-md-9">
+      <div class="field col-12 md:col-9">
         <span class="p-float-label">
           <p-autoComplete id="step" formControlName="step" [suggestions]="filteredSteps" field="position" [dropdown]="true" (completeMethod)="searchStep($event)" >
           </p-autoComplete>
           <label for="step">Step</label>
         </span>
       </div>
-      <div class="p-field p-col-12 p-md-3">
+      <div class="field col-12 md:col-3">
         <span class="p-float-label">
           <p-dropdown id="type" formControlName="type" [options]="changeTypes" field="type" optionValue="label" >
           </p-dropdown>
           <label for="type">Select a type</label>
         </span>
       </div>
-      <div class="p-field p-col-12">
+      <div class="field col-12">
         <span class="p-float-label">
           <textarea pInputTextarea id="value" formControlName="value" field="value" rows="10" [autoResize]="true" >
           </textarea>

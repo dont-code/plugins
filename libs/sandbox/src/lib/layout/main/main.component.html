@@ -10,27 +10,27 @@
       <button pButton type="button" class="p-button-rounded p-button-outlined" [ngClass]="connectedClass(ctx)" icon="pi pi-sort" (mouseenter)="op.show($event)" ></button>
       <p-overlayPanel #op [showCloseIcon]="false" [style]="{width: '500px'}">
         <ng-template pTemplate>
-          <div class="p-grid">
-            <div class="p-col-2">Server:</div>
-            <div class="p-col-10">{{serverUrl}}</div>
-            <div class="p-col-2">Session:</div>
-            <div class="p-col-10">{{ctx.sessionId}}</div>
+          <div class="grid">
+            <div class="col-2">Server:</div>
+            <div class="col-10">{{serverUrl}}</div>
+            <div class="col-2">Session:</div>
+            <div class="col-10">{{ctx.sessionId}}</div>
           </div>
         </ng-template>
       </p-overlayPanel>
     </div>
   </p-toolbar>
-  <div class="p-d-md-none">
+  <div class="md:hidden">
     <p-sidebar id="mainSidePanel" [style]="{width:'15em'}" [(visible)]="sidePanelVisible" [modal]="false" [closeOnEscape]="true" [showCloseIcon]="true">
      <a href="https://dont-code.net/apps.html"><img [src]="themedLogo ()" width="119" height="66"/></a>
       <dontcode-sandbox-menu></dontcode-sandbox-menu>
     </p-sidebar>
   </div>
-  <div class="p-grid">
-    <div class="p-col p-d-none p-d-md-block p-md-3">
+  <div class="grid">
+    <div class="col hidden md:block md:col-3">
       <dontcode-sandbox-menu id="mainMenu"></dontcode-sandbox-menu>
     </div>
-    <div class="p-col p-md-9">
+    <div class="col md:col-9">
       <router-outlet> </router-outlet>
     </div>
   </div>

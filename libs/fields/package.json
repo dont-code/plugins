@@ -2,13 +2,13 @@
   "name": "@dontcode/plugin-fields",
   "version": "0.3.32",
   "peerDependencies": {
-    "@angular/common": "^12.1.1",
-    "@angular/core": "^12.1.1",
-    "@dontcode/core": "^0.3.5",
-    "@dontcode/plugin-common": "^0.3.2",
+    "@angular/common": "^12.2.13",
+    "@angular/core": "^12.2.13",
+    "@dontcode/core": "^0.3.11",
+    "@dontcode/plugin-common": "^0.3.32",
     "rxjs": "^6.6.7"
   },
   "dependencies": {
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.1"
   }
 }
