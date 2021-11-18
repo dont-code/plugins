@@ -2,9 +2,9 @@
   <ng-container *ngIf="value">
     <form [formGroup]="form">
     <div class="p-fluid">
-      <div class="p-field p-grid" *ngFor="let field of fields">
-        <label [for]="field.name" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">{{field.name}}</label>
-        <div class="p-col-12 p-md-10">
+      <div class="field grid" *ngFor="let field of fields">
+        <label [for]="field.name" class="col-12 mb:col-2 md:col-2 md:mb-0">{{field.name}}</label>
+        <div class="col-12 md:col-10">
           <ng-container *ngTemplateOutlet="templateOf(field); context:{ fieldName:field.name}"></ng-container>
         </div>
       </div>

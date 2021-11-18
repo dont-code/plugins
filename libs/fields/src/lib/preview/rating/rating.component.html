@@ -1,6 +1,6 @@
-<ng-template #inlineView ><p-rating *ngIf="value" [readonly]="true" [ngModel]="value" [cancel]="false"></p-rating></ng-template>
+<ng-template #inlineView ><p-rating *ngIf="value" [readonly]="true" [ngModel]="value" [cancel]="false" iconOnClass="pi pi-star-fill" iconOffClass="pi pi-star"></p-rating></ng-template>
 <ng-template #fullEditView>
   <ng-container *ngIf="form" [formGroup]="form">
-    <p-rating [readonly]="false" [formControlName]="name"></p-rating>
+    <p-rating [readonly]="false" [formControlName]="name" iconOnClass="pi pi-star-fill" iconOffClass="pi pi-star"></p-rating>
   </ng-container>
 </ng-template>

@@ -2,6 +2,7 @@ import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {AbstractDynamicComponent, PossibleTemplateList, TemplateList} from '@dontcode/plugin-common';
 import * as i18nCountries from 'i18n-iso-countries';
 import countryDataEn from 'i18n-iso-countries/langs/en.json'
+import {FormGroup} from "@angular/forms";
 
 /**
  * Display or edit a country value

@@ -14,7 +14,7 @@ export class FieldsPlugin implements Plugin
         description: 'Add Country as a type of field',
         changes: [{
           location: {
-            parent: '#/definitions/field',
+            parent: '#/$defs/field',
             id: 'type'
           },
           update: {
