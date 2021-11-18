@@ -33,8 +33,8 @@ describe('New fields', () => {
       getListRowWithText ( "Test Recipe");
       getImageWithClass ('inline-image').should ('have.attr', 'src', 'https://test.dont-code.net/poweredby.png');
       getLinkWithUrl ('https://test.dont-code.net');
-      getRating ( 3).should('have.class', 'pi-star');
-      getRating ( 4).should('have.class', 'pi-star-o');
+      getRating ( 3).should('have.class', 'pi-star-fill');
+      getRating ( 4).should('have.class', 'pi-star');
 
     });
 
