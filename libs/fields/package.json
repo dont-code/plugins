@@ -1,6 +1,6 @@
 {
   "name": "@dontcode/plugin-fields",
-  "version": "0.3.34",
+  "version": "0.3.35",
   "peerDependencies": {
     "@angular/common": "^12.2.13",
     "@angular/core": "^12.2.13",
