@@ -1,6 +1,6 @@
 {
   "name": "@dontcode/sandbox",
-  "version": "0.3.29",
+  "version": "0.3.30",
   "peerDependencies": {
     "@angular/common": "^12.1.1",
     "@angular/core": "^12.2.13",
