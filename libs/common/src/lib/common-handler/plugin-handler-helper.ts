@@ -18,7 +18,7 @@ export class PluginHandlerHelper {
   /**
    * When the component is created for display, it receives the initial data as complete Json.
    * If it wants, it can call this method who will call handleChange for each property.
-   * This will avoid to duplicate code (first time when a complete json is sent, second when subelements are sent)
+   * This will avoid to duplicate code (first when a complete json is sent, then when subelements are sent)
    * @protected
    */
   decomposeJsonToMultipleChanges(pointer: DontCodeModelPointer, json: any): void {

@@ -1,10 +1,10 @@
-import { ChangeType } from '@dontcode/core';
-import { TestBed } from '@angular/core/testing';
+import {Change, ChangeType} from '@dontcode/core';
+import {TestBed} from '@angular/core/testing';
 
-import { ChangeProviderService } from './change-provider.service';
-import { Change } from '@dontcode/core';
-import { Subscription } from 'rxjs';
+import {ChangeProviderService} from './change-provider.service';
+import {Subscription} from 'rxjs';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
+
 
 describe('CommandProviderService', () => {
   let service: ChangeProviderService;
@@ -57,11 +57,11 @@ describe('CommandProviderService', () => {
       subscriptions.add(service.receiveCommands('creation/screens').subscribe(
         notified
       ));
-      service.pushChange (new Change (ChangeType.ADD, 'creation/screens/b', '{\"name\"=\"NewName\"}'));
+      service.pushChange (new Change (ChangeType.ADD, 'creation/screens/b', '{"name"="NewName"}'));
       expect(notified).toHaveBeenCalledTimes(2);
       service.pushChange (new Change (ChangeType.UPDATE, 'creation/screens/b/name', 'NewName'));
       expect(notified).toHaveBeenCalledTimes(3);
-      service.pushChange (new Change (ChangeType.ADD, 'creation/screens/b/components/b', '{\"type\"=\"edit\"}'));
+      service.pushChange (new Change (ChangeType.ADD, 'creation/screens/b/components/b', '{"type"="edit"}'));
       expect(notified).toHaveBeenCalledTimes(4);
       subscriptions.unsubscribe();
 
@@ -93,14 +93,16 @@ describe('CommandProviderService', () => {
 
   it('support reset properly', () => {
     const subscriptions = new Subscription();
-    const notified = jest.fn();
-    const notifiedQuestionMark = jest.fn();
+    const notified = waitableJestFn(3);
+    const notifiedQuestionMark = waitableJestFn(3);
     try {
-      subscriptions.add(service.receiveCommands('creation', 'name').subscribe(
-        notified
+      subscriptions.add(service.receiveCommands('creation', 'name').subscribe( value => {
+        notified();
+        }
       ));
-      subscriptions.add(service.receiveCommands('creation/entities', 'name').subscribe(
-        notified
+      subscriptions.add(service.receiveCommands('creation/entities', 'name').subscribe( value => {
+        notified();
+        }
       ));
       subscriptions.add(service.receiveCommands('creation/entities/?').subscribe(value => {
           notifiedQuestionMark();
@@ -120,8 +122,10 @@ describe('CommandProviderService', () => {
           }
         }
       }));
+      notified.waitUntilComplete();
       expect(notified).toHaveBeenCalledTimes(3);
-      expect(notifiedQuestionMark).toHaveBeenCalledTimes(3);
+      notifiedQuestionMark.waitUntilComplete();
+      expect(notifiedQuestionMark).toHaveBeenCalledTimes(1);
     } finally {
       subscriptions.unsubscribe();
       service.close();
@@ -129,3 +133,25 @@ describe('CommandProviderService', () => {
   });
 
 });
+
+// Standard code to wait for a number of calls before testing the result
+type WaitableMock = jest.Mock & {
+  waitUntilComplete(): Promise<void>
+}
+
+export const waitableJestFn = (times: number): WaitableMock => {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  let _resolve: Function
+  const promise = new Promise<void>(resolve => _resolve = resolve)
+
+  let i = 0
+  const mock = jest.fn(() => {
+    // debug('mock is called', i, times)
+    if (++i >= times)
+      _resolve()
+  }) as WaitableMock // force casting
+
+  mock.waitUntilComplete = () => promise
+
+  return mock
+}

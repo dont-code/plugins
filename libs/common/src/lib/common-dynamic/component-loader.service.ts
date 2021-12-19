@@ -7,6 +7,7 @@ import {
   ViewContainerRef
 } from '@angular/core';
 import {
+  ChangeHandlerConfig,
   CommandProviderInterface,
   DontCodeModelPointer,
   DontCodePreviewManager,
@@ -40,6 +41,16 @@ export class ComponentLoaderService {
     return this.loadComponentFactory('creation/entities/fields/type', type);
   }
 
+  loadPluginModule (handlerConfig: ChangeHandlerConfig): NgModuleRef<PluginModuleInterface> {
+    let moduleRef = this.moduleMap.get(handlerConfig.class.source);
+    if (!moduleRef) {
+      moduleRef = getModuleFactory('dontcode-plugin/' + handlerConfig.class.source)?.create(this.injector);
+      if( moduleRef)
+        this.moduleMap.set(handlerConfig.class.source, moduleRef);
+    }
+    return moduleRef;
+  }
+
   loadComponentFactory(schemaPosition: DontCodeModelPointer | string, currentJson?: any): Promise<FactoryBuilder|null> {
     let schemaPos:string = (schemaPosition as DontCodeModelPointer).schemaPosition;
     if (schemaPos) {
@@ -56,19 +67,15 @@ export class ComponentLoaderService {
       console.log("Importing from ", handlerConfig.class.source);
       // First lets try if the plugin is imported during the compilation
 
-      let moduleRef = this.moduleMap.get(handlerConfig.class.source);
-      if (!moduleRef) {
-        moduleRef = getModuleFactory('dontcode-plugin/' + handlerConfig.class.source).create(this.injector);
-        if( !moduleRef)
-          return Promise.reject("Cannot load module for source "+handlerConfig.class.source)
-        this.moduleMap.set(handlerConfig.class.source, moduleRef);
-      }
+      const moduleRef = this.loadPluginModule(handlerConfig);
+      if( !moduleRef)
+        return Promise.reject("Cannot load module for source "+handlerConfig.class.source)
       //console.log ("Applying component");
       let componentFactory = this.factoryMap.get(handlerConfig.class) || null;
       if (!componentFactory) {
         const factory = this.componentFactoryResolver.resolveComponentFactory(moduleRef.instance.exposedPreviewHandlers().get(handlerConfig.class.name)) as ComponentFactory<DynamicComponent>;
         if( factory) {
-          componentFactory={moduleRef:moduleRef, factory:factory};
+          componentFactory={moduleRef:moduleRef, factory:factory} as FactoryBuilder;
           this.factoryMap.set(handlerConfig.class, componentFactory);
         }
       }

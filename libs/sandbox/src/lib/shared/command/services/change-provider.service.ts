@@ -57,10 +57,14 @@ export class ChangeProviderService implements CommandProviderInterface {
           //console.log("Filtering ok");
           return true;
         } else {
-          nextPosition = this.nextItemEndPosition(change.position, nextPosition.pos+1);
-          if (nextPosition.value===property) {
-            return true;
-          }
+            nextPosition = this.nextItemEndPosition(change.position, nextPosition.pos+1);
+            if (nextPosition.value===property) {
+              return true;
+            }else if (nextPosition.value==="") { // Last item, maybe the property lies in the value ?
+              if ((change.value) && (change.value[property])) {
+                return true;
+              }
+            }
         }
         //console.log("Filtering no");
         return false;
@@ -108,18 +112,20 @@ export class ChangeProviderService implements CommandProviderInterface {
   }
 
   pushChange (change:Change) {
+
+
     if (!change.pointer) {
       change.pointer = this.calculatePointerFor(change.position);
     }
 
     this.receivedChanges.next(change);
 
-    this.findAndNotify ( change);
+    this.findAndNotify ( change, new Map<Subject<Change>, Array<string>>());
 
     this.changesHistory.next(change);
   }
 
-  findAndNotify ( change:Change) {
+  findAndNotify ( change:Change, alreadyCalled:Map<Subject<Change>, Array<string>>) {
 
     // First resolve the position and cache it
     if ( !this.listenerCachePerPosition.get(change.position)) {
@@ -131,14 +137,28 @@ export class ChangeProviderService implements CommandProviderInterface {
     }
 
     const affected = this.listenerCachePerPosition.get(change.position);
-    affected?.forEach(subject => {
-      subject.next(change);
-    });
+      affected?.forEach(subject => {
+        let canCall=true;
+        const positions = alreadyCalled.get(subject);
+        if( positions) { // Don't call twice the same listener for the same or parent position
+          for (const position of positions) {
+            if( change.position.startsWith(position)) {
+              canCall = false;
+            }
+          }
+        } else {
+          alreadyCalled.set(subject, new Array<string>());
+        }
+        if( canCall) {
+          subject.next(change);
+          alreadyCalled.get(subject)?.push(change.position);
+        }
+      });
 
     if( change.type===ChangeType.RESET) {
         // Notify the elements that are listening to children
       if (!change.value) {
-        // We are resetting from a certain position, so all listeners after this position must be tell there are no values anymore
+        // We are resetting from a certain position, so all listeners after this position must be told there are no values anymore
         let resetPosition = change.position;
         if (resetPosition==="/") resetPosition="creation";
 
@@ -149,7 +169,7 @@ export class ChangeProviderService implements CommandProviderInterface {
         });
       } else if( typeof (change.value)==='object') {
         for (const subProp in change.value) {
-            this.findAndNotify( this.morphChangeToChild(change, subProp));
+            this.findAndNotify( this.morphChangeToChild(change, subProp), alreadyCalled);
         }
       }
     }
@@ -171,7 +191,7 @@ export class ChangeProviderService implements CommandProviderInterface {
   /**
    * Be notified when something changes in the model at the following position
    * for example:
-   * position: /creation/screens, property: name will be notified of all name changes for all screen
+   * position: /creation/screens, property: name will be notified of all name changes for all screens
    * position: /creation/screens, property: null will be notified of any change in any screen and subscreens
    * position: /creation/screens/a, property: null will be notified on changes in screen a and below
    * position: /creation/screens/?, property: null will be notified on changes in screen items (move, delete), and not below
