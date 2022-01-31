@@ -1,13 +1,6 @@
 import {Injectable} from "@angular/core";
 import {Observable, ReplaySubject, Subject, Subscription} from "rxjs";
-import {
-  Change,
-  ChangeType,
-  CommandProviderInterface,
-  DontCodeModelPointer,
-  DontCodeSchemaManager,
-  dtcde
-} from "@dontcode/core";
+import {Change, CommandProviderInterface, DontCodeModelPointer, DontCodeSchemaManager, dtcde} from "@dontcode/core";
 import {ValueService} from "../../values/services/value.service";
 import {ChangeListenerService} from "../../change/services/change-listener.service";
 
@@ -24,10 +17,14 @@ export class ChangeProviderService implements CommandProviderInterface {
   protected listenerCachePerPosition = new Map<string, Array<Subject<Change>>>();
 
   constructor(protected changeListener: ChangeListenerService, protected valueService:ValueService) {
-    valueService.receiveUpdatesFrom (this.receivedChanges);
     this.subscriptions.add(changeListener.getChangeEvents().subscribe(change => {
       // console.log ('Received Change ', change);
+      const subChanges = this.valueService.applyChange (change);
       this.pushChange(change);
+        // Sends as well the subChanges induced by this change
+      subChanges.forEach(subChange => {
+        this.pushChange(subChange);
+      });
     })
     );
   }
@@ -50,20 +47,16 @@ export class ChangeProviderService implements CommandProviderInterface {
     //console.log("Setting Commands updates for ", position);
       //console.log("Filtering position for pos,item:", command.position, position, lastItem);
     if ((change.position!=null) && (change.position.startsWith(position))) {
-      let nextPosition=this.nextItemEndPosition (change.position, position.length+1)
+      let nextPosition=DontCodeModelPointer.nextItemAndPosition (change.position, position.length+1)
       const nextItem=nextPosition.value;
       if (property) {
         if( nextItem===property) {
           //console.log("Filtering ok");
           return true;
         } else {
-            nextPosition = this.nextItemEndPosition(change.position, nextPosition.pos+1);
+            nextPosition = DontCodeModelPointer.nextItemAndPosition(change.position, nextPosition.pos+1);
             if (nextPosition.value===property) {
               return true;
-            }else if (nextPosition.value==="") { // Last item, maybe the property lies in the value ?
-              if ((change.value) && (change.value[property])) {
-                return true;
-              }
             }
         }
         //console.log("Filtering no");
@@ -72,7 +65,7 @@ export class ChangeProviderService implements CommandProviderInterface {
         //console.log("Filtering ok");
         if( nextItem!=null) {
           // Check if its the last item
-          nextPosition = this.nextItemEndPosition(change.position, nextPosition.pos + 1);
+          nextPosition = DontCodeModelPointer.nextItemAndPosition(change.position, nextPosition.pos + 1);
           if (nextPosition.value === "")
             return true;
         }
@@ -112,7 +105,17 @@ export class ChangeProviderService implements CommandProviderInterface {
   }
 
   pushChange (change:Change) {
+    const subChanges = this.valueService.applyChange (change);
+    this.manageChangeInternally(change);
+    // Sends as well the subChanges induced by this change
+    subChanges.forEach(subChange => {
+      if ((subChange.type!==change.type) || (subChange.position!==change.position)) {
+        this.manageChangeInternally(subChange);
+      }
+    });
+  }
 
+  manageChangeInternally (change:Change) {
 
     if (!change.pointer) {
       change.pointer = this.calculatePointerFor(change.position);
@@ -125,6 +128,11 @@ export class ChangeProviderService implements CommandProviderInterface {
     this.changesHistory.next(change);
   }
 
+  /**
+   * Finds a listener that is interested in this change and notifies it.
+   * @param change
+   * @param alreadyCalled
+   */
   findAndNotify ( change:Change, alreadyCalled:Map<Subject<Change>, Array<string>>) {
 
     // First resolve the position and cache it
@@ -154,35 +162,15 @@ export class ChangeProviderService implements CommandProviderInterface {
           alreadyCalled.get(subject)?.push(change.position);
         }
       });
-
-    if( change.type===ChangeType.RESET) {
-        // Notify the elements that are listening to children
-      if (!change.value) {
-        // We are resetting from a certain position, so all listeners after this position must be told there are no values anymore
-        let resetPosition = change.position;
-        if (resetPosition==="/") resetPosition="creation";
-
-        this.listeners.forEach((value, key) => {
-          if (key.position.startsWith(resetPosition)) {
-            value.next(new Change (ChangeType.RESET, this.cleanPosition (key.position), null));
-          }
-        });
-      } else if( typeof (change.value)==='object') {
-        for (const subProp in change.value) {
-            this.findAndNotify( this.morphChangeToChild(change, subProp), alreadyCalled);
-        }
-      }
-    }
-
   }
 
-  morphChangeToChild (change:Change, child:string ): Change {
+/*  morphChangeToChild (change:Change, child:string ): Change {
     if( !change.pointer) throw new Error('Missing pointer in change to morph');
     const newPointer = this.getSchemaManager().generateSubSchemaPointer(change.pointer, child);
     const newChange=new Change(change.type, newPointer.position, change.value[child], newPointer );
 
     return newChange;
-  }
+  }*/
 
   getChangesHistory (): Observable<Change> {
     return this.changesHistory;
@@ -200,8 +188,7 @@ export class ChangeProviderService implements CommandProviderInterface {
    * @param property
    */
   receiveCommands (position?: string, property?: string): Observable<Change> {
-    if (position)
-    {
+    if (position) {
       return this.createNewListener (position, property);
     }
     else
@@ -222,31 +209,6 @@ export class ChangeProviderService implements CommandProviderInterface {
     this.subscriptions.unsubscribe();
   }
 
-  nextItemEndPosition(position: string, from: number): {pos:number, value:string|null} {
-    let posSlash = position.indexOf("/", from);
-    if (posSlash===from) {
-      from = from +1;
-      posSlash = position.indexOf("/", from);
-    }
-    if(posSlash!==-1)
-      posSlash=posSlash-1;
-    else {
-      if (posSlash===from) {
-        posSlash=-1;
-      } else {
-        posSlash=position.length-1;
-      }
-    }
-
-    let value=null;
-    if( posSlash!==-1)
-      value = position.substring(from, posSlash+1);
-
-    return {
-      pos: posSlash,
-      value: value
-    }
-  }
 
   /**
    * Removes ? or / from end of position

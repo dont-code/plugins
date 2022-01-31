@@ -1,12 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { EditEntityComponent } from './edit-entity.component';
+import {EditEntityComponent} from './edit-entity.component';
 import {CheckboxModule} from "primeng/checkbox";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {InputNumberModule} from "primeng/inputnumber";
 import {InputTextModule} from "primeng/inputtext";
 import {PluginCommonModule} from "@dontcode/plugin-common";
-import { Change, CommandProviderInterface, DontCodeModelPointer, DontCodeSchemaManager, dtcde} from '@dontcode/core';
+import {Change, CommandProviderInterface, DontCodeModelPointer, DontCodeSchemaManager, dtcde} from '@dontcode/core';
 import {Observable} from 'rxjs';
 
 describe('EditEntityComponent', () => {
@@ -28,7 +28,7 @@ describe('EditEntityComponent', () => {
   });
 
   it('should create', () => {
-    component.initCommandFlow(new FakeProvider(), new DontCodeModelPointer("creation/entities", "creation", undefined,undefined,null,null ));
+    component.initCommandFlow(new FakeProvider(), new DontCodeModelPointer("creation/entities", "creation/entities" ));
     expect(component).toBeTruthy();
   });
 });
@@ -44,7 +44,7 @@ class FakeProvider implements CommandProviderInterface {
         return dtcde.getSchemaManager();
     }
     calculatePointerFor(position: string): DontCodeModelPointer {
-        return new DontCodeModelPointer(position, position, undefined,undefined, null, null);
+        return new DontCodeModelPointer(position, position);
     }
 
 }

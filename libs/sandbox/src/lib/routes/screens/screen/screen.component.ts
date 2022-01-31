@@ -58,7 +58,7 @@ export class ScreenComponent extends PluginBaseComponent implements OnInit, Afte
         } catch (error) {
           console.warn('Error creating component for '+position+':',error);
           component = this.loader.createGivenComponent(DefaultViewerComponent, this.dynamicInsertPoint,
-            new DontCodeModelPointer(position, position,undefined,undefined, null,null));
+            new DontCodeModelPointer(position, position));
         }
       })
     ).subscribe());

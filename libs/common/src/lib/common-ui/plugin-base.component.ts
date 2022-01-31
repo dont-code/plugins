@@ -55,7 +55,7 @@ export abstract class PluginBaseComponent extends AbstractDynamicLoaderComponent
    * @param key
    */
   decodeStringField(change: Change, key: string): string|undefined {
-    if (change.pointer?.key === key) {
+    if (change.pointer?.lastElement === key) {
       return change.value;
     } else
       return undefined;

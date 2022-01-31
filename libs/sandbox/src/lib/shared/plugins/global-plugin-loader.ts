@@ -45,6 +45,7 @@ export class GlobalPluginLoader {
             handler = project.moduleRef.injector.get(project.clazz);
             this.cachedHandlers.set(project.clazz, handler);
             handler.initCommandFlow(this.changeService, project.change.pointer??this.changeService.calculatePointerFor(project.change.position));
+            handler.handleChange(project.change);
           }
           return handler;
 

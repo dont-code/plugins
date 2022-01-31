@@ -52,7 +52,7 @@ export class ComponentLoaderService {
   }
 
   loadComponentFactory(schemaPosition: DontCodeModelPointer | string, currentJson?: any): Promise<FactoryBuilder|null> {
-    let schemaPos:string = (schemaPosition as DontCodeModelPointer).schemaPosition;
+    let schemaPos:string = (schemaPosition as DontCodeModelPointer).positionInSchema;
     if (schemaPos) {
       if (!currentJson) {
         currentJson = this.provider?.getJsonAt((schemaPosition as DontCodeModelPointer).position);

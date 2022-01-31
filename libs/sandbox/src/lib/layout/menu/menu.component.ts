@@ -164,17 +164,18 @@ export class MenuComponent implements OnInit, OnDestroy {
   private updateMenuName(command: Change, icon: string) {
     const key = this.cleanPosition (command.position);
     const pos = this.findMenuPosOf (key);
+    const name=command.value;
 
     switch (command.type) {
       case ChangeType.UPDATE:
       case ChangeType.RESET:
       case ChangeType.ADD:
         if (pos!==-1) {
-          this.getDynamicMenu()[pos].label = command.value;
-        } else if (command.value) {
+          this.getDynamicMenu()[pos].label = name;
+        } else if (name) {
           this.getDynamicMenu().push({
             routerLink:[key],
-            label:command.value,
+            label:name,
             icon:'pi '+icon
           });
         }

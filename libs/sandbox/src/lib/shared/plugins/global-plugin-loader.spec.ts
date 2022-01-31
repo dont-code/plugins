@@ -74,18 +74,16 @@ describe('GlobalPluginLoaded', () => {
 
   it('should load global plugins', (done) => {
 
-    let initCallCount = 0;
-    let changeCallCount = 0;
+    const notifiedInit = waitableJestFn(1);
+    const notifiedCall = waitableJestFn(4);
+
     const previewMgr = dtcde.getPreviewManager();
     previewMgr.registerHandlers(new GlobalHandlerPluginTest().getConfiguration());
     loader.initLoading(previewMgr);
 
     GlobalTestHandler.subscribers.add(GlobalTestHandler.initCalls.subscribe ({
       next: pointer => {
-        initCallCount++;
-        if (initCallCount >1) {
-          done("InitCall called multiple times");
-        }
+        notifiedInit();
       },
       error: err => {
         done(err);
@@ -93,13 +91,9 @@ describe('GlobalPluginLoaded', () => {
     }));
 
     GlobalTestHandler.subscribers.add(GlobalTestHandler.handleChanges.subscribe ({
-      next: pointer => {
-        changeCallCount++;
-        if (initCallCount!=1) {
-          done ("initCallCount not called before handleChange");
-        }
-        if( changeCallCount==4)
-          done ();
+      next: change => {
+        if (change.pointer?.lastElement==='type') // I'm only interested in type changes
+          notifiedCall();
       },
       error: err => {
         done(err);
@@ -112,17 +106,22 @@ describe('GlobalPluginLoaded', () => {
     );
 
     chgeProvider.pushChange(
-      DontCodeTestManager.createAnyChange(ChangeType.UPDATE, 'creation', 'sources', 'aaaa', null, 'Other', 'type')
+      DontCodeTestManager.createAnyChange(ChangeType.UPDATE, 'creation', null, 'sources', 'aaaa', 'Other', 'type')
     );
 
     chgeProvider.pushChange(
-      DontCodeTestManager.createAnyChange(ChangeType.UPDATE, 'creation', 'sources', 'aaaa', null, 'Rest', 'type')
+      DontCodeTestManager.createAnyChange(ChangeType.UPDATE, 'creation', null,'sources', 'aaaa', 'Rest', 'type')
     );
 
     chgeProvider.pushChange(
-      DontCodeTestManager.createAnyChange(ChangeType.DELETE, 'creation', 'sources', 'aaaa',null, null)
+      DontCodeTestManager.createAnyChange(ChangeType.DELETE, 'creation', null, 'sources', 'aaaa', null)
     );
 
+    notifiedInit.waitUntilComplete();
+    notifiedCall.waitUntilComplete();
+    expect(notifiedInit).toHaveBeenCalledTimes(1);
+    expect(notifiedCall).toHaveBeenCalledTimes(4);
+    done();
   });
 
 });
@@ -138,7 +137,7 @@ class GlobalHandlerPluginTest implements Plugin {
       "global-handlers": [
         {
           "location": {
-            "parent": "creation/sources/?",
+            "parent": "creation/sources",
             "id":"type"
           },
           "class": {
@@ -151,3 +150,24 @@ class GlobalHandlerPluginTest implements Plugin {
   }
 }
 
+// Standard code to wait for a number of calls before testing the result
+type WaitableMock = jest.Mock & {
+  waitUntilComplete(): Promise<void>
+}
+
+export const waitableJestFn = (times: number): WaitableMock => {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  let _resolve: Function
+  const promise = new Promise<void>(resolve => _resolve = resolve)
+
+  let i = 0
+  const mock = jest.fn(() => {
+    // debug('mock is called', i, times)
+    if (++i >= times)
+      _resolve()
+  }) as WaitableMock // force casting
+
+  mock.waitUntilComplete = () => promise
+
+  return mock
+}

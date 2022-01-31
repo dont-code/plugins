@@ -15,7 +15,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
   styleUrls: ['./default-viewer.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DefaultViewerComponent extends PluginBaseComponent implements OnInit {
+export class DefaultViewerComponent extends PluginBaseComponent {
 
   fields = new Array<Field>();
   fieldsMap = new Map<string, number>();
@@ -25,10 +25,6 @@ export class DefaultViewerComponent extends PluginBaseComponent implements OnIni
   constructor(loader: ComponentLoaderService, injector: Injector, protected ref: ChangeDetectorRef, protected fb: FormBuilder) {
     super(loader, injector);
     this.setForm( this.fb.group({}, {updateOn: 'blur'}));
-  }
-
-  ngOnInit() {
-
   }
 
   initCommandFlow(provider: CommandProviderInterface, pointer: DontCodeModelPointer) {
@@ -45,7 +41,7 @@ export class DefaultViewerComponent extends PluginBaseComponent implements OnIni
   handleChange(change: Change) {
     super.handleChange(change);
     if (this.entityPointer) {
-      if (change?.pointer?.schemaPosition === DontCodeModel.APP_FIELDS) {
+      if (change?.pointer?.positionInSchema === DontCodeModel.APP_FIELDS) {
         this.applyUpdatesToArrayAsync(this.fields, this.fieldsMap, change, null, (position, value) => {
           return this.loadSubField(value.type, value.name, null).then(component => {
 
@@ -65,7 +61,7 @@ export class DefaultViewerComponent extends PluginBaseComponent implements OnIni
           this.ref.markForCheck();
           this.ref.detectChanges();
         });
-      } else if (change?.pointer?.isPropertyOf(this.entityPointer) === 'name') {
+      } else if (change?.pointer?.isSubItemOf(this.entityPointer) === 'name') {
         // The name of the entity is being changed, let's update it
         this.entityName = change.value;
         this.ref.markForCheck();
@@ -104,7 +100,7 @@ export class DefaultViewerComponent extends PluginBaseComponent implements OnIni
   }
 
   isEntity(): boolean {
-    if (DontCodeModel.APP_ENTITIES === this.entityPointer?.schemaPosition)
+    if (DontCodeModel.APP_ENTITIES === this.entityPointer?.positionInSchema)
       return true;
     return false;
   }
