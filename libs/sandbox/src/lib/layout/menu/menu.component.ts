@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit} from "@angular/core";
 import {Subscription} from "rxjs";
 import {map} from "rxjs/operators";
-import {Change, ChangeType, DontCodeModel} from "@dontcode/core";
+import {Change, ChangeType, DontCodeModel, DontCodeModelPointer} from "@dontcode/core";
 import {Router} from "@angular/router";
 import {MenuItem} from 'primeng/api';
 import {ChangeProviderService} from "../../shared/command/services/change-provider.service";
@@ -122,11 +122,13 @@ export class MenuComponent implements OnInit, OnDestroy {
 
     if (pos===-1)
     {
-      menu= {
-        routerLink: [key],
-        label: change.value.name,
-        icon: 'pi ' + icon
-      }
+      if( change.value?.name) {
+        menu= {
+          routerLink: [key],
+          label: change.value.name,
+          icon: 'pi ' + icon
+        }
+      } else return;
     } else {
       menu = this.getDynamicMenu()[pos];
     }
@@ -135,14 +137,8 @@ export class MenuComponent implements OnInit, OnDestroy {
       case ChangeType.UPDATE:
       case ChangeType.RESET:
       case ChangeType.ADD:
-        if (pos!==-1) {
-          this.getDynamicMenu()[pos] = menu;
-        } else {
-          this.getDynamicMenu().push(menu);
-        }
-        break;
       case ChangeType.DELETE:
-        this.getDynamicMenu().splice(pos, 1);
+        // These are handled at the name change level
         break;
       case ChangeType.MOVE: {
           if( pos!==-1) {
@@ -156,32 +152,45 @@ export class MenuComponent implements OnInit, OnDestroy {
           else
             this.getDynamicMenu().push(menu);
           }
+        this.menus = this.generateMenu();
         break;
     }
-    this.menus = this.generateMenu();
   }
 
   private updateMenuName(command: Change, icon: string) {
-    const key = this.cleanPosition (command.position);
+    const key = this.cleanPosition (DontCodeModelPointer.parentPosition(command.position)!);
     const pos = this.findMenuPosOf (key);
     const name=command.value;
+
+    let menu;
+    if (pos===-1)
+    {
+      menu= {
+        routerLink: [key],
+        label: command.value,
+        icon: 'pi ' + icon
+      }
+    } else {
+      menu = this.getDynamicMenu()[pos];
+    }
 
     switch (command.type) {
       case ChangeType.UPDATE:
       case ChangeType.RESET:
       case ChangeType.ADD:
         if (pos!==-1) {
-          this.getDynamicMenu()[pos].label = name;
-        } else if (name) {
-          this.getDynamicMenu().push({
-            routerLink:[key],
-            label:name,
-            icon:'pi '+icon
-          });
+          menu.label = name;
+        } else {
+          this.getDynamicMenu().push(menu);
         }
         break;
       case ChangeType.DELETE:
-        this.getDynamicMenu().splice(pos, 1);
+        if (pos!==-1)
+          this.getDynamicMenu().splice(pos, 1);
+        break;
+      case ChangeType.MOVE: {
+        // The move is handled at the menu level
+      }
         break;
     }
     this.menus = this.generateMenu();
