@@ -74,24 +74,26 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
   handleChange (change: Change ) {
     //console.log("Changed Entity",change.position);
 
-    this.applyUpdatesToArrayAsync (this.cols, this.colsMap, change, null, (position,value) => {
-      return this.loadSubComponent(position, value).then(component => {
+    if (change.position!==this.entityPointer?.position) {
+      this.applyUpdatesToArrayAsync (this.cols, this.colsMap, change, null, (position,value) => {
+        return this.loadSubComponent(position, value).then(component => {
 
-        const ret= new PrimeColumn(value.name, value.name, value.type);
-        if( component ) {
-          // Keep the component only if it provides the view template
-          if (component.canProvide(value.type).forInlineView) {
-            ret.component=component;
+          const ret= new PrimeColumn(value.name, value.name, value.type);
+          if( component ) {
+            // Keep the component only if it provides the view template
+            if (component.canProvide(value.type).forInlineView) {
+              ret.component=component;
+            }
           }
-        }
-        return ret;
+          return ret;
+        });
+      }).then(updatedColumns => {
+        this.cols = updatedColumns;
+        //  this.reloadData ();
+        this.ref.markForCheck();
+        this.ref.detectChanges();
       });
-    }).then(updatedColumns => {
-      this.cols = updatedColumns;
-      //  this.reloadData ();
-      this.ref.markForCheck();
-      this.ref.detectChanges();
-    });
+    }
   }
 
   providesTemplates(): TemplateList {
