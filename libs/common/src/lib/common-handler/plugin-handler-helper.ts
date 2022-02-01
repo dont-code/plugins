@@ -23,7 +23,7 @@ export class PluginHandlerHelper {
    */
   decomposeJsonToMultipleChanges(pointer: DontCodeModelPointer, json: any): void {
     // Do nothing as now the events are already splitted per subItems
-  /*  if ((typeof(json) === 'object') && (this.provider)) {
+    if ((typeof (json) === 'object') && (this.provider)) {
       let change: Change;
       const schemaManager = this.provider.getSchemaManager();
       for (const prop in json) {
@@ -34,7 +34,7 @@ export class PluginHandlerHelper {
             this.decomposeJsonToMultipleChanges(subPropertyPointer, json[prop]);
           } else {
             change = new Change(
-              ChangeType.ADD,
+              ChangeType.RESET,
               pointer.position + '/' + prop,
               json[prop],
               subPropertyPointer);
@@ -49,7 +49,7 @@ export class PluginHandlerHelper {
           }
         }
       }
-    }*/
+    }
   }
 
   /**
@@ -58,7 +58,7 @@ export class PluginHandlerHelper {
    */
   initChangeListening() {
     if ((this.provider) && (this.entityPointer)) {
-      this.subscriptions.add(this.provider.receiveCommands(this.entityPointer.position).pipe(
+      this.subscriptions.add(this.provider.receiveCommands(this.entityPointer.position+'/?').pipe(
         map(change => {
           if (this.changeHandler)
             this.changeHandler.handleChange(change);
@@ -119,6 +119,7 @@ export class PluginHandlerHelper {
     switch (change.type) {
       case ChangeType.ADD:
       case ChangeType.UPDATE:
+      case ChangeType.RESET:
         if (change.pointer.isProperty === true)  // It's not a replacement of the item but a change in one of its property
         {
           // Can we try to update directly the sub property?

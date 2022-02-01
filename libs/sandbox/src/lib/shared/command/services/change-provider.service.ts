@@ -19,12 +19,7 @@ export class ChangeProviderService implements CommandProviderInterface {
   constructor(protected changeListener: ChangeListenerService, protected valueService:ValueService) {
     this.subscriptions.add(changeListener.getChangeEvents().subscribe(change => {
       // console.log ('Received Change ', change);
-      const subChanges = this.valueService.applyChange (change);
       this.pushChange(change);
-        // Sends as well the subChanges induced by this change
-      subChanges.forEach(subChange => {
-        this.pushChange(subChange);
-      });
     })
     );
   }
