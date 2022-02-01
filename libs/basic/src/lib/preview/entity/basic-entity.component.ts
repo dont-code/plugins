@@ -101,7 +101,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
       }
     }
     if( this.entityPointer) {
-      const prop = change.pointer.getUnderPropertyOf(this.entityPointer);
+      const prop = change.pointer.isUnderSubItemOf(this.entityPointer);
       if( prop ) {
         switch (prop) {
           case     DontCodeModel.APP_ENTITIES_NAME_NODE:

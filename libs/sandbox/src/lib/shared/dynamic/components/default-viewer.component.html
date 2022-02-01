@@ -1,6 +1,6 @@
 <dtcde-dynamic></dtcde-dynamic>
 <ng-container *ngIf="!isEntity()">
-  <p>No handler found for position {{entityPointer?.position}} and schemaPosition {{entityPointer?.schemaPosition}}</p>
+  <p>No handler found for position {{entityPointer?.position}} and schemaPosition {{entityPointer?.positionInSchema}}</p>
 </ng-container>
 <ng-container *ngIf="isEntity()">
   <p>You can edit the {{entityName}} entity:</p>

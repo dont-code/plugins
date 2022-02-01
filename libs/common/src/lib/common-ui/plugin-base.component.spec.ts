@@ -42,7 +42,7 @@ describe('PluginBaseComponent', () => {
       "type": "number"
     });
     const provider = new TestProviderInterface(null);
-    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer?.containerSchemaPosition as string) );
+    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer?.containerPositionInSchema as string) );
 
     // Simple results first
     const map = new Map<string, any>();
@@ -136,7 +136,7 @@ describe('PluginBaseComponent', () => {
       resultA);
     // tslint:disable-next-line:no-shadowed-variable
     const provider = new TestProviderInterface(null);
-    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer?.containerSchemaPosition as string) );
+    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer?.containerPositionInSchema as string) );
     component.applyUpdatesToArrayAsync(array, map, change, 'fields', transformToTarget).then (array => {
 
     change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'b',
@@ -232,7 +232,7 @@ describe('PluginBaseComponent', () => {
     let change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'a',
       resultA);
     const provider = new TestProviderInterface(null);
-    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer?.containerSchemaPosition as string) );
+    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer?.containerPositionInSchema as string) );
     // tslint:disable-next-line:no-shadowed-variable
     component.applyUpdatesToArrayAsync(array, map, change, 'fields', transformToTarget).then (array => {
 
@@ -328,7 +328,7 @@ describe('PluginBaseComponent', () => {
   }
 
   function createPointer(position: string) {
-    return new DontCodeModelPointer(position, position,position,position,"test", null);
+    return new DontCodeModelPointer(position+'/test', position+'/test',undefined,undefined,"test", true);
   }
 
 });

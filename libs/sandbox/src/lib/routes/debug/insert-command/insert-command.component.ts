@@ -178,6 +178,7 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
   }
 
   private pushChange(type: string, position: string, valueOrBeforeKey: any) {
+    if (position==='/') position = '';
     const toSend = new Change(ChangeType[type as keyof typeof ChangeType], position, valueOrBeforeKey);
     if( type===ChangeType.MOVE) {
       toSend.value=null;

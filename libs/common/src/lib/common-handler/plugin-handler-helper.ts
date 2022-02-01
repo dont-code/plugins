@@ -18,29 +18,30 @@ export class PluginHandlerHelper {
   /**
    * When the component is created for display, it receives the initial data as complete Json.
    * If it wants, it can call this method who will call handleChange for each property.
-   * This will avoid to duplicate code (first time when a complete json is sent, second when subelements are sent)
+   * This will avoid to duplicate code (first when a complete json is sent, then when subelements are sent)
    * @protected
    */
   decomposeJsonToMultipleChanges(pointer: DontCodeModelPointer, json: any): void {
-    if ((json) && (this.provider)) {
+    // Do nothing as now the events are already splitted per subItems
+    if ((typeof (json) === 'object') && (this.provider)) {
       let change: Change;
       const schemaManager = this.provider.getSchemaManager();
       for (const prop in json) {
         if (json.hasOwnProperty(prop)) {
           const subPropertyPointer = schemaManager.generateSubSchemaPointer(pointer, prop);
-          const propType = schemaManager.locateItem(subPropertyPointer.schemaPosition);
-          if ((propType?.isArray()) && (!subPropertyPointer.itemId)) {
+          const propType = schemaManager.locateItem(subPropertyPointer.positionInSchema);
+          if ((propType?.isArray()) && (subPropertyPointer.isProperty)) {
             this.decomposeJsonToMultipleChanges(subPropertyPointer, json[prop]);
           } else {
             change = new Change(
-              ChangeType.ADD,
+              ChangeType.RESET,
               pointer.position + '/' + prop,
               json[prop],
               subPropertyPointer);
             if ((!propType) && (change.pointer)) {
               // This is not a sub property but a subItem of an array
-              change.pointer.itemId = change.pointer.key;
-              change.pointer.key = null;
+              //change.pointer.itemId = change.pointer.key;
+              change.pointer.isProperty = false;
             }
 
             if (this.changeHandler)
@@ -57,7 +58,7 @@ export class PluginHandlerHelper {
    */
   initChangeListening() {
     if ((this.provider) && (this.entityPointer)) {
-      this.subscriptions.add(this.provider.receiveCommands(this.entityPointer.position).pipe(
+      this.subscriptions.add(this.provider.receiveCommands(this.entityPointer.position+'/?').pipe(
         map(change => {
           if (this.changeHandler)
             this.changeHandler.handleChange(change);
@@ -118,13 +119,14 @@ export class PluginHandlerHelper {
     switch (change.type) {
       case ChangeType.ADD:
       case ChangeType.UPDATE:
-        if (change.pointer.itemId == null)  // It's not a replacement of the item but a change in one of its property
+      case ChangeType.RESET:
+        if (change.pointer.isProperty === true)  // It's not a replacement of the item but a change in one of its property
         {
           // Can we try to update directly the sub property?
           if ((!newTarget) || (
             (newTarget) &&
             ((!applyProperty)
-              || (!applyProperty(newTarget, change.pointer.key, change.value))
+              || (!applyProperty(newTarget, change.pointer.lastElement, change.value))
             ))
           ) {
             // It cannot be dynamically updated by the caller, so we do a full replacement

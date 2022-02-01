@@ -92,31 +92,34 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
    * @protected
    */
   handleChange(change: Change) {
-    this.applyUpdatesToArrayAsync (this.fields, this.fieldsMap, change, null, (position,value) => {
-      return this.loadSubComponent(position, value).then(component => {
-        if( component) {
-          component.setName(value.name);
-          component.setForm(this.form);
-        }
-        return new FormElement(value.name, value.type, component);
-      });
-    }, (elt, key, newVal) => {
-        switch (key) {
-          case DontCodeModel.APP_FIELDS_NAME_NODE:
-            elt.name = newVal;
-            break;
-          default:
-            return false;
-        }
-        return true;
-      }
-      ).then (updatedFields => {
-      this.fields = updatedFields;
-      this.rebuildForm();
-      this.ref.markForCheck();
-      this.ref.detectChanges();
+    if (change.position!==this.entityPointer?.position) {
 
-    });
+      this.applyUpdatesToArrayAsync(this.fields, this.fieldsMap, change, null, (position, value) => {
+          return this.loadSubComponent(position, value).then(component => {
+            if (component) {
+              component.setName(value.name);
+              component.setForm(this.form);
+            }
+            return new FormElement(value.name, value.type, component);
+          });
+        }, (elt, key, newVal) => {
+          switch (key) {
+            case DontCodeModel.APP_FIELDS_NAME_NODE:
+              elt.name = newVal;
+              break;
+            default:
+              return false;
+          }
+          return true;
+        }
+      ).then(updatedFields => {
+        this.fields = updatedFields;
+        this.rebuildForm();
+        this.ref.markForCheck();
+        this.ref.detectChanges();
+
+      });
+    }
   }
 
   /**
