@@ -106,7 +106,7 @@ export class ChangeListenerService {
       if (this.projectUrl){
          return this.http.get<IdeProject>(this.projectUrl + '/' + encodeURIComponent(projectId), {responseType: 'json'}).toPromise().then (project => {
            // Create a new Reset change
-           const resetChange = new Change(ChangeType.RESET, "/", project.content);
+           const resetChange = new Change(ChangeType.RESET, "", project.content);
            this.listOfChanges.push(resetChange);
            this.changeEmitter.next(resetChange);
            return project;
