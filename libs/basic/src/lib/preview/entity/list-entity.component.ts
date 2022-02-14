@@ -77,7 +77,6 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
     //console.log("Changed Entity",change.position);
 
     if (change.position!==this.entityPointer?.position) {
-      const mutex = new Mutex().acquire().then(release => {
         // Columns have been changed
         this.applyUpdatesToArrayAsync(this.cols, this.colsMap, change, null, (position, value) => {
           return this.loadSubComponent(position, value).then(component => {
@@ -96,10 +95,7 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
           //  this.reloadData ();
           this.ref.markForCheck();
           this.ref.detectChanges();
-        }).finally(() => {
-          release();
         })
-      })
     }
   }
 
