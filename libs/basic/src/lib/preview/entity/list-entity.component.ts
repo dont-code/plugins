@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   EventEmitter,
@@ -18,6 +19,7 @@ import {
   PossibleTemplateList,
   TemplateList
 } from "@dontcode/plugin-common";
+import {Mutex} from "async-mutex";
 
 
 @Component({
@@ -60,7 +62,7 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
 
     if (!this.entityPointer)  throw new Error ('Cannot listen to changes without knowing a base position');
     this.decomposeJsonToMultipleChanges (this.entityPointer, provider.getJsonAt(this.entityPointer.position)); // Dont provide a special handling for initial json, but emulate a list of changes
-    this.initChangeListening (); // Listen to all changes occuring after entityPointer
+    this.initChangeListening (true); // Listen to all changes occuring after entityPointer
     } finally {
       this.initing=false;
     }
@@ -75,24 +77,29 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
     //console.log("Changed Entity",change.position);
 
     if (change.position!==this.entityPointer?.position) {
-      this.applyUpdatesToArrayAsync (this.cols, this.colsMap, change, null, (position,value) => {
-        return this.loadSubComponent(position, value).then(component => {
+      const mutex = new Mutex().acquire().then(release => {
+        // Columns have been changed
+        this.applyUpdatesToArrayAsync(this.cols, this.colsMap, change, null, (position, value) => {
+          return this.loadSubComponent(position, value).then(component => {
 
-          const ret= new PrimeColumn(value.name, value.name, value.type);
-          if( component ) {
-            // Keep the component only if it provides the view template
-            if (component.canProvide(value.type).forInlineView) {
-              ret.component=component;
+            const ret = new PrimeColumn(value.name, value.name, value.type);
+            if (component) {
+              // Keep the component only if it provides the view template
+              if (component.canProvide(value.type).forInlineView) {
+                ret.component = component;
+              }
             }
-          }
-          return ret;
-        });
-      }).then(updatedColumns => {
-        this.cols = updatedColumns;
-        //  this.reloadData ();
-        this.ref.markForCheck();
-        this.ref.detectChanges();
-      });
+            return ret;
+          });
+        }).then(updatedColumns => {
+          this.cols = updatedColumns;
+          //  this.reloadData ();
+          this.ref.markForCheck();
+          this.ref.detectChanges();
+        }).finally(() => {
+          release();
+        })
+      })
     }
   }
 

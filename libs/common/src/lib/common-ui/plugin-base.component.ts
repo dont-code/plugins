@@ -35,8 +35,8 @@ export abstract class PluginBaseComponent extends AbstractDynamicLoaderComponent
     this.pluginHelper.initCommandFlow(provider, pointer, this);
   }
 
-  protected initChangeListening() {
-    this.pluginHelper.initChangeListening();
+  protected initChangeListening(subElement?:boolean) {
+    this.pluginHelper.initChangeListening(subElement);
   }
 
   /**
