@@ -109,13 +109,17 @@ export class PluginHandlerHelper {
             if (!change.pointer) {
               change.pointer = this.provider.calculatePointerFor(change.position);
             }
-            const itemId = change.pointer.calculateItemIdOrContainer();
+              // If the change concerns the array, then calculates it's element (itemId)
+            const subItem = change.pointer.containerPosition===this.entityPointer?.position;
+            let itemId = subItem?change.pointer.lastElement:DontCodeModelPointer.lastElementOf(change.pointer.containerPosition)??null;
+
+            let propertyId = change.pointer.isProperty?change.pointer.lastElement:null;
             let futureTarget: Observable<T> | null = null;
             let newTarget: T | null = null;
             let pos = -1;
             let targetPos = -1;
 
-            if ((itemId) && (targetMap.has(itemId))) {  // Does the target item already exist ?
+            if ((itemId!=null) && (targetMap.has(itemId))) {  // Does the target item already exist ?
               pos = targetMap.get(itemId) as number;
               newTarget = target[pos];
               futureTarget = of(newTarget);
@@ -128,18 +132,26 @@ export class PluginHandlerHelper {
               case ChangeType.ADD:
               case ChangeType.UPDATE:
               case ChangeType.RESET:
-                if (change.pointer.isProperty === true)  // It's not a replacement of the item but a change in one of its property
+                if (propertyId!=null)  // It's not a replacement of the item but a change in one of its property
                 {
                   // Can we try to update directly the sub property?
                   if ((!newTarget) || (
                     (newTarget) &&
                     ((!applyProperty)
-                      || (!applyProperty(newTarget, change.pointer.lastElement, change.value))
+                      || (!applyProperty(newTarget, propertyId, change.value))
                     ))
                   ) {
-                    // It cannot be dynamically updated by the caller, so we do a full replacement
-                    const fullValue = this.provider.getJsonAt(change.pointer.containerPosition as string);
-                    futureTarget = from(transform(this.provider.calculatePointerFor(change.pointer.containerPosition as string), fullValue));
+                      // It cannot be dynamically updated by the caller, so we do a full replacement
+                      const fullValue = this.provider.getJsonAt(change.pointer.containerPosition as string);
+                      //if (change.value!==fullValue[propertyId]) { Don't check as the new value as already been set in the json
+                        const parentPointer = this.provider.calculatePointerFor(change.pointer.containerPosition as string);
+                        if (parentPointer.isProperty)
+                          throw new Error ("A parent of a property "+change.pointer.position+" must be an array");
+                        futureTarget = from(transform(parentPointer, fullValue));
+/*                      }else {
+                        // We set the same value, so nothing changed
+                        futureTarget = null;
+                      }*/
                   }
                 } else {
                   // The new value replace the old one
@@ -147,7 +159,7 @@ export class PluginHandlerHelper {
                 }
                 break;
               case ChangeType.MOVE:
-                if (pos !== -1) {
+                if ((pos !== -1)&&(subItem)&&(itemId)) {
                   // We delete the element moved, it will be inserted at the right position later
                   if ((targetPos !== -1) && (targetPos > pos))
                     targetPos--;
@@ -158,25 +170,21 @@ export class PluginHandlerHelper {
                       targetMap.set(key, value - 1);
                     }
                   });
-                  if (itemId)
-                    targetMap.delete(itemId);
-                  else
-                    throw new Error('Cannot move ' + change.position + ' without knowing the itemId');
+                  targetMap.delete(itemId);
                   pos = -1;
                 }
                 break;
               case ChangeType.DELETE:
-                target.splice(pos, 1);
-                // Recalculate all indexes in targetMap
-                targetMap.forEach((value, key) => {
-                  if (value > pos) {
-                    targetMap.set(key, value - 1);
-                  }
-                });
-                if (itemId)
+                if ((pos!==-1)&&(subItem)&&(itemId)) {
+                  target.splice(pos, 1);
+                  // Recalculate all indexes in targetMap
+                  targetMap.forEach((value, key) => {
+                    if (value > pos) {
+                      targetMap.set(key, value - 1);
+                    }
+                  });
                   targetMap.delete(itemId);
-                else
-                  throw new Error('Cannot delete ' + change.position + ' without knowing the itemId');
+                }
                 futureTarget = null;
                 break;
             }
@@ -196,7 +204,7 @@ export class PluginHandlerHelper {
                       targetMap.set(key, value + 1);
                     }
                   });
-                  if (itemId)
+                  if (itemId!=null)
                     targetMap.set(itemId, targetPos);
                   else
                     throw new Error('Cannot set targetPos ' + targetPos + ' without knowing the itemId');
@@ -204,7 +212,7 @@ export class PluginHandlerHelper {
                 } else {
                   // Insert the element at the end
                   target.push(result);
-                  if (itemId)
+                  if (itemId!=null)
                     targetMap.set(itemId, targetMap.size);
                   else
                     throw new Error('Cannot set targetPos ' + targetPos + ' without knowing the itemId');
