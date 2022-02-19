@@ -49,8 +49,10 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent{
 
   setForm(form: FormGroup) {
     super.setForm(form);
-    if( this.group)
+    if( this.group) {
       this.group.registerControl('amount', this.control);
+      this.preloadCurrencyField ();
+    }
     else
       throw new Error ('Group must be created before setting parent form');
 
@@ -100,12 +102,16 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent{
 
   ngAfterViewInit() {
     super.ngAfterViewInit();
-    if (this.group) {
-        // Only load currency component in edit mode
-      this.loadSubField('Currency', 'currencyCode', this.value.currencyCode).then(() => {
-        // Nothing to do
-      });
-    }
-
+    this.preloadCurrencyField();
   }
+
+  preloadCurrencyField ()
+    {
+      // Only load currency component to the cache in edit mode
+      if (this.group) {
+        this.loadSubField('Currency', 'currencyCode', this.value.currencyCode).then(() => {
+          // Nothing to do
+        });
+      }
+    }
 }
