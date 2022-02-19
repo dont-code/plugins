@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 
 import {PluginBaseComponent} from "./plugin-base.component";
-import {Component} from "@angular/core";
+import {Component, Injector} from "@angular/core";
 import {
   Change,
   CommandProviderInterface,
@@ -12,6 +12,7 @@ import {
 } from "@dontcode/core";
 import {Observable} from "rxjs";
 import {PossibleTemplateList, TemplateList} from "./template-list";
+import {ComponentLoaderService} from "@dontcode/plugin-common";
 
 
 describe('PluginBaseComponent', () => {
@@ -42,7 +43,7 @@ describe('PluginBaseComponent', () => {
       "type": "number"
     });
     const provider = new TestProviderInterface(null);
-    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer?.containerPositionInSchema as string) );
+    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer?.containerPosition as string) );
 
     // Simple results first
     const map = new Map<string, any>();
@@ -136,7 +137,7 @@ describe('PluginBaseComponent', () => {
       resultA);
     // tslint:disable-next-line:no-shadowed-variable
     const provider = new TestProviderInterface(null);
-    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer?.containerPositionInSchema as string) );
+    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer?.containerPosition as string) );
     component.applyUpdatesToArrayAsync(array, map, change, 'fields', transformToTarget).then (array => {
 
     change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'b',
@@ -232,7 +233,7 @@ describe('PluginBaseComponent', () => {
     let change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'a',
       resultA);
     const provider = new TestProviderInterface(null);
-    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer?.containerPositionInSchema as string) );
+    component.initCommandFlow(provider, provider.calculatePointerFor(change.pointer?.containerPosition as string) );
     // tslint:disable-next-line:no-shadowed-variable
     component.applyUpdatesToArrayAsync(array, map, change, 'fields', transformToTarget).then (array => {
 
@@ -372,6 +373,10 @@ class TestProviderInterface implements CommandProviderInterface {
   template: ``
 })
 class TestBaseComponent extends PluginBaseComponent {
+  constructor(protected cls:ComponentLoaderService, protected inj:Injector) {
+    super(cls,inj);
+  }
+
   handleChange(change: Change) {
   }
 

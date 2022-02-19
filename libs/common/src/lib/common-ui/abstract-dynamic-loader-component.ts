@@ -39,15 +39,20 @@ export abstract class AbstractDynamicLoaderComponent extends AbstractDynamicComp
   }
 
   loadSubField(type:string, formName:string, subValue:any): Promise<DynamicComponent|null> {
-    return this.loader.loadComponentFactoryForFieldType(type).then (componentFactory => {
-      if (componentFactory) {
-        const comp= this.loader.createComponent(componentFactory, this.dynamicInsertPoint, null);
-        this.prepareComponent (comp, formName, subValue);
-        return comp;
-      } else {
-        return null;
-      }
-    });
+    const component = this.componentsByFormName.get(formName);
+    if( component==null) {
+      return this.loader.loadComponentFactoryForFieldType(type).then (componentFactory => {
+        if (componentFactory) {
+          const comp= this.loader.createComponent(componentFactory, this.dynamicInsertPoint, null);
+          this.prepareComponent (comp, formName, subValue);
+          return comp;
+        } else {
+          return null;
+        }
+      });
+    } else {
+      return Promise.resolve(component);
+    }
   }
 
   getSubFieldValue(formName: string): any {

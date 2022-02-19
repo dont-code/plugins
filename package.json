@@ -30,7 +30,7 @@
   },
   "private": true,
   "dependencies": {
-    "@angular-architects/module-federation-runtime": "^12.5.2",
+    "@angular-architects/module-federation-runtime": "^12.5.3",
     "@angular/animations": "^12.2.13",
     "@angular/cdk": "^12.2.13",
     "@angular/common": "^12.2.13",
@@ -48,6 +48,7 @@
     "@ngrx/component-store": "12.5.1",
     "@nrwl/angular": "13.1.4",
     "all-country-data": "^0.1.1",
+    "async-mutex": "^0.3.2",
     "broadcast-channel": "^4.5.0",
     "core-js": "^3.19.1",
     "dexie": "^3.2.0",

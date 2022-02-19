@@ -81,7 +81,7 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
 
     if (!this.entityPointer)  throw new Error ('Cannot listen to changes without knowing a base position');
     this.decomposeJsonToMultipleChanges (this.entityPointer, provider.getJsonAt(this.entityPointer.position)); // Dont provide a special handling for initial json, but emulate a list of changes
-    this.initChangeListening (); // Listen to all changes occuring after entityPointer
+    this.initChangeListening (true); // Listen to all changes occuring after entityPointer
     //this.initing=false;
     this.rebuildForm();
   }
