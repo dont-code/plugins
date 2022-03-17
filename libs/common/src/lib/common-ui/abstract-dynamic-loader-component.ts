@@ -29,7 +29,7 @@ export abstract class AbstractDynamicLoaderComponent extends AbstractDynamicComp
   }
 
   setForm(form: FormGroup): void {
-    this.form=form;
+    super.setForm(form);
     if (this.name) {
       this.group = new FormGroup({},{updateOn:'blur'});
       this.form.registerControl(this.name, this.group);

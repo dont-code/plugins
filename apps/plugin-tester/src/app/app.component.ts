@@ -9,6 +9,5 @@ import {dtcde} from "@dontcode/core";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent extends BaseAppComponent{
-
 }
 
