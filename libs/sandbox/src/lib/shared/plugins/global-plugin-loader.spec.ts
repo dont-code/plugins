@@ -4,7 +4,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {dtcde, PluginConfig, PluginModuleInterface, PreviewHandler, Plugin, Change, ChangeType, DontCodeTestManager, CommandProviderInterface, DontCodeModelPointer} from '@dontcode/core';
 import {NgModule} from "@angular/core";
 import {ChangeProviderService} from "../command/services/change-provider.service";
-import {Subject, Subscriber} from "rxjs";
+import {asyncScheduler, Subject, Subscriber} from "rxjs";
 import {PluginHandlerHelper} from "@dontcode/plugin-common";
 
 
@@ -77,10 +77,6 @@ describe('GlobalPluginLoaded', () => {
     const notifiedInit = waitableJestFn(1);
     const notifiedCall = waitableJestFn(4);
 
-    const previewMgr = dtcde.getPreviewManager();
-    previewMgr.registerHandlers(new GlobalHandlerPluginTest().getConfiguration());
-    loader.initLoading(previewMgr);
-
     GlobalTestHandler.subscribers.add(GlobalTestHandler.initCalls.subscribe ({
       next: pointer => {
         notifiedInit();
@@ -100,28 +96,35 @@ describe('GlobalPluginLoaded', () => {
       }
     }));
 
-    const chgeProvider = TestBed.inject(ChangeProviderService);
-    chgeProvider.pushChange(
-      DontCodeTestManager.createAnyChange(ChangeType.ADD, 'creation', null, 'sources','aaaa', {type:'Rest', url:'https://test/url'})
-    );
+    const previewMgr = dtcde.getPreviewManager();
+    previewMgr.registerHandlers(new GlobalHandlerPluginTest().getConfiguration());
+    loader.initLoading(previewMgr);
 
-    chgeProvider.pushChange(
-      DontCodeTestManager.createAnyChange(ChangeType.UPDATE, 'creation', null, 'sources', 'aaaa', 'Other', 'type')
-    );
+      // Ensure the initialization is done before the changes are handled
+    asyncScheduler.schedule(() => {
+      const chgeProvider = TestBed.inject(ChangeProviderService);
+      chgeProvider.pushChange(
+        DontCodeTestManager.createAnyChange(ChangeType.ADD, 'creation', null, 'sources','aaaa', {type:'Rest', url:'https://test/url'})
+      );
 
-    chgeProvider.pushChange(
-      DontCodeTestManager.createAnyChange(ChangeType.UPDATE, 'creation', null,'sources', 'aaaa', 'Rest', 'type')
-    );
+      chgeProvider.pushChange(
+        DontCodeTestManager.createAnyChange(ChangeType.UPDATE, 'creation', null, 'sources', 'aaaa', 'Other', 'type')
+      );
 
-    chgeProvider.pushChange(
-      DontCodeTestManager.createAnyChange(ChangeType.DELETE, 'creation', null, 'sources', 'aaaa', null)
-    );
+      chgeProvider.pushChange(
+        DontCodeTestManager.createAnyChange(ChangeType.UPDATE, 'creation', null,'sources', 'aaaa', 'Rest', 'type')
+      );
 
-    notifiedInit.waitUntilComplete();
-    notifiedCall.waitUntilComplete();
-    expect(notifiedInit).toHaveBeenCalledTimes(1);
-    expect(notifiedCall).toHaveBeenCalledTimes(4);
-    done();
+      chgeProvider.pushChange(
+        DontCodeTestManager.createAnyChange(ChangeType.DELETE, 'creation', null, 'sources', 'aaaa', null)
+      );
+
+      notifiedInit.waitUntilComplete();
+      notifiedCall.waitUntilComplete();
+      expect(notifiedInit).toHaveBeenCalledTimes(1);
+      expect(notifiedCall).toHaveBeenCalledTimes(4);
+      done();
+    });
   });
 
 });

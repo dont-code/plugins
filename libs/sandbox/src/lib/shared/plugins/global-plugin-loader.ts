@@ -33,6 +33,7 @@ export class GlobalPluginLoader {
         }),
         mergeMap (result => {
           const clazz: Type<PreviewHandler> = result.moduleRef.instance.exposedPreviewHandlers().get(result.config.class.name);
+//          console.log('ReceiveCommands');
           return this.changeService.receiveCommands(result.config.location.parent, result.config.location.id).pipe(map(change => {
             return {clazz,moduleRef:result.moduleRef,change}
           }));
