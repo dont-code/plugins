@@ -35,7 +35,7 @@ export class DefaultViewerComponent extends PluginBaseComponent {
       this.decomposeJsonToMultipleChanges(pointer, provider.getJsonAt(pointer.position));
       this.store = dtcde.getStoreManager().getProvider(pointer.position);
       if (this.store!=null) {
-        this.store.loadEntity(pointer.position,pointer.lastElement).then ( val => {
+        this.store.loadEntity(pointer.position,null).then ( val => {
           this.setValue( val);
           this.rebuildForm();
           this.ref.detectChanges();
