@@ -16,6 +16,7 @@ import {
 } from '@dontcode/core';
 import {DynamicComponent} from "../common-ui/dynamic-component";
 import {COMMAND_PROVIDER} from "../common-global/globals";
+import {Mutex} from "async-mutex";
 
 /**
  * Manages the dynamic loading of components able to display a data located at a specific pointer position
@@ -32,6 +33,7 @@ export class ComponentLoaderService {
 
   protected moduleMap = new Map<string, NgModuleRef<PluginModuleInterface>>();
   protected factoryMap = new Map<{ source:string, name:string }, FactoryBuilder>();
+  mutex = new Mutex();
 
   constructor(protected componentFactoryResolver: ComponentFactoryResolver, protected injector:Injector, @Optional() @Inject(COMMAND_PROVIDER) protected provider?:CommandProviderInterface) {
     this.previewMgr = dtcde.getPreviewManager();
@@ -41,14 +43,20 @@ export class ComponentLoaderService {
     return this.loadComponentFactory('creation/entities/fields/type', type);
   }
 
-  loadPluginModule (handlerConfig: ChangeHandlerConfig): NgModuleRef<PluginModuleInterface> {
-    let moduleRef = this.moduleMap.get(handlerConfig.class.source);
-    if (!moduleRef) {
-      moduleRef = getModuleFactory('dontcode-plugin/' + handlerConfig.class.source)?.create(this.injector);
-      if( moduleRef)
-        this.moduleMap.set(handlerConfig.class.source, moduleRef);
-    }
-    return moduleRef;
+  loadPluginModule (handlerConfig: ChangeHandlerConfig): Promise<NgModuleRef<PluginModuleInterface>> {
+    return this.mutex.acquire().then(release => {
+      try {
+      let moduleRef = this.moduleMap.get(handlerConfig.class.source);
+      if (!moduleRef) {
+        moduleRef = getModuleFactory('dontcode-plugin/' + handlerConfig.class.source)?.create(this.injector);
+        if (moduleRef)
+          this.moduleMap.set(handlerConfig.class.source, moduleRef);
+        }
+        return moduleRef;
+      } finally {
+        release();
+      }
+    });
   }
 
   loadComponentFactory(schemaPosition: DontCodeModelPointer | string, currentJson?: any): Promise<FactoryBuilder|null> {
@@ -67,19 +75,21 @@ export class ComponentLoaderService {
       console.log("Importing from ", handlerConfig.class.source);
       // First lets try if the plugin is imported during the compilation
 
-      const moduleRef = this.loadPluginModule(handlerConfig);
-      if( !moduleRef)
-        return Promise.reject("Cannot load module for source "+handlerConfig.class.source)
-      //console.log ("Applying component");
-      let componentFactory = this.factoryMap.get(handlerConfig.class) || null;
-      if (!componentFactory) {
-        const factory = this.componentFactoryResolver.resolveComponentFactory(moduleRef.instance.exposedPreviewHandlers().get(handlerConfig.class.name)) as ComponentFactory<DynamicComponent>;
-        if( factory) {
-          componentFactory={moduleRef:moduleRef, factory:factory} as FactoryBuilder;
-          this.factoryMap.set(handlerConfig.class, componentFactory);
+      return this.loadPluginModule(handlerConfig).then(moduleRef => {
+        let componentFactory = this.factoryMap.get(handlerConfig.class) || null;
+        if (!componentFactory) {
+          const factory = this.componentFactoryResolver.resolveComponentFactory(moduleRef.instance.exposedPreviewHandlers().get(handlerConfig.class.name)) as ComponentFactory<DynamicComponent>;
+          if( factory) {
+            componentFactory={moduleRef:moduleRef, factory:factory} as FactoryBuilder;
+            this.factoryMap.set(handlerConfig.class, componentFactory);
+          }
         }
-      }
-      return Promise.resolve(componentFactory);
+        return componentFactory;
+
+      }).catch (reason => {
+        return Promise.reject("Cannot load module for source "+handlerConfig.class.source+' because of '+reason);
+      })
+      //console.log ("Applying component");
     } else {
       return Promise.resolve(null);
     }

@@ -1,6 +1,6 @@
 import {Change, ChangeType, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
-import {combineAll, finalize, map, mergeAll, switchAll, take, takeUntil} from "rxjs/operators";
-import {defer, from, Observable, of, Subject, Subscription} from "rxjs";
+import {map} from "rxjs/operators";
+import {from, Observable, of, Subscription} from "rxjs";
 import {Mutex} from "async-mutex";
 
 export class PluginHandlerHelper {
@@ -110,7 +110,10 @@ export class PluginHandlerHelper {
               change.pointer = this.provider.calculatePointerFor(change.position);
             }
               // If the change concerns the array, then calculates it's element (itemId)
-            const subItem = change.pointer.containerPosition===this.entityPointer?.position;
+            let parentPosition=this.entityPointer?.position;
+            if (property!=null)
+              parentPosition = parentPosition+'/'+property;
+            const subItem = change.pointer.containerPosition===parentPosition;
             let itemId = subItem?change.pointer.lastElement:DontCodeModelPointer.lastElementOf(change.pointer.containerPosition)??null;
 
             let propertyId = change.pointer.isProperty?change.pointer.lastElement:null;

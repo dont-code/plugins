@@ -27,16 +27,18 @@ export class GlobalPluginLoader {
     this.subscribers.add(
       previewManager.receiveGlobalHandlers().pipe (
         mergeMap (config => {
-          const moduleRef = this.loader.loadPluginModule(config);
-          if( !moduleRef)
-            throwError(new Error ('Cannot find module for '+config.class.name));
-          const clazz: Type<PreviewHandler> = moduleRef.instance.exposedPreviewHandlers().get(config.class.name);
-          return this.changeService.receiveCommands(config.location.parent, config.location.id).pipe(map(change => {
-            return {clazz,moduleRef,change}
+          return this.loader.loadPluginModule(config).then(moduleRef => {
+            return {config, moduleRef};
+          });
+        }),
+        mergeMap (result => {
+          const clazz: Type<PreviewHandler> = result.moduleRef.instance.exposedPreviewHandlers().get(result.config.class.name);
+//          console.log('ReceiveCommands');
+          return this.changeService.receiveCommands(result.config.location.parent, result.config.location.id).pipe(map(change => {
+            return {clazz,moduleRef:result.moduleRef,change}
           }));
         }),
         map ( project => {
-
 
           let handler = this.cachedHandlers.get(project.clazz);
           if( !handler) {

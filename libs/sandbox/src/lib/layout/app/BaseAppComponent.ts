@@ -5,6 +5,7 @@ import {ChangeListenerService} from "../../shared/change/services/change-listene
 import {ChangeProviderService} from "../../shared/command/services/change-provider.service";
 import {EMPTY, from, Observable, of, Subscription} from "rxjs";
 import {map, mergeMap} from "rxjs/operators";
+import {GlobalPluginLoader} from "../../shared/plugins/global-plugin-loader";
 
 @Component({
   template:''
@@ -21,6 +22,8 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy{
 
   protected provider: ChangeProviderService;
 
+  protected globalPluginLoader?: GlobalPluginLoader;
+
   constructor(  protected injector:Injector) {
     this.provider = injector.get(ChangeProviderService);
     this.storage = injector.get(IndexedDbStorageService);
@@ -28,6 +31,11 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy{
   }
 
   ngOnInit(): void {
+
+      // Manage the global plugins
+    this.globalPluginLoader = this.injector.get(GlobalPluginLoader);
+    this.globalPluginLoader.initLoading(dtcde.getPreviewManager());
+      // Manage the store manager
     dtcde.getStoreManager().setProvider(this.storage);
     this.subscription.add(this.provider.receiveCommands(DontCodeModel.APP_SHARING, DontCodeModel.APP_SHARING_WITH_NODE).pipe (mergeMap(change => {
       if (change.type!== ChangeType.DELETE) {

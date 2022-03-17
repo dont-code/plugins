@@ -1,4 +1,4 @@
-import {Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer} from "@dontcode/core";
+import {Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, DontCodeStoreProvider, dtcde} from "@dontcode/core";
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, OnInit, TemplateRef} from "@angular/core";
 import {
   ComponentLoaderService,
@@ -22,6 +22,8 @@ export class DefaultViewerComponent extends PluginBaseComponent {
 
   entityName = 'Unknown';
 
+  store?: DontCodeStoreProvider;
+
   constructor(loader: ComponentLoaderService, injector: Injector, protected ref: ChangeDetectorRef, protected fb: FormBuilder) {
     super(loader, injector);
     this.setForm( this.fb.group({}, {updateOn: 'blur'}));
@@ -31,6 +33,15 @@ export class DefaultViewerComponent extends PluginBaseComponent {
     super.initCommandFlow(provider, pointer);
     if (this.isEntity()) {
       this.decomposeJsonToMultipleChanges(pointer, provider.getJsonAt(pointer.position));
+      this.store = dtcde.getStoreManager().getProvider(pointer.position);
+      if (this.store!=null) {
+        this.store.loadEntity(pointer.position,null).then ( val => {
+          this.setValue( val);
+          this.rebuildForm();
+          this.ref.detectChanges();
+          }
+        );
+      }
       this.initChangeListening();
       this.rebuildForm();
     }
@@ -40,9 +51,10 @@ export class DefaultViewerComponent extends PluginBaseComponent {
 
   handleChange(change: Change) {
     super.handleChange(change);
+
     if (this.entityPointer) {
       if (change?.pointer?.positionInSchema === DontCodeModel.APP_FIELDS) {
-        this.applyUpdatesToArrayAsync(this.fields, this.fieldsMap, change, null, (position, value) => {
+        this.applyUpdatesToArrayAsync(this.fields, this.fieldsMap, change, 'fields', (position, value) => {
           return this.loadSubField(value.type, value.name, null).then(component => {
 
             const ret = new Field(value.name, value.type);
@@ -129,7 +141,7 @@ export class DefaultViewerComponent extends PluginBaseComponent {
 
         // Check if the component manages the FormControl itself or if it relies on us
         if (!field.component?.managesFormControl())
-          this.form.registerControl(field.name, new FormControl(val, Validators.required));
+          this.form.setControl(field.name, new FormControl(val, Validators.required));
 
       });
 
@@ -143,10 +155,6 @@ export class DefaultViewerComponent extends PluginBaseComponent {
     if (this.form.controls[fieldName])
       return this.form.controls[fieldName].value;
     else return undefined;
-  }
-
-  setForm (form:FormGroup) {
-    super.setForm(form);
   }
 
 }
