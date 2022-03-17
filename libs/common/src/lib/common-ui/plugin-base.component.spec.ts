@@ -258,7 +258,7 @@ describe('PluginBaseComponent', () => {
     testElementDelete(null, done);
   });
 
-  it('should manage properly element delete', (done) => {
+  it('should manage properly subArray element delete', (done) => {
     testElementDelete('fields', done);
   });
 
@@ -280,17 +280,17 @@ describe('PluginBaseComponent', () => {
     }
     component.initCommandFlow(provider, entityPointer );
     // tslint:disable-next-line:no-shadowed-variable
-    component.applyUpdatesToArrayAsync(array, map, change, null, transformToTarget).then (array => {
+    component.applyUpdatesToArrayAsync(array, map, change, subArray, transformToTarget).then (array => {
 
     change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'b',
       resultB);
       // tslint:disable-next-line:no-shadowed-variable
-    component.applyUpdatesToArrayAsync(array, map, change, null, transformToTarget).then (array => {
+    component.applyUpdatesToArrayAsync(array, map, change, subArray, transformToTarget).then (array => {
 
     change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'c',
       resultC);
       // tslint:disable-next-line:no-shadowed-variable
-    component.applyUpdatesToArrayAsync(array, map, change, null, transformToTarget).then (array => {
+    component.applyUpdatesToArrayAsync(array, map, change, subArray, transformToTarget).then (array => {
 
     expect(array).toHaveLength(3);
     expect(map.get('b')).toBe(1);
@@ -299,7 +299,7 @@ describe('PluginBaseComponent', () => {
     // Delete b
     change = DontCodeTestManager.createDeleteChange('creation/entities', 'a', 'fields', 'b');
       // tslint:disable-next-line:no-shadowed-variable
-    component.applyUpdatesToArrayAsync(array, map, change, null, transformToTarget).then (array => {
+    component.applyUpdatesToArrayAsync(array, map, change, subArray, transformToTarget).then (array => {
 
     expect(array).toEqual(new Array(resultA, resultC));
     expect(map).toEqual(new Map([
@@ -309,7 +309,7 @@ describe('PluginBaseComponent', () => {
     // Delete a
     change = DontCodeTestManager.createDeleteChange('creation/entities', 'a', 'fields', 'a');
       // tslint:disable-next-line:no-shadowed-variable
-    component.applyUpdatesToArrayAsync(array, map, change, null, transformToTarget).then (array => {
+    component.applyUpdatesToArrayAsync(array, map, change, subArray, transformToTarget).then (array => {
 
     expect(array).toEqual(new Array(resultC));
     expect(map).toEqual(new Map([
@@ -319,7 +319,7 @@ describe('PluginBaseComponent', () => {
     change = DontCodeTestManager.createTestChange('creation/entities', 'a', 'fields', 'a',
       resultA);
       // tslint:disable-next-line:no-shadowed-variable
-    component.applyUpdatesToArrayAsync(array, map, change, null, transformToTarget).then (array => {
+    component.applyUpdatesToArrayAsync(array, map, change, subArray, transformToTarget).then (array => {
     expect(array).toEqual(new Array(resultC, resultA));
     expect(map).toEqual(new Map([
       ['c', 0],
@@ -328,7 +328,7 @@ describe('PluginBaseComponent', () => {
     // Delete a
     change = DontCodeTestManager.createDeleteChange('creation/entities', 'a', 'fields', 'a');
       // tslint:disable-next-line:no-shadowed-variable
-    component.applyUpdatesToArrayAsync(array, map, change, null, transformToTarget).then (array => {
+    component.applyUpdatesToArrayAsync(array, map, change, subArray, transformToTarget).then (array => {
 
     expect(array).toEqual(new Array(resultC));
     expect(map).toEqual(new Map([
@@ -338,7 +338,7 @@ describe('PluginBaseComponent', () => {
     // Delete c
     change = DontCodeTestManager.createDeleteChange('creation/entities', 'a', 'fields', 'c');
       // tslint:disable-next-line:no-shadowed-variable
-    component.applyUpdatesToArrayAsync(array, map, change, null, transformToTarget).then (array => {
+    component.applyUpdatesToArrayAsync(array, map, change, subArray, transformToTarget).then (array => {
 
       expect(array).toEqual(new Array());
       expect(map).toEqual(new Map());
