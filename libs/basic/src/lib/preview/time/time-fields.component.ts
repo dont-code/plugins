@@ -9,17 +9,17 @@ import {FormGroup} from "@angular/forms";
 })
 export class TimeFieldsComponent extends AbstractDynamicComponent {
 
-  @ViewChild('EDIT_DATE')
+  @ViewChild('EDIT_DATE',{static:true})
   private editDateTemplate!: TemplateRef<any>;
-  @ViewChild('READ_DATE')
+  @ViewChild('READ_DATE',{static:true})
   private readDateTemplate!: TemplateRef<any>;
-  @ViewChild('EDIT_DATE_TIME')
+  @ViewChild('EDIT_DATE_TIME',{static:true})
   private editDateTimeTemplate!: TemplateRef<any>;
-  @ViewChild('READ_DATE_TIME')
+  @ViewChild('READ_DATE_TIME',{static:true})
   private readDateTimeTemplate!: TemplateRef<any>;
-  @ViewChild('EDIT_TIME')
+  @ViewChild('EDIT_TIME',{static:true})
   private editTimeTemplate!: TemplateRef<any>;
-  @ViewChild('READ_TIME')
+  @ViewChild('READ_TIME',{static:true})
   private readTimeTemplate!: TemplateRef<any>;
 
   providesTemplates(type:string): TemplateList {
