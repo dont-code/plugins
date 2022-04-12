@@ -101,8 +101,7 @@
       },
       "defaultConfiguration": "development",
       "options": {
-        "port": 3000,
-        "publicHost": "http://localhost:3000"
+        "port": 3000
       }
     },
     "extract-i18n": {
