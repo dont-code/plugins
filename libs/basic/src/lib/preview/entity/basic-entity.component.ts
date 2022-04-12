@@ -39,7 +39,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   }
 
 
-  initCommandFlow(provider: CommandProviderInterface, pointer: DontCodeModelPointer): any {
+  override initCommandFlow(provider: CommandProviderInterface, pointer: DontCodeModelPointer): any {
     super.initCommandFlow(provider, pointer);
     if( this.entityPointer) {
       const json=provider.getJsonAt(this.entityPointer.position);
@@ -49,7 +49,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
     this.initChangeListening (); // Listen to name changes of this Entity
   }
 
-  ngAfterViewInit(): void {
+  override ngAfterViewInit(): void {
     // When testing entityPointer is not defined
     if ((this.entityPointer)&&(this.provider)) {
       this.list.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
@@ -64,7 +64,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
     }
   }
 
-  protected initChangeListening() {
+  protected override initChangeListening() {
     super.initChangeListening();
     if( this.provider) {
       this.subscriptions.add(this.provider.receiveCommands(DontCodeModel.APP_SHARING_WITH).pipe(
@@ -91,7 +91,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
    * @param change
    * @protected
    */
-  handleChange (change: Change ) {
+  override handleChange (change: Change ) {
     //console.log("Changed Entity",change.position);
     if( !change.pointer) {
       if(this.provider) {

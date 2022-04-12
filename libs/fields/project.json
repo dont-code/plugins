@@ -1,0 +1,42 @@
+{
+  "projectType": "library",
+  "root": "libs/fields",
+  "sourceRoot": "libs/fields/src",
+  "prefix": "dontcode",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:package",
+      "outputs": ["dist/libs/fields"],
+      "options": {
+        "project": "libs/fields/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/fields/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/fields/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/fields"],
+      "options": {
+        "jestConfig": "libs/fields/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/fields/src/**/*.ts",
+          "libs/fields/src/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": []
+}

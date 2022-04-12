@@ -8,27 +8,33 @@ import {
   Input,
   OnInit,
   Output,
-  TemplateRef
+  TemplateRef,
 } from '@angular/core';
-import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
+import {
+  Change,
+  CommandProviderInterface,
+  DontCodeModelPointer,
+  PreviewHandler,
+} from '@dontcode/core';
 import {
   ComponentLoaderService,
   DynamicComponent,
   EntityListManager,
   PluginBaseComponent,
   PossibleTemplateList,
-  TemplateList
-} from "@dontcode/plugin-common";
-import {Mutex} from "async-mutex";
-
+  TemplateList,
+} from '@dontcode/plugin-common';
+import { Mutex } from 'async-mutex';
 
 @Component({
   selector: 'dontcode-list-entity',
   templateUrl: './list-entity.component.html',
-  styleUrls: ['./list-entity.component.scss']
+  styleUrls: ['./list-entity.component.scss'],
 })
-export class ListEntityComponent extends PluginBaseComponent implements PreviewHandler, OnInit {
-
+export class ListEntityComponent
+  extends PluginBaseComponent
+  implements PreviewHandler, OnInit
+{
   @Input()
   selectedItem: any;
 
@@ -40,47 +46,62 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
   cols = new Array<PrimeColumn>();
   colsMap = new Map<string, number>();
 
-
   @Input()
-  store: EntityListManager|null = null;
+  store: EntityListManager | null = null;
 
-  constructor(private ref:ChangeDetectorRef, injector:Injector, @Inject(ComponentLoaderService) componentLoader: ComponentLoaderService) {
+  constructor(
+    private ref: ChangeDetectorRef,
+    injector: Injector,
+    @Inject(ComponentLoaderService) componentLoader: ComponentLoaderService
+  ) {
     super(componentLoader, injector);
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
-  selectionChange (event:any): void {
+  selectionChange(event: any): void {
     this.selectedItemChange.emit(event);
   }
 
-  initCommandFlow(provider: CommandProviderInterface, pointer: DontCodeModelPointer): any {
-    this.initing=true;
+  override initCommandFlow(
+    provider: CommandProviderInterface,
+    pointer: DontCodeModelPointer
+  ): any {
+    this.initing = true;
     try {
-    super.initCommandFlow(provider, pointer);
+      super.initCommandFlow(provider, pointer);
 
-    if (!this.entityPointer)  throw new Error ('Cannot listen to changes without knowing a base position');
-    this.decomposeJsonToMultipleChanges (this.entityPointer, provider.getJsonAt(this.entityPointer.position)); // Dont provide a special handling for initial json, but emulate a list of changes
-    this.initChangeListening (true); // Listen to all changes occuring after entityPointer
+      if (!this.entityPointer)
+        throw new Error(
+          'Cannot listen to changes without knowing a base position'
+        );
+      this.decomposeJsonToMultipleChanges(
+        this.entityPointer,
+        provider.getJsonAt(this.entityPointer.position)
+      ); // Dont provide a special handling for initial json, but emulate a list of changes
+      this.initChangeListening(true); // Listen to all changes occuring after entityPointer
     } finally {
-      this.initing=false;
+      this.initing = false;
     }
-//    this.reloadData();
+    //    this.reloadData();
   }
 
   /**
    * Make the appropriate display updates whenever a change is received
    * @param change
    */
-  handleChange (change: Change ) {
+  override handleChange(change: Change) {
     //console.log("Changed Entity",change.position);
 
-    if (change.position!==this.entityPointer?.position) {
-        // Columns have been changed
-        this.applyUpdatesToArrayAsync(this.cols, this.colsMap, change, null, (position, value) => {
-          return this.loadSubComponent(position, value).then(component => {
-
+    if (change.position !== this.entityPointer?.position) {
+      // Columns have been changed
+      this.applyUpdatesToArrayAsync(
+        this.cols,
+        this.colsMap,
+        change,
+        null,
+        (position, value) => {
+          return this.loadSubComponent(position, value).then((component) => {
             const ret = new PrimeColumn(value.name, value.name, value.type);
             if (component) {
               // Keep the component only if it provides the view template
@@ -90,52 +111,49 @@ export class ListEntityComponent extends PluginBaseComponent implements PreviewH
             }
             return ret;
           });
-        }).then(updatedColumns => {
-          this.cols = updatedColumns;
-          //  this.reloadData ();
-          this.ref.markForCheck();
-          this.ref.detectChanges();
-        })
+        }
+      ).then((updatedColumns) => {
+        this.cols = updatedColumns;
+        //  this.reloadData ();
+        this.ref.markForCheck();
+        this.ref.detectChanges();
+      });
     }
   }
 
   providesTemplates(): TemplateList {
-    return new TemplateList(null,null,null);
+    return new TemplateList(null, null, null);
   }
 
   canProvide(key?: string): PossibleTemplateList {
     return new PossibleTemplateList(false, false, false);
   }
 
-  templateOf (col: PrimeColumn, value:any): TemplateRef<any> {
-    if( col.component) {
+  templateOf(col: PrimeColumn, value: any): TemplateRef<any> {
+    if (col.component) {
       col.component.setValue(value);
-      const ref= col.component.providesTemplates(col.type).forInlineView;
-      if( ref)
-        return ref;
+      const ref = col.component.providesTemplates(col.type).forInlineView;
+      if (ref) return ref;
     }
-    throw new Error ('No component or template to display '+col.type);
+    throw new Error('No component or template to display ' + col.type);
   }
 
   getStoreEntities(): any[] {
-    if( this.store)
-      return this.store.entities;
-    else
-      return [];
+    if (this.store) return this.store.entities;
+    else return [];
   }
 }
 
 class PrimeColumn {
-  field:string; header:string; type:string;
-  component: DynamicComponent|null;
+  field: string;
+  header: string;
+  type: string;
+  component: DynamicComponent | null;
 
-  constructor(field: string, header: string, type:string) {
+  constructor(field: string, header: string, type: string) {
     this.field = field;
     this.header = header;
     this.type = type;
-    this.component=null;
+    this.component = null;
   }
-
 }
-
-

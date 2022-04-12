@@ -1,12 +1,12 @@
-import {Component, Injector, TemplateRef, ViewChild} from '@angular/core';
-import {MoneyAmount} from '@dontcode/core';
+import { Component, Injector, TemplateRef, ViewChild } from '@angular/core';
+import { MoneyAmount } from '@dontcode/core';
 import {
   AbstractDynamicLoaderComponent,
   ComponentLoaderService,
   PossibleTemplateList,
-  TemplateList
+  TemplateList,
 } from '@dontcode/plugin-common';
-import {FormControl, FormGroup} from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 
 /**
  * Display or edit a country value
@@ -14,104 +14,101 @@ import {FormControl, FormGroup} from '@angular/forms';
 @Component({
   selector: 'dontcode-fields-money',
   templateUrl: './money.component.html',
-  styleUrls: ['./money.component.css']
+  styleUrls: ['./money.component.css'],
 })
-export class MoneyComponent extends AbstractDynamicLoaderComponent{
-  @ViewChild('inlineView',{static:true})
+export class MoneyComponent extends AbstractDynamicLoaderComponent {
+  @ViewChild('inlineView', { static: true })
   private inlineView!: TemplateRef<any>;
 
-  @ViewChild('fullEditView',{static:true})
+  @ViewChild('fullEditView', { static: true })
   private fullEditView!: TemplateRef<any>;
 
-  value:MoneyAmount = new MoneyAmount();
+  override value: MoneyAmount = new MoneyAmount();
   valueAmountDefined = false;
 
-  control:FormControl = new FormControl(null,{updateOn:'blur'})
+  control: FormControl = new FormControl(null, { updateOn: 'blur' });
 
-  constructor(injector:Injector, loaderService: ComponentLoaderService) {
-    super(loaderService, injector );
+  constructor(injector: Injector, loaderService: ComponentLoaderService) {
+    super(loaderService, injector);
   }
 
-  providesTemplates (key?: string): TemplateList {
+  override providesTemplates(key?: string): TemplateList {
     return new TemplateList(this.inlineView, null, this.fullEditView);
   }
 
-  canProvide(key?: string): PossibleTemplateList {
-      return new PossibleTemplateList(true, false, true);
+  override canProvide(key?: string): PossibleTemplateList {
+    return new PossibleTemplateList(true, false, true);
   }
 
   /**
    * We are managing our own FormControl to store both the amount and currency
    */
-  managesFormControl(): boolean {
+  override managesFormControl(): boolean {
     return true;
   }
 
-  setForm(form: FormGroup) {
+  override setForm(form: FormGroup) {
     super.setForm(form);
-    if( this.group) {
+    if (this.group) {
       this.group.registerControl('amount', this.control);
-      this.preloadCurrencyField ();
-    }
-    else
-      throw new Error ('Group must be created before setting parent form');
-
+      this.preloadCurrencyField();
+    } else throw new Error('Group must be created before setting parent form');
   }
 
-  get amount (): number|undefined {
-    if (this.valueAmountDefined)
-      return this.value.amount;
-    else
-      return;
+  get amount(): number | undefined {
+    if (this.valueAmountDefined) return this.value.amount;
+    else return;
   }
 
-  set amount (newAmount){
+  set amount(newAmount) {
     if (newAmount) {
-      this.value.amount=newAmount;
-      this.valueAmountDefined=true;
+      this.value.amount = newAmount;
+      this.valueAmountDefined = true;
     } else {
-      this.valueAmountDefined=false;
+      this.valueAmountDefined = false;
     }
     this.control.setValue(newAmount);
   }
 
-  template (): TemplateRef<any>|null {
-    const comp =this.componentsByFormName.get('currencyCode');
-    if (comp)
-      return comp.providesTemplates().forFullEdit;
-    else throw new Error ('Cannot find component handling currencyCode');
+  template(): TemplateRef<any> | null {
+    const comp = this.componentsByFormName.get('currencyCode');
+    if (comp) return comp.providesTemplates().forFullEdit;
+    else throw new Error('Cannot find component handling currencyCode');
   }
 
-  setValue(val: any) {
+  override setValue(val: any) {
     super.setValue(val);
     if (this.value) {
-      this.valueAmountDefined=true;
+      this.valueAmountDefined = true;
     } else {
       this.value = new MoneyAmount();
-      this.valueAmountDefined=false;
+      this.valueAmountDefined = false;
     }
-    this.setSubFieldValue ('currencyCode',this.value.currencyCode);
+    this.setSubFieldValue('currencyCode', this.value.currencyCode);
   }
 
-  getValue(): any {
-    const val= super.getValue() as MoneyAmount;
+  override getValue(): any {
+    const val = super.getValue() as MoneyAmount;
     val.currencyCode = this.getSubFieldValue('currencyCode');
 
     return val;
   }
 
-  ngAfterViewInit() {
+  override ngAfterViewInit() {
     super.ngAfterViewInit();
     this.preloadCurrencyField();
   }
 
-  preloadCurrencyField ()
-    {
-      // Only load currency component to the cache in edit mode
-      if (this.group) {
-        this.loadSubField('Currency', 'currencyCode', this.value.currencyCode).then(() => {
-          // Nothing to do
-        });
-      }
+  preloadCurrencyField() {
+    // Only load currency component to the cache in edit mode
+    if (this.group) {
+      this.loadSubField(
+        'Currency',
+        'currencyCode',
+        this.value.currencyCode
+      ).then(() => {
+        // Nothing to do
+      });
     }
+  }
 }

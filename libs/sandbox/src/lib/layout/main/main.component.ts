@@ -24,7 +24,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
   context$: Observable<{
     status:string,
-    sessionId:string
+    sessionId:string|undefined
   }> = EMPTY;
 
   protected subscriptions = new Subscription();

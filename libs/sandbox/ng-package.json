@@ -3,24 +3,6 @@
   "dest": "../../dist/libs/sandbox",
   "assets": ["./assets/**"],
   "lib": {
-    "entryFile": "src/index.ts",
-    "umdModuleIds": {
-      "@dontcode/core": "@dontcode/core",
-      "dexie":"dexie",
-      "broadcast-channel":"broadcast-channel",
-      "primeng/toolbar":"primeng/toolbar",
-      "primeng/overlaypanel":"primeng/overlaypanel",
-      "primeng/sidebar":"primeng/sidebar",
-      "primeng/menu":"primeng/menu",
-      "primeng/button":"primeng/button",
-      "primeng/api":"primeng/api",
-      "primeng/tooltip":"primeng/tooltip",
-      "primeng/accordion":"primeng/accordion",
-      "primeng/autocomplete":"primeng/autocomplete",
-      "primeng/dropdown":"primeng/dropdown",
-      "primeng/inputtext":"primeng/inputtext",
-      "primeng/inputtextarea":"primeng/inputtextarea",
-      "primeng/panel":"primeng/panel"
-    }
+    "entryFile": "src/index.ts"
   }
 }

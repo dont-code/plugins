@@ -1,0 +1,42 @@
+{
+  "projectType": "library",
+  "root": "libs/common",
+  "sourceRoot": "libs/common/src",
+  "prefix": "dontcode",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:package",
+      "outputs": ["dist/libs/basic"],
+      "options": {
+        "project": "libs/common/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/common/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/common/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/basic"],
+      "options": {
+        "jestConfig": "libs/common/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/basic/src/**/*.ts",
+          "libs/basic/src/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": []
+}

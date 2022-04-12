@@ -1,12 +1,14 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "sourceMap": false,
     "outDir": "../../dist/out-tsc",
-    "allowJs": false,
+    "allowJs": true,
     "types": ["cypress", "node"],
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },

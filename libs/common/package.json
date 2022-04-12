@@ -1,10 +1,13 @@
 {
   "name": "@dontcode/plugin-common",
-  "version": "0.4.4",
+  "version": "0.5.0",
   "peerDependencies": {
-    "@angular/common": "^12.2.13",
-    "@angular/core": "^12.2.13",
-    "@dontcode/core": "^0.4.1",
-    "rxjs": "^6.6.7"
+    "@angular/common": "^13.3.2",
+    "@angular/core": "^13.3.2",
+    "@dontcode/core": "^0.5.1",
+    "rxjs": "^7.5.5"
+  },
+  "dependencies": {
+    "tslib": "^2.3.1"
   }
 }

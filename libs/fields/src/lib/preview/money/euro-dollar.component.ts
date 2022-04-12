@@ -18,7 +18,7 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
   @ViewChild('fullEditView',{static:true})
   private fullEditView!: TemplateRef<any>;
 
-  value = new MoneyAmount();
+  override value = new MoneyAmount();
   // We cannot set a null value when amount field is empty, so we have this boolean to tell us it should be null
   valueAmountDefined = false;
 
@@ -35,7 +35,7 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
     }
   }
 
-  setValue(val: any):void {
+  override setValue(val: any):void {
     if( val) {
       this.value = val;
       this.control.setValue(this.value.amount, {emitEvent: false});
@@ -60,16 +60,16 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
   /**
    * We are managing our own FormControl to store both the amount and currency
    */
-  managesFormControl(): boolean {
+  override managesFormControl(): boolean {
     return true;
   }
 
-  setForm(form: FormGroup) {
+  override setForm(form: FormGroup) {
     super.setForm(form);
     form.registerControl(this.name, this.control);
   }
 
-  getValue(): any {
+  override getValue(): any {
     if( this.valueAmountDefined)
       return this.value;
     else return null;

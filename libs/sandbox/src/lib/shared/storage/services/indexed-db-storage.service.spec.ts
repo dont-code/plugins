@@ -1,7 +1,8 @@
 import {TestBed} from '@angular/core/testing';
 import {IndexedDbStorageService} from "./indexed-db-storage.service";
 import {ValueService} from "../../values/services/value.service";
-import {map, takeLast} from "rxjs/operators";
+import {map} from "rxjs/operators";
+import {lastValueFrom} from "rxjs";
 
 describe('DevTemplateManagerService', () => {
   let service: IndexedDbStorageService;
@@ -74,13 +75,13 @@ describe('DevTemplateManagerService', () => {
 
     Promise.all(allStores).then (()=> {
        const cumul = new Array<any>();
-       return service.searchEntities('creation/entities/c').pipe (
+       return lastValueFrom(
+         service.searchEntities('creation/entities/c').pipe (
          map (values => {
            cumul.push(...values);
            return cumul;
-          }),
-         takeLast(1)
-       ).toPromise();
+          })
+       ));
       }
     ).then (values => {
       expect (values.length).toEqual(10);

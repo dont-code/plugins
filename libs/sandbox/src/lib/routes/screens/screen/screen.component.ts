@@ -16,7 +16,6 @@ export class ScreenComponent extends PluginBaseComponent implements OnInit, Afte
   screenName$:Observable<Params> = EMPTY;
 
   constructor(protected route:ActivatedRoute,
-              public provider:ChangeProviderService,
               loader: ComponentLoaderService,
               injector: Injector) {
     super( loader, injector );
@@ -27,7 +26,7 @@ export class ScreenComponent extends PluginBaseComponent implements OnInit, Afte
     this.screenName$ = this.route.params;
   }
 
-  ngAfterViewInit(): void {
+  override ngAfterViewInit(): void {
     super.ngAfterViewInit();
 
     this.subscriptions.add(this.route.url.pipe (
@@ -41,7 +40,10 @@ export class ScreenComponent extends PluginBaseComponent implements OnInit, Afte
         });
         console.log("Searching for component handling route", position);
 
-        if(!position) throw new Error ("No position in route to screen");
+        if(position==null) throw new Error ("No position in route to screen");
+        if (this.provider == null) {
+          throw new Error ("No provider");
+        }
         let component = null;
         try {
         const pointer = this.provider.calculatePointerFor(position);

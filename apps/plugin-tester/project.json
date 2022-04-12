@@ -1,0 +1,133 @@
+{
+  "projectType": "application",
+  "root": "apps/plugin-tester",
+  "sourceRoot": "apps/plugin-tester/src",
+  "prefix": "dontcode",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:webpack-browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/plugin-tester",
+        "index": "apps/plugin-tester/src/index.html",
+        "main": "apps/plugin-tester/src/main.ts",
+        "polyfills": "apps/plugin-tester/src/polyfills.ts",
+        "tsConfig": "apps/plugin-tester/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          "apps/plugin-tester/src/favicon.ico",
+          "apps/plugin-tester/src/assets",
+          {
+            "input": "libs/sandbox/assets",
+            "glob": "**/*",
+            "output": "assets"
+          }
+        ],
+        "styles": [
+          "apps/plugin-tester/src/styles.scss",
+          "./node_modules/flag-icon-css/css/flag-icons.css",
+          "./node_modules/primeflex/primeflex.css",
+          "./node_modules/primeng/resources/themes/saga-blue/theme.css",
+          "./node_modules/primeng/resources/primeng.min.css",
+          "./node_modules/primeicons/primeicons.css"
+        ],
+        "scripts": [],
+        "customWebpackConfig": {
+          "path":"apps/plugin-tester/webpack.config.js"
+        }
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "fileReplacements": [
+            {
+              "replace": "apps/plugin-tester/src/environments/environment.ts",
+              "with": "apps/plugin-tester/src/environments/environment.prod.ts"
+            }
+          ],
+          "outputHashing": "all",
+          "customWebpackConfig": {
+            "path": "apps/plugin-tester/webpack.prod.config.js"
+          }
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true,
+          "customWebpackConfig": {
+            "path": "apps/plugin-tester/webpack.config.js"
+          }
+        },
+        "online": {
+          "fileReplacements": [
+            {
+              "replace": "apps/plugin-tester/src/environments/environment.ts",
+              "with": "apps/plugin-tester/src/environments/environment.online.ts"
+            }
+          ],
+          "customWebpackConfig": {
+            "path": "apps/plugin-tester/webpack.online.config.js"
+          }
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@nrwl/angular:webpack-server",
+      "configurations": {
+        "production": {
+          "browserTarget": "plugin-tester:build:production"
+        },
+        "development": {
+          "browserTarget": "plugin-tester:build:development"
+        },
+        "online": {
+          "browserTarget": "plugin-tester:build:online"
+        }
+      },
+      "defaultConfiguration": "development",
+      "options": {
+        "port": 3000,
+        "publicHost": "http://localhost:3000"
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "plugin-tester:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/plugin-tester/src/**/*.ts",
+          "apps/plugin-tester/src/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/plugin-tester"],
+      "options": {
+        "jestConfig": "apps/plugin-tester/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

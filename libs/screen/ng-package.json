@@ -2,9 +2,6 @@
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/libs/screen",
   "lib": {
-    "entryFile": "src/index.ts",
-    "umdModuleIds": {
-      "@dontcode/core": "@dontcode/core"
-    }
+    "entryFile": "src/index.ts"
   }
 }
