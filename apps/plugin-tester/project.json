@@ -79,6 +79,12 @@
               "with": "apps/plugin-tester/src/environments/environment.online.ts"
             }
           ],
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true,
           "customWebpackConfig": {
             "path": "apps/plugin-tester/webpack.config.js"
           }

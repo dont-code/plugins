@@ -1,9 +1,15 @@
-import {AfterViewInit, Component, Injector, OnInit} from "@angular/core";
+import {AfterViewInit, Component, Injector, OnDestroy, OnInit, ViewChild, ViewContainerRef} from "@angular/core";
 import {ActivatedRoute, Params} from "@angular/router";
 import {map} from "rxjs/operators";
-import {EMPTY, Observable} from "rxjs";
+import {EMPTY, Observable, Subscription} from "rxjs";
 import {ChangeProviderService} from "../../../shared/command/services/change-provider.service";
-import {ComponentLoaderService, PluginBaseComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
+import {
+  ComponentLoaderService,
+  DynamicInsertPoint,
+  PluginBaseComponent,
+  PossibleTemplateList,
+  TemplateList
+} from "@dontcode/plugin-common";
 import {DefaultViewerComponent} from "../../../shared/dynamic/components/default-viewer.component";
 import {DontCodeModelPointer} from "@dontcode/core";
 
@@ -12,13 +18,19 @@ import {DontCodeModelPointer} from "@dontcode/core";
   templateUrl: './screen.component.html',
   styleUrls: ['./screen.component.css']
 })
-export class ScreenComponent extends PluginBaseComponent implements OnInit, AfterViewInit {
+export class ScreenComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  @ViewChild(DynamicInsertPoint, { read: ViewContainerRef, static: false })
+  dynamicInsertPoint!: ViewContainerRef;
+
+  protected subscriptions = new Subscription();
   screenName$:Observable<Params> = EMPTY;
 
   constructor(protected route:ActivatedRoute,
-              loader: ComponentLoaderService,
-              injector: Injector) {
-    super( loader, injector );
+              protected provider:ChangeProviderService,
+              protected loader: ComponentLoaderService,
+              protected injector: Injector) {
+
   }
 
   ngOnInit():void {
@@ -26,8 +38,11 @@ export class ScreenComponent extends PluginBaseComponent implements OnInit, Afte
     this.screenName$ = this.route.params;
   }
 
-  override ngAfterViewInit(): void {
-    super.ngAfterViewInit();
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  ngAfterViewInit(): void {
 
     this.subscriptions.add(this.route.url.pipe (
       map (segments => {
