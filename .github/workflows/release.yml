@@ -122,7 +122,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Rebuild for deploy
         if: ${{ success() && matrix.browser == 'chromium'}}
-        run: x run plugin-tester:build:production --base-href "https://dont-code.net/plugins/"
+        run: nx run plugin-tester:build:production --base-href "https://dont-code.net/plugins/"
       - name: Deploy PluginTester
         if: ${{ success() && ( matrix.browser == 'chromium' )}}
         uses: JamesIves/github-pages-deploy-action@releases/v3
