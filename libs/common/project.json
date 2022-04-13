@@ -6,7 +6,7 @@
   "targets": {
     "build": {
       "executor": "@nrwl/angular:package",
-      "outputs": ["dist/libs/basic"],
+      "outputs": ["dist/libs/common"],
       "options": {
         "project": "libs/common/ng-package.json"
       },
