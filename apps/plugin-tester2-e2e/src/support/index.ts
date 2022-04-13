@@ -17,8 +17,7 @@
 import './commands';
 
 Cypress.on('uncaught:exception', (err) => {
-  if ((err.message.includes(`Cannot use 'import.meta' outside a module`)) ||
-    (err.message.includes('import.meta may only appear in a module'))) {
+  if (err.message.includes(`Cannot use 'import.meta' outside a module`)) {
     return false;
   }
   return true;
