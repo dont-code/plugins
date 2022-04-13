@@ -2,20 +2,6 @@
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/libs/basic",
   "lib": {
-    "entryFile": "src/index.ts",
-    "umdModuleIds": {
-      "primeng/table": "primeng/table",
-      "primeng/api": "primeng/api",
-      "primeng/toolbar": "primeng/toolbar",
-      "primeng/button": "primeng/button",
-      "primeng/inputtext": "primeng/inputtext",
-      "primeng/checkbox": "primeng/checkbox",
-      "primeng/inputnumber": "primeng/inputnumber",
-      "primeng/tabview": "primeng/tabview",
-      "primeng/calendar": "primeng/calendar",
-      "primeng/tooltip": "primeng/tooltip",
-      "@dontcode/core": "@dontcode/core",
-      "@dontcode/plugin-common": "@dontcode/plugin-common"
-    }
+    "entryFile": "src/index.ts"
   }
 }

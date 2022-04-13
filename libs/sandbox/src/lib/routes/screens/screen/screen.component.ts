@@ -1,9 +1,15 @@
-import {AfterViewInit, Component, Injector, OnInit} from "@angular/core";
+import {AfterViewInit, Component, Injector, OnDestroy, OnInit, ViewChild, ViewContainerRef} from "@angular/core";
 import {ActivatedRoute, Params} from "@angular/router";
 import {map} from "rxjs/operators";
-import {EMPTY, Observable} from "rxjs";
+import {EMPTY, Observable, Subscription} from "rxjs";
 import {ChangeProviderService} from "../../../shared/command/services/change-provider.service";
-import {ComponentLoaderService, PluginBaseComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
+import {
+  ComponentLoaderService,
+  DynamicInsertPoint,
+  PluginBaseComponent,
+  PossibleTemplateList,
+  TemplateList
+} from "@dontcode/plugin-common";
 import {DefaultViewerComponent} from "../../../shared/dynamic/components/default-viewer.component";
 import {DontCodeModelPointer} from "@dontcode/core";
 
@@ -12,14 +18,19 @@ import {DontCodeModelPointer} from "@dontcode/core";
   templateUrl: './screen.component.html',
   styleUrls: ['./screen.component.css']
 })
-export class ScreenComponent extends PluginBaseComponent implements OnInit, AfterViewInit {
+export class ScreenComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  @ViewChild(DynamicInsertPoint, { read: ViewContainerRef, static: false })
+  dynamicInsertPoint!: ViewContainerRef;
+
+  protected subscriptions = new Subscription();
   screenName$:Observable<Params> = EMPTY;
 
   constructor(protected route:ActivatedRoute,
-              public provider:ChangeProviderService,
-              loader: ComponentLoaderService,
-              injector: Injector) {
-    super( loader, injector );
+              protected provider:ChangeProviderService,
+              protected loader: ComponentLoaderService,
+              protected injector: Injector) {
+
   }
 
   ngOnInit():void {
@@ -27,8 +38,11 @@ export class ScreenComponent extends PluginBaseComponent implements OnInit, Afte
     this.screenName$ = this.route.params;
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
   ngAfterViewInit(): void {
-    super.ngAfterViewInit();
 
     this.subscriptions.add(this.route.url.pipe (
       map (segments => {
@@ -41,7 +55,10 @@ export class ScreenComponent extends PluginBaseComponent implements OnInit, Afte
         });
         console.log("Searching for component handling route", position);
 
-        if(!position) throw new Error ("No position in route to screen");
+        if(position==null) throw new Error ("No position in route to screen");
+        if (this.provider == null) {
+          throw new Error ("No provider");
+        }
         let component = null;
         try {
         const pointer = this.provider.calculatePointerFor(position);

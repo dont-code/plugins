@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        browser: [chromium, chrome, firefox]
+        browser: [chromium, chrome]
 
     steps:
       - uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Install
         run: |
-          npm --version
+          npm install -g nx
           npm install @dontcode/core@latest
           npm ci
       - name: Version
@@ -55,21 +55,21 @@ jobs:
         working-directory: libs/fields
       - name: Build
         run: |
-          npm run nx run common:build -- --prod
-          npm run nx run sandbox:build -- --prod
-          npm run nx run basic:build -- --prod
-          npm run nx run fields:build -- --prod
-          npm run nx run screen:build -- --prod
+          nx run common:build:production
+          nx run sandbox:build:production
+          nx run basic:build:production
+          nx run fields:build:production
+          nx run screen:build:production
       - name: Unit tests
         run: |
-          npm run nx run common:test
-          npm run nx run sandbox:test
-          npm run nx run screen:test
-          npm run nx run basic:test
-          npm run nx run fields:test
+          nx run common:test
+          nx run sandbox:test
+          nx run screen:test
+          nx run basic:test
+          nx run fields:test
       - name: E2E Tests on ${{matrix.browser}}
         run: |
-          npm run ng e2e -- --project=plugin-tester-e2e --browser ${{matrix.browser}}
+          nx run plugin-tester-e2e:e2e --browser ${{matrix.browser}}
       - uses: actions/upload-artifact@v2
         # Test run screenshots only on failure
         if: failure()
@@ -122,7 +122,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Rebuild for deploy
         if: ${{ success() && matrix.browser == 'chromium'}}
-        run: npm run build -- --prod --project=plugin-tester --base-href "https://dont-code.net/plugins/"
+        run: x run plugin-tester:build:production --base-href "https://dont-code.net/plugins/"
       - name: Deploy PluginTester
         if: ${{ success() && ( matrix.browser == 'chromium' )}}
         uses: JamesIves/github-pages-deploy-action@releases/v3

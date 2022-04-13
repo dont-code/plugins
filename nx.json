@@ -1,25 +1,26 @@
 {
   "npmScope": "dontcode",
+  "affected": {
+    "defaultBase": "main"
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/angular",
+    "packageManager": "npm"
+  },
   "implicitDependencies": {
-    "angular.json": "*",
     "package.json": {
       "dependencies": "*",
       "devDependencies": "*"
     },
-    "tslint.json": "*",
-    "nx.json": "*",
-    "tsconfig.base.json": "*"
+    ".eslintrc.json": "*"
   },
   "tasksRunnerOptions": {
     "default": {
-      "runner": "@nrwl/workspace/tasks-runners/default",
+      "runner": "nx/tasks-runners/default",
       "options": {
         "cacheableOperations": ["build", "lint", "test", "e2e"]
       }
     }
-  },
-  "affected": {
-    "defaultBase": "master"
   },
   "targetDependencies": {
     "build": [
@@ -29,11 +30,6 @@
       }
     ]
   },
-  "cli": {
-    "defaultCollection": "@nrwl/angular",
-    "analytics": "2d0f7d7c-317a-4984-8934-a6583d864a70"
-  },
-  "defaultProject": "common",
   "generators": {
     "@nrwl/angular:application": {
       "style": "scss",
@@ -42,12 +38,12 @@
       "e2eTestRunner": "cypress"
     },
     "@nrwl/angular:library": {
-      "style": "scss",
       "linter": "eslint",
       "unitTestRunner": "jest"
     },
     "@nrwl/angular:component": {
       "style": "scss"
     }
-  }
+  },
+  "defaultProject": "common"
 }

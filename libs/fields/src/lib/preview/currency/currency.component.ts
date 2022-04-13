@@ -21,7 +21,7 @@ export class CurrencyComponent extends  AbstractDynamicComponent implements OnIn
   ngOnInit(): void {
 
     const currencySet = new Map<string, string>();
-    country.countryCurrencyList().forEach(country => {
+    country.countryCurrencyList().forEach((country: { currency: string; currency_code: string; }) => {
       if ((country.currency && country.currency_code)) {
         currencySet.set(country.currency, country.currency_code);
       }

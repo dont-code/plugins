@@ -1,0 +1,42 @@
+{
+  "projectType": "library",
+  "root": "libs/screen",
+  "sourceRoot": "libs/screen/src",
+  "prefix": "plugins",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:package",
+      "outputs": ["dist/libs/screen"],
+      "options": {
+        "project": "libs/screen/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/screen/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/screen/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/screen"],
+      "options": {
+        "jestConfig": "libs/screen/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/screen/src/**/*.ts",
+          "libs/screen/src/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": []
+}

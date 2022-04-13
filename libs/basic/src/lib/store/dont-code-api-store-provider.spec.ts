@@ -3,7 +3,7 @@ import {HttpClientTestingModule, HttpTestingController} from "@angular/common/ht
 import {DONTCODE_STORE_API_URL, DONTCODE_DOC_API_URL, DontCodeApiStoreProvider} from "./dont-code-api-store-provider";
 import {HttpClient} from "@angular/common/http";
 import { dtcde, UploadedDocumentInfo } from '@dontcode/core';
-import {toArray} from "rxjs/internal/operators";
+import {toArray} from "rxjs/operators";
 
 
 describe('DontCode Api Store Manager', () => {
