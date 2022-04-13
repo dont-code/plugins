@@ -79,12 +79,6 @@
               "with": "apps/plugin-tester/src/environments/environment.online.ts"
             }
           ],
-          "buildOptimizer": false,
-          "optimization": false,
-          "vendorChunk": true,
-          "extractLicenses": false,
-          "sourceMap": true,
-          "namedChunks": true,
           "customWebpackConfig": {
             "path": "apps/plugin-tester/webpack.config.js"
           }
@@ -107,7 +101,8 @@
       },
       "defaultConfiguration": "development",
       "options": {
-        "port": 3000
+        "port": 3000,
+        "publicHost": "http://localhost:3000"
       }
     },
     "extract-i18n": {
