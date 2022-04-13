@@ -29,27 +29,27 @@ jobs:
           cache: 'npm'
       - name: Install
         run: |
-          npm --version
+          npm install -g nx
           npm install @dontcode/core@latest --no-optional
           npm ci
       - name: Build
         run: |
-          npm run nx run common:build -- --prod
-          npm run nx run sandbox:build -- --prod
-          npm run nx run basic:build -- --prod
-          npm run nx run screen:build -- --prod
-          npm run nx run fields:build -- --prod
+          nx run common:build:production
+          nx run sandbox:build:production
+          nx run basic:build:production
+          nx run screen:build:production
+          nx run fields:build:production
       - name: Unit tests
         run: |
-          npm run nx run common:test
-          npm run nx run sandbox:test
-          npm run nx run screen:test
-          npm run nx run basic:test
-          npm run nx run fields:test
-          npm run nx run plugin-tester:test
+          nx run common:test
+          nx run sandbox:test
+          nx run screen:test
+          nx run basic:test
+          nx run fields:test
+          nx run plugin-tester:test
       - name: E2E Tests on ${{matrix.browser}}
         run: |
-          npm run ng e2e -- --project=plugin-tester-e2e --browser ${{matrix.browser}}
+          nx run plugin-tester-e2e:e2e --browser ${{matrix.browser}}
       - uses: actions/upload-artifact@v2
         # Test run screenshots only on failure
         if: failure()
