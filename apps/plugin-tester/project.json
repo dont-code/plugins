@@ -33,7 +33,7 @@
         ],
         "scripts": [],
         "customWebpackConfig": {
-          "path":"apps/plugin-tester/webpack.config.js"
+          "path": "apps/plugin-tester/webpack.config.js"
         }
       },
       "configurations": {
