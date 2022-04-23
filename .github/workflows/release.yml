@@ -120,13 +120,13 @@ jobs:
         run: npm publish dist/libs/fields --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Rebuild for deploy
-        if: ${{ success() && matrix.browser == 'chromium'}}
-        run: x run plugin-tester:build:production --base-href "https://dont-code.net/plugins/"
-      - name: Deploy PluginTester
-        if: ${{ success() && ( matrix.browser == 'chromium' )}}
-        uses: JamesIves/github-pages-deploy-action@releases/v3
-        with:
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: dist/apps/plugin-tester
+#      - name: Rebuild for deploy
+#        if: ${{ success() && matrix.browser == 'chromium'}}
+#        run: nx run plugin-tester:build:production --base-href "https://dont-code.net/plugins/"
+#      - name: Deploy PluginTester
+#        if: ${{ success() && ( matrix.browser == 'chromium' )}}
+#        uses: JamesIves/github-pages-deploy-action@releases/v3
+#        with:
+#          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+#          BRANCH: gh-pages # The branch the action should deploy to.
+#          FOLDER: dist/apps/plugin-tester

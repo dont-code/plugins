@@ -8,3 +8,5 @@ import { CommonModule } from '@angular/common';
   ]
 })
 export class CommandModule { }
+
+export * from './services/change-provider.service';

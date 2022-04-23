@@ -6,8 +6,6 @@
     "fields": "libs/fields",
     "plugin-tester": "apps/plugin-tester",
     "plugin-tester-e2e": "apps/plugin-tester-e2e",
-    "plugin-tester2": "apps/plugin-tester2",
-    "plugin-tester2-e2e": "apps/plugin-tester2-e2e",
     "sandbox": "libs/sandbox",
     "screen": "libs/screen"
   }

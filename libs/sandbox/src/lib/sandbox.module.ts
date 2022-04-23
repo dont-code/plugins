@@ -1,5 +1,4 @@
 import {ModuleWithProviders, NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {SharedModule} from "./shared/shared.module";
 import {LayoutModule} from "./layout/layout.module";
 import {RoutesModule} from "./routes/routes.module";
@@ -19,7 +18,7 @@ const sandboxRoutes: Routes = [
   }];
 
 @NgModule({
-  imports: [CommonModule, SharedModule,LayoutModule, RoutesModule, RouterModule.forChild(sandboxRoutes)],
+  imports: [SharedModule,LayoutModule, RoutesModule, RouterModule.forChild(sandboxRoutes)],
   exports: [SharedModule, LayoutModule],
   providers: [
     {provide:COMMAND_PROVIDER, useExisting:ChangeProviderService}
@@ -42,3 +41,5 @@ export class SandboxModule {
 export * from './layout/layout.module';
 export * from './shared/shared.module';
 export * from './shared/config/sandbox-lib-config';
+export * from './shared/command/command.module';
+export * from './shared/plugins/global-plugin-loader'

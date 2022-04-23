@@ -1,6 +1,6 @@
 import {
-  Component,
-  getModuleFactory,
+  Component, createNgModuleRef,
+  getModuleFactory, getNgModuleById,
   Inject,
   Injector,
   OnDestroy,
@@ -18,6 +18,7 @@ import { ChangeProviderService } from '../../shared/command/services/change-prov
 import { EMPTY, from, Observable, of, Subscription } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { GlobalPluginLoader } from '../../shared/plugins/global-plugin-loader';
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   template: '',
@@ -27,23 +28,11 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
 
   sessionId: string | null = null;
 
-  protected storage: IndexedDbStorageService;
-
-  protected listener: ChangeListenerService;
-
-  protected provider: ChangeProviderService;
-
-  protected globalPluginLoader?: GlobalPluginLoader;
-
-  constructor(protected injector: Injector) {
-    this.provider = injector.get(ChangeProviderService);
-    this.storage = injector.get(IndexedDbStorageService);
-    this.listener = injector.get(ChangeListenerService);
+  constructor(protected provider: ChangeProviderService, protected storage:IndexedDbStorageService, protected listener:ChangeListenerService, protected globalPluginLoader:GlobalPluginLoader) {
   }
 
   ngOnInit(): void {
     // Manage the global plugins
-    this.globalPluginLoader = this.injector.get(GlobalPluginLoader);
     this.globalPluginLoader.initLoading(dtcde.getPreviewManager());
     // Manage the store manager
     dtcde.getStoreManager().setProvider(this.storage);
@@ -69,10 +58,11 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
           }),
           map((storeProvider) => {
             if (storeProvider) {
-              Injector.create({ providers: [storeProvider] });
+              const updatedInjector = Injector.create({ providers: [storeProvider]});
+              console.log("Injector:", updatedInjector.get(HttpClient));
               dtcde
                 .getStoreManager()
-                .setProvider(this.injector.get(storeProvider));
+                .setProvider(updatedInjector.get(storeProvider));
             }
             return storeProvider;
           })
@@ -99,13 +89,15 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
       console.log('Importing StoreManager from ', handler.class.source);
       try {
         // First lets try if the plugin is imported during the compilation
-        const module: PluginModuleInterface = getModuleFactory(
+        const module = createNgModuleRef(getNgModuleById<PluginModuleInterface>('dontcode-plugin/' + handler.class.source)).instance;
+
+/*        const module: PluginModuleInterface = getModuleFactory(
           'dontcode-plugin/' + handler.class.source
-        ).create(null).instance;
+        ).create(this.injector).instance;*/
         const providerClass = module
           .exposedPreviewHandlers()
           .get(handler.class.name);
-        console.log('Provider Class found', handler.class.name);
+        console.log('Provider Class found:', providerClass);
 
         return of(providerClass);
       } catch (e) {
