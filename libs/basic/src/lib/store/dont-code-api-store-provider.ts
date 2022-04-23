@@ -5,10 +5,10 @@ import {
   dtcde,
   UploadedDocumentInfo
 } from "@dontcode/core";
-import {from, Observable, throwError} from "rxjs";
+import {Observable, throwError} from "rxjs";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Inject, Injectable, InjectionToken, Optional} from "@angular/core";
-import {flatMap, map, mergeAll, mergeMap} from "rxjs/operators";
+import {map, mergeAll} from "rxjs/operators";
 
 export const DONTCODE_STORE_API_URL = new InjectionToken<string>('DontCodeStoreApiUrl');
 export const DONTCODE_DOC_API_URL = new InjectionToken<string>('DontCodeStoreDocUrl');

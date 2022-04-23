@@ -12,9 +12,10 @@ import {MoneyComponent} from './preview/money/money.component';
 import {InputNumberModule} from 'primeng/inputnumber';
 import {RatingComponent} from "./preview/rating/rating.component";
 import {RatingModule} from "primeng/rating";
+import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
-  imports: [CommonModule,
+  imports: [CommonModule,HttpClientModule,
     ReactiveFormsModule, DropdownModule, PluginCommonModule, InputNumberModule, FormsModule, RatingModule],
   declarations: [CountryComponent, CurrencyComponent, EuroDollarComponent, MoneyComponent, RatingComponent],
   id:'dontcode-plugin/fields'
