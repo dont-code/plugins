@@ -72,7 +72,7 @@ export class GlobalPluginLoader {
         )
         .subscribe({
           error: (error) => {
-            console.log('Error loading global handler', error);
+            console.error('Error loading global handler', error);
           },
         })
     );
