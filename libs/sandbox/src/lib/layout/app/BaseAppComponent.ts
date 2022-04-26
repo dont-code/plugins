@@ -1,24 +1,12 @@
-import {
-  Component, createNgModuleRef,
-  getModuleFactory, getNgModuleById,
-  Inject,
-  Injector,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import {
-  ChangeType,
-  DontCodeModel,
-  dtcde,
-  PluginModuleInterface,
-} from '@dontcode/core';
-import { IndexedDbStorageService } from '../..//shared/storage/services/indexed-db-storage.service';
-import { ChangeListenerService } from '../../shared/change/services/change-listener.service';
-import { ChangeProviderService } from '../../shared/command/services/change-provider.service';
-import { EMPTY, from, Observable, of, Subscription } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
-import { GlobalPluginLoader } from '../../shared/plugins/global-plugin-loader';
-import {HttpClient} from "@angular/common/http";
+import {Component, Injector, OnDestroy, OnInit, StaticProvider, Type, TypeProvider,} from '@angular/core';
+import {ChangeType, DontCodeModel, DontCodeStoreProvider, dtcde,} from '@dontcode/core';
+import {IndexedDbStorageService} from '../..//shared/storage/services/indexed-db-storage.service';
+import {ChangeListenerService} from '../../shared/change/services/change-listener.service';
+import {ChangeProviderService} from '../../shared/command/services/change-provider.service';
+import {EMPTY, Observable, of, Subscription} from 'rxjs';
+import {map, mergeMap} from 'rxjs/operators';
+import {GlobalPluginLoader} from '../../shared/plugins/global-plugin-loader';
+import {ComponentLoaderService} from "@dontcode/plugin-common";
 
 @Component({
   template: '',
@@ -28,7 +16,12 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
 
   sessionId: string | null = null;
 
-  constructor(protected provider: ChangeProviderService, protected storage:IndexedDbStorageService, protected listener:ChangeListenerService, protected globalPluginLoader:GlobalPluginLoader) {
+  constructor(
+    protected provider: ChangeProviderService,
+    protected storage:IndexedDbStorageService,
+    protected listener:ChangeListenerService,
+    protected globalPluginLoader:GlobalPluginLoader,
+    protected loaderService:ComponentLoaderService) {
   }
 
   ngOnInit(): void {
@@ -54,12 +47,12 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
                 return EMPTY;
               }
             }
-            return from([change]);
+            return EMPTY;
           }),
           map((storeProvider) => {
-            if (storeProvider) {
-              const updatedInjector = Injector.create({ providers: [storeProvider]});
-              console.log("Injector:", updatedInjector.get(HttpClient));
+            if (storeProvider!=null) {
+              const updatedInjector = Injector.create({ providers: [storeProvider as any]});
+//              console.debug("Injector:", updatedInjector.get(HttpClient));
               dtcde
                 .getStoreManager()
                 .setProvider(updatedInjector.get(storeProvider));
@@ -69,40 +62,37 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
         )
         .subscribe({
           error(error) {
-            console.log('Cannot load StoreProvider due to', error);
+            console.error('Cannot load StoreProvider due to', error);
           },
         })
     );
 
     this.sessionId = (window as any).dontCodeConfig?.sessionId;
-    console.log('Browser opened with SessionId =', this.sessionId);
+    // eslint-disable-next-line no-restricted-syntax
+    console.info('Browser opened with SessionId =', this.sessionId);
     this.listener.setSessionId(this.sessionId);
   }
 
-  loadStoreManager(position: string): Observable<any> {
+  loadStoreManager(position: string): Observable<Type<DontCodeStoreProvider>> {
     const previewMgr = dtcde.getPreviewManager();
     const currentJson = this.provider.getJsonAt(position);
 
     const handler = previewMgr.retrieveHandlerConfig(position, currentJson);
 
     if (handler) {
-      console.log('Importing StoreManager from ', handler.class.source);
-      try {
-        // First lets try if the plugin is imported during the compilation
-        const module = createNgModuleRef(getNgModuleById<PluginModuleInterface>('dontcode-plugin/' + handler.class.source)).instance;
+      // eslint-disable-next-line no-restricted-syntax
+      console.debug('Importing StoreManager from ', handler.class.source);
+      // First lets try if the plugin is imported during the compilation
+      this.loaderService.loadPluginModule(handler).then(module => {
 
-/*        const module: PluginModuleInterface = getModuleFactory(
-          'dontcode-plugin/' + handler.class.source
-        ).create(this.injector).instance;*/
-        const providerClass = module
+        const providerClass:Type<DontCodeStoreProvider> = module.instance
           .exposedPreviewHandlers()
           .get(handler.class.name);
-        console.log('Provider Class found:', providerClass);
+        // eslint-disable-next-line no-restricted-syntax
+        console.debug('Provider Class found:', providerClass);
 
         return of(providerClass);
-      } catch (e) {
-        // Nope, fallback to dynamically loading it
-      }
+      });
     }
     return EMPTY;
   }

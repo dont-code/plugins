@@ -1,13 +1,9 @@
-import {
-  ChangeHandlerConfig,
-  DontCodePreviewManager,
-  PreviewHandler,
-} from '@dontcode/core';
-import { Subscriber, throwError } from 'rxjs';
-import { Injectable, Type } from '@angular/core';
-import { ComponentLoaderService } from '@dontcode/plugin-common';
-import { ChangeProviderService } from '../command/services/change-provider.service';
-import { map, mergeMap } from 'rxjs/operators';
+import {DontCodePreviewManager, PreviewHandler,} from '@dontcode/core';
+import {Subscriber} from 'rxjs';
+import {Injectable, Type} from '@angular/core';
+import {ComponentLoaderService} from '@dontcode/plugin-common';
+import {ChangeProviderService} from '../command/services/change-provider.service';
+import {map, mergeMap} from 'rxjs/operators';
 
 /**
  * Loads all plugins that are declared globally

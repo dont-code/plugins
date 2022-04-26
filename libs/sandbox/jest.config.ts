@@ -1,6 +1,6 @@
 module.exports = {
-  displayName: 'screen',
-  preset: '../../jest.preset.js',
+  displayName: 'sandbox',
+
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   globals: {
     'ts-jest': {
@@ -8,7 +8,7 @@ module.exports = {
       stringifyContentPathRegex: '\\.(html|svg)$',
     },
   },
-  coverageDirectory: '../../coverage/libs/screen',
+  coverageDirectory: '../../coverage/libs/sandbox',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': 'jest-preset-angular',
   },
@@ -17,5 +17,6 @@ module.exports = {
     'jest-preset-angular/build/serializers/no-ng-attributes',
     'jest-preset-angular/build/serializers/ng-snapshot',
     'jest-preset-angular/build/serializers/html-comment',
-  ]
+  ],
+  preset: '../../jest.preset.ts',
 };

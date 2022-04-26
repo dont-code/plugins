@@ -63,18 +63,16 @@ export class ScreenComponent implements OnInit, OnDestroy, AfterViewInit {
         try {
         const pointer = this.provider.calculatePointerFor(position);
 
-        this.loader.loadComponentFactory(pointer, this.provider.getJsonAt(position)).then (factory => {
-          this.dynamicInsertPoint.clear();
-          if( factory) {
-            component = this.loader.createComponent(factory, this.dynamicInsertPoint, pointer);
-          } else {
+        this.dynamicInsertPoint.clear();
+        this.loader.insertComponent(pointer, this.dynamicInsertPoint, this.provider.getJsonAt(position)).then (component => {
+          if( component==null) {
               // Display the default viewer component if no factory are found...
-            component = this.loader.createGivenComponent(DefaultViewerComponent, this.dynamicInsertPoint, pointer);
+            this.loader.createComponent(DefaultViewerComponent, this.dynamicInsertPoint, undefined, pointer);
           }
         });
         } catch (error) {
           console.warn('Error creating component for '+position+':',error);
-          component = this.loader.createGivenComponent(DefaultViewerComponent, this.dynamicInsertPoint,
+          this.loader.createComponent(DefaultViewerComponent, this.dynamicInsertPoint,undefined,
             new DontCodeModelPointer(position, position));
         }
       })

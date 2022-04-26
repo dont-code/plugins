@@ -130,7 +130,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/plugin-tester"],
       "options": {
-        "jestConfig": "apps/plugin-tester/jest.config.js",
+        "jestConfig": "apps/plugin-tester/jest.config.ts",
         "passWithNoTests": true
       }
     }
