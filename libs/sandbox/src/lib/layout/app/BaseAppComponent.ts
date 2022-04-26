@@ -59,7 +59,7 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
           map((storeProvider) => {
             if (storeProvider) {
               const updatedInjector = Injector.create({ providers: [storeProvider]});
-              console.log("Injector:", updatedInjector.get(HttpClient));
+//              console.log("Injector:", updatedInjector.get(HttpClient));
               dtcde
                 .getStoreManager()
                 .setProvider(updatedInjector.get(storeProvider));

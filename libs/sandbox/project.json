@@ -24,7 +24,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/sandbox"],
       "options": {
-        "jestConfig": "libs/sandbox/jest.config.js",
+        "jestConfig": "libs/sandbox/jest.config.ts",
         "passWithNoTests": true
       }
     },
