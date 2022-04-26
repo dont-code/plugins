@@ -1,16 +1,9 @@
-import { AbstractDynamicComponent } from './abstract-dynamic-component';
-import { DynamicComponent } from './dynamic-component';
-import {
-  AfterViewInit,
-  Component,
-  Directive,
-  Injector,
-  ViewChild,
-  ViewContainerRef,
-} from '@angular/core';
-import { DontCodeModelPointer } from '@dontcode/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { ComponentLoaderService } from '../common-dynamic/component-loader.service';
+import {AbstractDynamicComponent} from './abstract-dynamic-component';
+import {DynamicComponent} from './dynamic-component';
+import {AfterViewInit, Component, Directive, Injector, ViewChild, ViewContainerRef,} from '@angular/core';
+import {DontCodeModelPointer} from '@dontcode/core';
+import {FormControl, FormGroup} from '@angular/forms';
+import {ComponentLoaderService} from '../common-dynamic/component-loader.service';
 
 /** A component must be attached to a insertionpoint in the template **/
 @Directive({ selector: 'dtcde-dynamic' })
@@ -58,16 +51,11 @@ export abstract class AbstractDynamicLoaderComponent
     const component = this.componentsByFormName.get(formName);
     if (component == null) {
       return this.loader
-        .loadComponentFactoryForFieldType(type)
-        .then((componentFactory) => {
-          if (componentFactory) {
-            const comp = this.loader.createComponent(
-              componentFactory,
-              this.dynamicInsertPoint,
-              null
-            );
-            this.prepareComponent(comp, formName, subValue);
-            return comp;
+        .insertComponentForFieldType(type, this.dynamicInsertPoint)
+        .then((component) => {
+          if (component!=null) {
+            this.prepareComponent(component, formName, subValue);
+            return component;
           } else {
             return null;
           }
@@ -123,15 +111,14 @@ export abstract class AbstractDynamicLoaderComponent
     position: DontCodeModelPointer,
     currentJson?: any
   ): Promise<DynamicComponent | null> {
+    if (this.dynamicInsertPoint==null) {
+      //console.warn('No ComponentFactory or missing <dtcde-dynamic></dtcde-dynamic> in template');
+      return Promise.resolve(null);
+    }
     return this.loader
-      .loadComponentFactory(position, currentJson)
-      .then((componentFactory) => {
-        if (componentFactory && this.dynamicInsertPoint) {
-          const component = this.loader.createComponent(
-            componentFactory,
-            this.dynamicInsertPoint,
-            position
-          );
+      .insertComponent(position,this.dynamicInsertPoint, currentJson)
+      .then((component) => {
+        if (component!=null) {
           return this.prepareComponent(component, null, currentJson);
         } else {
           //console.warn('No ComponentFactory or missing <dtcde-dynamic></dtcde-dynamic> in template');

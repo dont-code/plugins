@@ -1,7 +1,6 @@
 import {
-  ComponentFactory,
-  ComponentFactoryResolver,
-  getModuleFactory,
+  createNgModuleRef,
+  getNgModuleById,
   Inject,
   Injectable,
   Injector,
@@ -19,9 +18,9 @@ import {
   PluginModuleInterface,
   PreviewHandler,
 } from '@dontcode/core';
-import { DynamicComponent } from '../common-ui/dynamic-component';
-import { COMMAND_PROVIDER } from '../common-global/globals';
-import { Mutex } from 'async-mutex';
+import {DynamicComponent} from '../common-ui/dynamic-component';
+import {COMMAND_PROVIDER} from '../common-global/globals';
+import {Mutex} from 'async-mutex';
 
 /**
  * Manages the dynamic loading of components able to display a data located at a specific pointer position
@@ -36,26 +35,15 @@ export class ComponentLoaderService {
   protected previewMgr: DontCodePreviewManager;
 
   protected moduleMap = new Map<string, NgModuleRef<PluginModuleInterface>>();
-  protected factoryMap = new Map<
-    { source: string; name: string },
-    FactoryBuilder
-  >();
   mutex = new Mutex();
 
   constructor(
-    protected componentFactoryResolver: ComponentFactoryResolver,
     protected injector: Injector,
     @Optional()
     @Inject(COMMAND_PROVIDER)
     protected provider?: CommandProviderInterface
   ) {
     this.previewMgr = dtcde.getPreviewManager();
-  }
-
-  loadComponentFactoryForFieldType(
-    type: string
-  ): Promise<FactoryBuilder | null> {
-    return this.loadComponentFactory('creation/entities/fields/type', type);
   }
 
   loadPluginModule(
@@ -65,9 +53,9 @@ export class ComponentLoaderService {
       try {
         let moduleRef = this.moduleMap.get(handlerConfig.class.source);
         if (!moduleRef) {
-          moduleRef = getModuleFactory(
-            'dontcode-plugin/' + handlerConfig.class.source
-          )?.create(this.injector);
+          moduleRef = createNgModuleRef(
+              getNgModuleById ('dontcode-plugin/' + handlerConfig.class.source),
+            this.injector);
           if (moduleRef)
             this.moduleMap.set(handlerConfig.class.source, moduleRef);
         }
@@ -78,19 +66,29 @@ export class ComponentLoaderService {
     });
   }
 
-  loadComponentFactory(
+  insertComponentForFieldType (type: string,
+                               insertPoint: ViewContainerRef
+  ) {
+    return this.insertComponent('creation/entities/fields/type', insertPoint, type);
+  }
+
+  insertComponent(
     schemaPosition: DontCodeModelPointer | string,
+    insertPoint: ViewContainerRef,
     currentJson?: any
-  ): Promise<FactoryBuilder | null> {
+  ): Promise<DynamicComponent | null> {
     let schemaPos: string = (schemaPosition as DontCodeModelPointer)
       .positionInSchema;
+    let isPointer: boolean;
     if (schemaPos) {
+      isPointer = true;
       if (!currentJson) {
         currentJson = this.provider?.getJsonAt(
           (schemaPosition as DontCodeModelPointer).position
         );
       }
     } else {
+      isPointer=false;
       schemaPos = schemaPosition as string;
     }
 
@@ -100,29 +98,16 @@ export class ComponentLoaderService {
     );
 
     if (handlerConfig) {
-      console.log('Importing from ', handlerConfig.class.source);
+      console.debug('Importing from ', handlerConfig.class.source);
       // First lets try if the plugin is imported during the compilation
 
       return this.loadPluginModule(handlerConfig)
         .then((moduleRef) => {
-          let componentFactory =
-            this.factoryMap.get(handlerConfig.class) || null;
-          if (!componentFactory) {
-            const factory =
-              this.componentFactoryResolver.resolveComponentFactory(
-                moduleRef.instance
-                  .exposedPreviewHandlers()
-                  .get(handlerConfig.class.name)
-              ) as ComponentFactory<DynamicComponent>;
-            if (factory) {
-              componentFactory = {
-                moduleRef: moduleRef,
-                factory: factory,
-              } as FactoryBuilder;
-              this.factoryMap.set(handlerConfig.class, componentFactory);
-            }
-          }
-          return componentFactory;
+          const componentClass = moduleRef.instance
+            .exposedPreviewHandlers()
+            .get(handlerConfig.class.name);
+
+          return this.createComponent(componentClass, insertPoint, moduleRef, isPointer?schemaPosition as DontCodeModelPointer:null);
         })
         .catch((reason) => {
           return Promise.reject(
@@ -138,40 +123,18 @@ export class ComponentLoaderService {
     }
   }
 
-  createGivenComponent(
+  createComponent(
     componentClass: Type<DynamicComponent>,
     insertPoint: ViewContainerRef,
-    position: DontCodeModelPointer | null
-  ): DynamicComponent {
-    let componentFactory =
-      this.componentFactoryResolver.resolveComponentFactory(
-        componentClass
-      ) as ComponentFactory<DynamicComponent>;
-    if (!componentFactory)
-      throw new Error(
-        'Cannot find ComponentFactory for Component class ' +
-          componentClass.name
-      );
-    return this.createComponent(
-      { factory: componentFactory },
-      insertPoint,
-      position
-    );
-  }
-
-  createComponent(
-    builder: FactoryBuilder,
-    insertPoint: ViewContainerRef,
+    moduleRef: NgModuleRef<PluginModuleInterface> | undefined,
     position: DontCodeModelPointer | null
   ): DynamicComponent {
     let injector = this.injector;
-    if (builder.moduleRef) injector = builder.moduleRef.injector;
     const componentRef = insertPoint.createComponent(
-      builder.factory,
-      undefined,
-      injector,
-      undefined,
-      builder.moduleRef
+      componentClass, {
+      injector:injector,
+      ngModuleRef: moduleRef
+      }
     );
     const component = componentRef.instance as DynamicComponent;
 
@@ -197,11 +160,3 @@ export class ComponentLoaderService {
     return component;
   }
 }
-
-/**
- * Everything needed to create a new component.
- */
-export type FactoryBuilder = {
-  moduleRef?: NgModuleRef<PluginModuleInterface>;
-  factory: ComponentFactory<DynamicComponent>;
-};

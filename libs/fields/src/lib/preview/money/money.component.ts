@@ -101,7 +101,7 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
 
   preloadCurrencyField() {
     // Only load currency component to the cache in edit mode
-    if (this.group) {
+    if ((this.group!=null)&&(this.dynamicInsertPoint!=null)) {
       this.loadSubField(
         'Currency',
         'currencyCode',
