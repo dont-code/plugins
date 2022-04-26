@@ -21,7 +21,8 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
     protected storage:IndexedDbStorageService,
     protected listener:ChangeListenerService,
     protected globalPluginLoader:GlobalPluginLoader,
-    protected loaderService:ComponentLoaderService) {
+    protected loaderService:ComponentLoaderService,
+    protected injector: Injector) {
   }
 
   ngOnInit(): void {
@@ -51,11 +52,14 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
           }),
           map((storeProvider) => {
             if (storeProvider!=null) {
-              const updatedInjector = Injector.create({ providers: [storeProvider as any]});
-//              console.debug("Injector:", updatedInjector.get(HttpClient));
+              const updatedInjector = Injector.create({
+                providers: [storeProvider as any],
+                  parent: this.injector});
               dtcde
                 .getStoreManager()
                 .setProvider(updatedInjector.get(storeProvider));
+              // eslint-disable-next-line no-restricted-syntax
+              console.info("Set new provider to:", storeProvider);
             }
             return storeProvider;
           })
@@ -73,7 +77,7 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
     this.listener.setSessionId(this.sessionId);
   }
 
-  loadStoreManager(position: string): Observable<Type<DontCodeStoreProvider>> {
+  loadStoreManager(position: string): Promise<Type<DontCodeStoreProvider>> {
     const previewMgr = dtcde.getPreviewManager();
     const currentJson = this.provider.getJsonAt(position);
 
@@ -83,7 +87,7 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
       // eslint-disable-next-line no-restricted-syntax
       console.debug('Importing StoreManager from ', handler.class.source);
       // First lets try if the plugin is imported during the compilation
-      this.loaderService.loadPluginModule(handler).then(module => {
+      return this.loaderService.loadPluginModule(handler).then(module => {
 
         const providerClass:Type<DontCodeStoreProvider> = module.instance
           .exposedPreviewHandlers()
@@ -91,10 +95,10 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
         // eslint-disable-next-line no-restricted-syntax
         console.debug('Provider Class found:', providerClass);
 
-        return of(providerClass);
+        return providerClass;
       });
     }
-    return EMPTY;
+    return Promise.reject('No handler found for storemanager '+currentJson);
   }
 
   mainTab(): boolean {
