@@ -1,5 +1,5 @@
 module.exports = {
-  name: "plugin-tester",
+  name: 'plugin-tester',
   exposes: {
     './Fields': './libs/fields/src/lib/fields.module.ts',
     './Basic': './libs/basic/src/lib/basic.module.ts'
