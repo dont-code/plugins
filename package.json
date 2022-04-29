@@ -7,7 +7,9 @@
     "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2015 browser module main",
     "start": "nx serve",
     "build": "nx build",
-    "test": "nx test"
+    "test": "nx test",
+    "push-all": "cd libs/common && npm version prerelease && cd ../sandbox && npm version prerelease && cd ../basic && npm version prerelease && cd ../fields && npm version prerelease && cd ../.. && nx run common:build:development && nx run sandbox:build:development && nx run basic:build:development && nx run fields:build:development && cd dist/libs/common && yalc push && cd ../sandbox && yalc push && cd ../basic && yalc push && cd ../fields && yalc push",
+    "push": "cd libs/${npm_config_dir} && npm version prerelease && cd ../.. && nx run ${npm_config_dir}:build:development && cd dist/libs/${npm_config_dir} && yalc push"
   },
   "private": true,
   "dependencies": {

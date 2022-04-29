@@ -87,7 +87,7 @@ export class IndexedDbStorageService implements DontCodeStoreProvider {
       } catch (error) {
         // Just ignore table not found
       }
-      if (table) return Promise.resolve(table);
+      if (table != null) return Promise.resolve(table);
 
       if( create) {
         const tableDescription:{[key:string]:string} = {};

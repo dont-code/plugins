@@ -64,11 +64,15 @@ export class DefaultViewerComponent extends PluginBaseComponent {
       );
       this.store = dtcde.getStoreManager().getProvider(pointer.position);
       if (this.store != null) {
-        this.store.loadEntity(pointer.position, null).then((val) => {
-          this.setValue(val);
-          this.rebuildForm();
-          this.ref.detectChanges();
-        });
+        this.store.loadEntity(pointer.position, null).then(
+          (val) => {
+            this.setValue(val);
+            this.rebuildForm();
+            this.ref.detectChanges();
+          },
+          (error)=> {
+            console.error("Cannot load element with DefaultViewer because of error ", error);
+          });
       }
       this.initChangeListening();
       this.rebuildForm();

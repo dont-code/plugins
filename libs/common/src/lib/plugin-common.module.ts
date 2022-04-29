@@ -7,7 +7,8 @@ import {DynamicInsertPoint} from "./common-ui/abstract-dynamic-loader-component"
   declarations: [DynamicInsertPoint],
   exports: [DynamicInsertPoint]
 })
-export class PluginCommonModule {}
+export class PluginCommonModule {
+}
 
 export * from './common-global/globals';
 export * from './common-handler/abstract-plugin-handler';
