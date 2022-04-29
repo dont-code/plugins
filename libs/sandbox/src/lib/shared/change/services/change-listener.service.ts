@@ -73,7 +73,7 @@ export class ChangeListenerService {
         // Called when connection is closed (for whatever reason)
       );
     } else {
-      console.log(
+      console.warn(
         'No SANDBOX_CONFIG WebSocketUrl injected => Not listening to changes from servers'
       );
       this.connectionStatus.next('undefined');

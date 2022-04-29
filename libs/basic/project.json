@@ -13,8 +13,12 @@
       "configurations": {
         "production": {
           "tsConfig": "libs/basic/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/basic/tsconfig.lib.json"
         }
-      }
+      },
+      "defaultConfiguration": "production"
     },
     "test": {
       "executor": "@nrwl/jest:jest",
