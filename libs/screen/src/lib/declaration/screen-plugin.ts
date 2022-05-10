@@ -1,7 +1,9 @@
-import {Plugin, DontCodeModel, PluginConfig} from "@dontcode/core";
+import {Plugin, DontCodeModel, PluginConfig, Core} from "@dontcode/core";
 
-export class ScreenPlugin implements Plugin
-{
+export class ScreenPlugin implements Plugin {
+  pluginInit(dontCode: Core): void {
+      // Nothing to init
+  }
   getConfiguration(): PluginConfig {
     return {
       "plugin": {

@@ -11,7 +11,7 @@ import {
   ChangeType,
   DontCodeTestManager,
   CommandProviderInterface,
-  DontCodeModelPointer,
+  DontCodeModelPointer, Core,
 } from '@dontcode/core';
 import { NgModule } from '@angular/core';
 import { ChangeProviderService } from '../command/services/change-provider.service';
@@ -193,6 +193,9 @@ class GlobalHandlerPluginTest implements Plugin {
         },
       ],
     };
+  }
+
+  pluginInit(dontCode: Core): void {
   }
 }
 
