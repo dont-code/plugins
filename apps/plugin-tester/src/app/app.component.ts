@@ -6,4 +6,6 @@ import {BaseAppComponent} from '@dontcode/sandbox';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent extends BaseAppComponent {}
+export class AppComponent extends BaseAppComponent {
+
+}

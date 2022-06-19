@@ -41,3 +41,5 @@ Thumbs.db
 /dontcode-core-dev.tgz
 
 .angular
+/.yalc/
+/yalc.lock

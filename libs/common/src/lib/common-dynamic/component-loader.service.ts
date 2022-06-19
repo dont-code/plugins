@@ -56,8 +56,11 @@ export class ComponentLoaderService {
           moduleRef = createNgModuleRef(
               getNgModuleById ('dontcode-plugin/' + handlerConfig.class.source),
             this.injector);
-          if (moduleRef)
+          if (moduleRef) {
             this.moduleMap.set(handlerConfig.class.source, moduleRef);
+            // Now init the newly loaded module
+            dtcde.initPlugins();
+          }
         }
         return moduleRef;
       } finally {

@@ -40,6 +40,3 @@ export class SandboxModule {
 
 export * from './layout/layout.module';
 export * from './shared/shared.module';
-export * from './shared/config/sandbox-lib-config';
-export * from './shared/command/command.module';
-export * from './shared/plugins/global-plugin-loader'

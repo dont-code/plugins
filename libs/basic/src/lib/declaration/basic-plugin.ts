@@ -1,7 +1,6 @@
-import {Plugin, DontCodeModel, PluginConfig} from "@dontcode/core";
+import {Plugin, DontCodeModel, PluginConfig, Core} from "@dontcode/core";
 
-export class BasicPlugin implements Plugin
-{
+export class BasicPlugin implements Plugin {
   getConfiguration(): PluginConfig {
     return {
       "plugin": {
@@ -93,6 +92,10 @@ export class BasicPlugin implements Plugin
         }
       ]
     }
+  }
+
+  pluginInit(dontCode: Core): void {
+    // Nothing to do here
   }
 
 }

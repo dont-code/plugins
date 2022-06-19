@@ -1,4 +1,4 @@
-import {Plugin, DontCodeModel, PluginConfig} from '@dontcode/core';
+import {Plugin, DontCodeModel, PluginConfig, Core} from '@dontcode/core';
 
 export class FieldsPlugin implements Plugin
 {
@@ -120,6 +120,10 @@ export class FieldsPlugin implements Plugin
 
       ]
     }
+  }
+
+  pluginInit(dontCode: Core): void {
+    // Nothing to do here
   }
 
 }
