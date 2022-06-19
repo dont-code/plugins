@@ -34,7 +34,7 @@
     "async-mutex": "^0.3.2",
     "broadcast-channel": "^4.10.0",
     "core-js": "^3.21.1",
-    "dexie": "^3.2.1",
+    "dexie": "^3.2.2",
     "flag-icon-css": "^4.1.7",
     "i18n-iso-countries": "^7.4.0",
     "jsonpath-plus": "^6.0.1",
