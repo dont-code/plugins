@@ -16,6 +16,7 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
   protected subscription = new Subscription();
 
   sessionId: string | null = null;
+  protected forceRepositoryLoading = false;
 
   constructor(
     protected provider: ChangeProviderService,
@@ -29,7 +30,14 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const repoUrl = (window as any).dontCodeConfig?.repositoryUrl;
-    this.pluginLoader.loadPluginsFromRepository(repoUrl, 'assets/repositories/default.json').then(value => {
+    this.pluginLoader.loadPluginsFromRepository(repoUrl, 'assets/repositories/default.json').catch (
+      reason => {
+        if (this.forceRepositoryLoading)
+          return Promise.reject(reason);
+        else
+          return Promise.resolve(null);
+      }
+    ).then(value => {
       dtcde.initPlugins();
 
         // Apply updates from repository
