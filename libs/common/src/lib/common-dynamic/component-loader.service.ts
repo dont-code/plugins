@@ -46,20 +46,20 @@ export class ComponentLoaderService {
     this.previewMgr = dtcde.getPreviewManager();
   }
 
-  loadPluginModule(
-    handlerConfig: ChangeHandlerConfig
-  ): Promise<NgModuleRef<PluginModuleInterface>> {
+  /**
+   * Either creates or retrieves the module whose name is in parameter.
+   * @param moduleName
+   */
+  getOrCreatePluginModuleRef (moduleSource:string): Promise<NgModuleRef<PluginModuleInterface>> {
     return this.mutex.acquire().then((release) => {
       try {
-        let moduleRef = this.moduleMap.get(handlerConfig.class.source);
+        let moduleRef = this.moduleMap.get(moduleSource);
         if (!moduleRef) {
           moduleRef = createNgModuleRef(
-              getNgModuleById ('dontcode-plugin/' + handlerConfig.class.source),
+            getNgModuleById ('dontcode-plugin/' + moduleSource),
             this.injector);
           if (moduleRef) {
-            this.moduleMap.set(handlerConfig.class.source, moduleRef);
-            // Now init the newly loaded module
-            dtcde.initPlugins();
+            this.moduleMap.set(moduleSource, moduleRef);
           }
         }
         return moduleRef;
@@ -67,6 +67,19 @@ export class ComponentLoaderService {
         release();
       }
     });
+
+  }
+
+  loadPluginModule(
+    handlerConfig: ChangeHandlerConfig
+  ): Promise<NgModuleRef<PluginModuleInterface>> {
+    return this.getOrCreatePluginModuleRef(handlerConfig.class.source).then(moduleRef => {
+      if (moduleRef!=null) {
+        // Now init the newly loaded module
+        dtcde.initPlugins();
+      }
+      return moduleRef;
+    })
   }
 
   insertComponentForFieldType (type: string,

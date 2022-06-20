@@ -16,7 +16,9 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
   protected subscription = new Subscription();
 
   sessionId: string | null = null;
-  protected forceRepositoryLoading = false;
+  protected pluginsLoaded?:Promise<any>;
+
+  protected runtimeConfig = new DontCodeRuntimeConfig();
 
   constructor(
     protected provider: ChangeProviderService,
@@ -29,10 +31,10 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const repoUrl = (window as any).dontCodeConfig?.repositoryUrl;
-    this.pluginLoader.loadPluginsFromRepository(repoUrl, 'assets/repositories/default.json').catch (
+    const repoUrl = this.runtimeConfig.repositoryUrl;
+    this.pluginsLoaded=this.pluginLoader.loadPluginsFromRepository(repoUrl, 'assets/repositories/default.json').catch (
       reason => {
-        if (this.forceRepositoryLoading)
+        if (this.runtimeConfig.forceRepositoryLoading)
           return Promise.reject(reason);
         else
           return Promise.resolve(null);
@@ -91,7 +93,7 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
           })
       );
 
-      this.sessionId = (window as any).dontCodeConfig?.sessionId;
+      this.sessionId = this.runtimeConfig.sessionId??null;
       // eslint-disable-next-line no-restricted-syntax
       console.info('Browser opened with SessionId =', this.sessionId);
       this.listener.setSessionId(this.sessionId);
@@ -129,4 +131,12 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
+}
+
+export class DontCodeRuntimeConfig {
+  sessionId?:string;
+  projectId?:string;
+  runtime=false;
+  forceRepositoryLoading=false;
+  repositoryUrl?:string;
 }

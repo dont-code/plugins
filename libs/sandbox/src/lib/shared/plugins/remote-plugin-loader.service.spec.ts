@@ -129,7 +129,7 @@ const TEST_OVERLOAD_JSON={
       "display-name": "Test Basic plugin with overloaded params",
       "version": "1.0.0",
       "info": {
-        "remote-entry": "https://test.dont-code.net/basic-overload/remoteEntry.js"
+        "remote-entry": "https://test.dont-code.net/basic-overload/remoteEntry.mjs"
       }
     },
     {
@@ -138,8 +138,8 @@ const TEST_OVERLOAD_JSON={
       "version": "1.0.0",
       "info": {
         "exposed-module":"./BasicOverload",
-        "module-name":"https://test.dont-code.net/basic-overload-config/remoteEntry.js",
-        "remote-entry": "BasicOverloadModule"
+        "remote-entry":"https://test.dont-code.net/basic-overload-config/remoteEntry.mjs",
+        "module-name": "BasicOverloadModule"
       },
       "config": {
         "definition-updates": [{
@@ -174,10 +174,6 @@ class TestRemotePluginLoaderService extends RemotePluginLoaderService {
         expect(moduleDef.exposedModule).toEqual(toCheck["exposed-module"]);
       else
         expect(moduleDef.exposedModule).toBeTruthy();
-      if (toCheck["module-name"]!=null)
-        expect(moduleDef.moduleName).toEqual(toCheck["module-name"]);
-      else
-        expect(moduleDef.moduleName).toBeTruthy();
     }
     return Promise.resolve(new TestPluginModuleInterface ());
 

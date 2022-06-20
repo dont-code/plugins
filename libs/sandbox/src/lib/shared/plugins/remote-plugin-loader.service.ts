@@ -1,11 +1,12 @@
-import {createNgModuleRef, Injectable, Injector} from '@angular/core';
+import {Injectable, Injector} from '@angular/core';
 import {loadRemoteModule, LoadRemoteModuleOptions,} from '@angular-architects/module-federation-runtime';
 import {DefinitionUpdateConfig, PluginModuleInterface, RepositoryPluginEntry, RepositorySchema} from '@dontcode/core';
 import {HttpClient} from "@angular/common/http";
 import {firstValueFrom} from "rxjs";
+import {ComponentLoaderService} from "@dontcode/plugin-common";
 
 export type RemotePluginModuleOptions = LoadRemoteModuleOptions & {
-  moduleName: string;
+  moduleId: string;
 };
 
 /**
@@ -18,13 +19,13 @@ export class RemotePluginLoaderService {
 
   repository:RepositorySchema|null=null;
 
-  constructor( protected injector: Injector, protected httpClient: HttpClient) {}
+  constructor( protected compLoader: ComponentLoaderService, protected injector: Injector, protected httpClient: HttpClient) {}
 
   /**
    * Loads the configuration file of the plugin repository, then loads and configure all plugins in it
    * @param repoUrl
    */
-  loadPluginsFromRepository (repoUrl:string, defaultRepoUrl:string, ) : Promise<RepositorySchema>{
+  loadPluginsFromRepository (repoUrl:string|undefined, defaultRepoUrl:string) : Promise<RepositorySchema>{
 /*    this.httpClient.get<RepositorySchema>(repoUrl, {observe:'events', responseType:'json'}).subscribe({
       next: value => {
         console.log("Received", value);
@@ -37,6 +38,9 @@ export class RemotePluginLoaderService {
       }
     });*/
 
+    if( repoUrl==null) repoUrl=defaultRepoUrl;
+    // eslint-disable-next-line no-restricted-syntax
+    console.info("Loading plugins from repository url", repoUrl);
     return firstValueFrom(
       this.httpClient.get<RepositorySchema>(repoUrl, {observe:'body', responseType:'json'})
       ).then((config:RepositorySchema) => {
@@ -46,6 +50,8 @@ export class RemotePluginLoaderService {
           config.plugins.forEach(value => {
             toLoad.push(this.createRemotePluginConfig (value, defaultRepoUrl));
           });
+          // eslint-disable-next-line no-restricted-syntax
+          console.debug("Loading following plugins", config.plugins);
           return this.loadMultipleModules(toLoad);
         }
         return Promise.resolve([]);
@@ -67,21 +73,20 @@ export class RemotePluginLoaderService {
     const upperId = value.id.substring(0,1).toUpperCase()+value.id.substring(1);
 
     if (value.info != null) {
-      const moduleName=value.info["module-name"]??upperId+'Module';
       const exposedModule = value.info["exposed-module"]??'./'+upperId;
       const remoteEntry = value.info["remote-entry"]??defaultRepoUrl+'/remoteEntry.mjs';
 
       ret = {
         type: 'module',
+        moduleId: value.id,
         exposedModule: exposedModule,
-        moduleName: moduleName,
         remoteEntry: remoteEntry
       }
     }else {
       ret = {
         type: 'module',
+        moduleId: value.id,
         exposedModule:'./'+upperId,
-        moduleName: upperId+'Module',
         remoteEntry:defaultRepoUrl+'/remoteEntry.mjs'
       }
     }
@@ -116,16 +121,14 @@ export class RemotePluginLoaderService {
   ): Promise<PluginModuleInterface> {
     const module = await loadRemoteModule(moduleDef);
     //console.log('Loaded Module:', module);
-    const mainModuleClass = module[moduleDef.moduleName];
+/*    const mainModuleClass = module[moduleDef.moduleId];
     if (mainModuleClass==null)  // The main module class is not defined
     {
-      throw new Error("ModuleClass "+moduleDef.moduleName+" not exported in "+moduleDef.remoteEntry);
-    }
-    const mainModule = createNgModuleRef<PluginModuleInterface>(mainModuleClass, this.injector).instance;
-    /*const mainModule = this.compiler
-      .compileModuleSync(mainModuleClass)
-      .create(this.injector).instance as PluginModuleInterface;*/
-    return mainModule;
+      throw new Error("ModuleClass "+moduleDef.moduleId+" not exported in "+moduleDef.remoteEntry);
+    }*/
+    const mainModule = await this.compLoader.getOrCreatePluginModuleRef(moduleDef.moduleId.toLowerCase());
+    //createNgModuleRef<PluginModuleInterface>(mainModuleClass, this.injector).instance;
+    return mainModule.instance;
   }
 
   /**
@@ -141,9 +144,9 @@ export class RemotePluginLoaderService {
         const loaded = await this.loadModule(moduleDef);
         ret.push(loaded);
       } catch (error) {
-        console.log(
+        console.error(
           'Error loading plugin ' +
-            moduleDef.moduleName +
+            moduleDef.moduleId +
             ' from ' +
             moduleDef.remoteEntry,
           error
