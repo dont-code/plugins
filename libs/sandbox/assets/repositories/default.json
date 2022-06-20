@@ -7,6 +7,18 @@
       "id": "Basic",
       "display-name": "Basic plugin for editing entities",
       "version": "1.0.0",
+      "info": {
+        "remote-entry":"https://dont-code.net/plugins/remoteEntry.mjs"
+      },
+      "config": {}
+    },
+    {
+      "id": "Fields",
+      "display-name": "Additional editors for entity properties",
+      "version": "1.0.0",
+      "info": {
+        "remote-entry":"https://dont-code.net/plugins/remoteEntry.mjs"
+      },
       "config": {}
     }
   ]
