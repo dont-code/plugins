@@ -12,7 +12,7 @@ describe('MoneyComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ MoneyComponent ],
-      imports: [DropdownModule, InputNumberModule, FormsModule, ReactiveFormsModule, PluginCommonModule]
+      imports: [DropdownModule, InputNumberModule, FormsModule, ReactiveFormsModule, PluginCommonModule.forRoot()]
     })
     .compileComponents();
   });

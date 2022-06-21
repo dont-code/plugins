@@ -2,7 +2,7 @@ import {
   Change,
   CommandProviderInterface,
   DontCodeModel,
-  DontCodeModelPointer,
+  DontCodeModelPointer, DontCodeStoreManager,
   DontCodeStoreProvider,
   dtcde,
 } from '@dontcode/core';
@@ -46,7 +46,8 @@ export class DefaultViewerComponent extends PluginBaseComponent {
     loader: ComponentLoaderService,
     injector: Injector,
     protected ref: ChangeDetectorRef,
-    protected fb: FormBuilder
+    protected fb: FormBuilder,
+    protected storeMgr:DontCodeStoreManager
   ) {
     super(loader, injector);
     this.setForm(this.fb.group({}, { updateOn: 'blur' }));
@@ -62,7 +63,7 @@ export class DefaultViewerComponent extends PluginBaseComponent {
         pointer,
         provider.getJsonAt(pointer.position)
       );
-      this.store = dtcde.getStoreManager().getProvider(pointer.position);
+      this.store = this.storeMgr.getProvider(pointer.position);
       if (this.store != null) {
         this.store.loadEntity(pointer.position, null).then(
           (val) => {

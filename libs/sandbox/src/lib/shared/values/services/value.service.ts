@@ -11,14 +11,12 @@ import {DontCodeModelManager} from "@dontcode/core";
   providedIn: 'root'
 })
 export class ValueService {
-  protected model:DontCodeModelManager;
 
-  constructor() {
-    this.model = dtcde.getModelManager();
+  constructor(protected modelMgr:DontCodeModelManager) {
   }
 
   getContent(): any {
-    return this.model.getContent();
+    return this.modelMgr.getContent();
   }
 
   /**
@@ -26,7 +24,7 @@ export class ValueService {
    * @param newContent
    */
   resetContent(newContent: any): void {
-    this.model.resetContent(newContent);
+    this.modelMgr.resetContent(newContent);
   }
   /**
    * Subscribes to the Subject in parameter to receive model updates through changes.
@@ -44,7 +42,7 @@ export class ValueService {
    * @param chg
    */
   applyChange (chg: Change): Change[] {
-    return this.model.applyChange(chg);
+    return this.modelMgr.applyChange(chg);
   }
   /**
    * Provides the json extract at the given position.
@@ -53,7 +51,7 @@ export class ValueService {
    * @param create
    */
   findAtPosition(position: string, create?: boolean): any {
-    return this.model.findAtPosition(position, create);
+    return this.modelMgr.findAtPosition(position, create);
   }
 
 }

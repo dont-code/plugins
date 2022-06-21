@@ -11,7 +11,7 @@ describe('ListEntityComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ ListEntityComponent ],
-      imports: [TableModule, PluginCommonModule]
+      imports: [TableModule, PluginCommonModule.forRoot()]
     })
     .compileComponents();
   });

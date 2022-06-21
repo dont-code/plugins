@@ -1,12 +1,20 @@
-import {Component, Injector, OnDestroy, OnInit, Type,} from '@angular/core';
-import {ChangeType, DontCodeModel, DontCodeStoreProvider, dtcde,} from '@dontcode/core';
+import {Component, Inject, Injector, OnDestroy, OnInit, Type,} from '@angular/core';
+import {
+  ChangeType,
+  Core,
+  DontCodeModel,
+  DontCodeModelManager, DontCodePreviewManager,
+  DontCodeStoreManager,
+  DontCodeStoreProvider,
+  dtcde,
+} from '@dontcode/core';
 import {IndexedDbStorageService} from '../../shared/storage/services/indexed-db-storage.service';
 import {ChangeListenerService} from '../../shared/change/services/change-listener.service';
 import {ChangeProviderService} from '../../shared/command/services/change-provider.service';
 import {EMPTY, Subscription} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {GlobalPluginLoader} from '../../shared/plugins/global-plugin-loader';
-import {ComponentLoaderService} from "@dontcode/plugin-common";
+import {ComponentLoaderService, DONT_CODE_CORE} from "@dontcode/plugin-common";
 import {RemotePluginLoaderService} from "../../shared/plugins/remote-plugin-loader.service";
 
 @Component({
@@ -27,7 +35,13 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
     protected pluginLoader: RemotePluginLoaderService,
     protected globalPluginLoader:GlobalPluginLoader,
     protected loaderService:ComponentLoaderService,
-    protected injector: Injector) {
+    protected injector: Injector,
+    @Inject(DONT_CODE_CORE)
+    protected dontCodeCore: Core,
+    protected modelMgr:DontCodeModelManager,
+    protected storeMgr:DontCodeStoreManager,
+    protected previewMgr:DontCodePreviewManager
+  ) {
   }
 
   ngOnInit(): void {
@@ -40,18 +54,18 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
           return Promise.resolve(null);
       }
     ).then(value => {
-      dtcde.initPlugins();
+      this.dontCodeCore.initPlugins();
 
         // Apply updates from repository
       const repoUpdates = this.pluginLoader.listAllRepositoryConfigUpdates();
-      dtcde.getModelManager().applyPluginConfigUpdates(repoUpdates);
+      this.modelMgr.applyPluginConfigUpdates(repoUpdates);
 
       // eslint-disable-next-line no-restricted-syntax
       console.info('Dynamic Plugins inited');
       // Manage the global plugins
-      this.globalPluginLoader.initLoading(dtcde.getPreviewManager());
+      this.globalPluginLoader.initLoading();
       // Manage the store manager
-      dtcde.getStoreManager().setProvider(this.storage);
+      this.storeMgr.setProvider(this.storage);
       this.subscription.add(
         this.provider
           .receiveCommands(
@@ -62,7 +76,7 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
             mergeMap((change) => {
               if (change.type !== ChangeType.DELETE) {
                 if (change.value === 'No-one') {
-                  dtcde.getStoreManager().setProvider(this.storage);
+                  this.storeMgr.setProvider(this.storage);
                   return EMPTY;
                 } else if (change.value) {
                   return this.loadStoreManager(DontCodeModel.APP_SHARING_WITH);
@@ -77,8 +91,7 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
                 const updatedInjector = Injector.create({
                   providers: [storeProvider as any],
                     parent: this.injector});
-                dtcde
-                  .getStoreManager()
+                this.storeMgr
                   .setProvider(updatedInjector.get(storeProvider));
                 // eslint-disable-next-line no-restricted-syntax
                 console.info("Set new provider to:", storeProvider);
@@ -101,10 +114,9 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
   }
 
   loadStoreManager(position: string): Promise<Type<DontCodeStoreProvider>> {
-    const previewMgr = dtcde.getPreviewManager();
     const currentJson = this.provider.getJsonAt(position);
 
-    const handler = previewMgr.retrieveHandlerConfig(position, currentJson);
+    const handler = this.previewMgr.retrieveHandlerConfig(position, currentJson);
 
     if (handler) {
       // eslint-disable-next-line no-restricted-syntax

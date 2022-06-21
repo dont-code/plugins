@@ -4,6 +4,7 @@ import {TestBed} from '@angular/core/testing';
 import {ChangeProviderService} from './change-provider.service';
 import {Subscription} from 'rxjs';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {PluginCommonModule} from "@dontcode/plugin-common";
 
 
 describe('CommandProviderService', () => {
@@ -11,7 +12,7 @@ describe('CommandProviderService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports:[HttpClientTestingModule]
+      imports:[HttpClientTestingModule, PluginCommonModule.forRoot()]
     });
     service = TestBed.inject(ChangeProviderService);
   });

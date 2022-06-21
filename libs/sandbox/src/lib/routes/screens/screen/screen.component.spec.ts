@@ -16,7 +16,7 @@ describe('ScreenComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ScreenComponent, DefaultViewerComponent],
-      imports:[InputTextModule, ReactiveFormsModule, HttpClientTestingModule, PluginCommonModule],
+      imports:[InputTextModule, ReactiveFormsModule, HttpClientTestingModule, PluginCommonModule.forRoot()],
       providers: [{
         provide: ActivatedRoute, useValue: {
           url: of([new UrlSegment("creation/screens/aa", {})]),

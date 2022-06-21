@@ -18,16 +18,17 @@ export class GlobalPluginLoader {
 
   constructor(
     protected loader: ComponentLoaderService,
-    protected changeService: ChangeProviderService
+    protected changeService: ChangeProviderService,
+    protected previewManager:DontCodePreviewManager
   ) {}
 
   /**
    * Register each global handler to the changeService: It will create and call them when necessary
    * @param previewManager
    */
-  initLoading(previewManager: DontCodePreviewManager) {
+  initLoading() {
     this.subscribers.add(
-      previewManager
+      this.previewManager
         .receiveGlobalHandlers()
         .pipe(
           mergeMap((config) => {

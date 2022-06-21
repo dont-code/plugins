@@ -16,7 +16,7 @@ describe('EditEntityComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [EditEntityComponent],
-      imports: [CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ReactiveFormsModule, PluginCommonModule]
+      imports: [CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ReactiveFormsModule, PluginCommonModule.forRoot()]
     })
       .compileComponents();
   });

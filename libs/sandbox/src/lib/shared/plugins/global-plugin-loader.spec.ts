@@ -16,7 +16,7 @@ import {
 import { NgModule } from '@angular/core';
 import { ChangeProviderService } from '../command/services/change-provider.service';
 import { asyncScheduler, Subject, Subscriber } from 'rxjs';
-import { PluginHandlerHelper } from '@dontcode/plugin-common';
+import {PluginCommonModule, PluginHandlerHelper} from '@dontcode/plugin-common';
 
 export class GlobalTestHandler implements PreviewHandler {
   public static initCalls = new Subject<DontCodeModelPointer>();
@@ -66,7 +66,7 @@ describe('GlobalPluginLoaded', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, GlobalTestModule],
+      imports: [HttpClientTestingModule, GlobalTestModule, PluginCommonModule.forRoot()],
     });
     loader = TestBed.inject(GlobalPluginLoader);
   });
@@ -112,7 +112,7 @@ describe('GlobalPluginLoaded', () => {
     previewMgr.registerHandlers(
       new GlobalHandlerPluginTest().getConfiguration()
     );
-    loader.initLoading(previewMgr);
+    loader.initLoading();
 
     // Ensure the initialization is done before the changes are handled
     asyncScheduler.schedule(() => {
@@ -196,6 +196,7 @@ class GlobalHandlerPluginTest implements Plugin {
   }
 
   pluginInit(dontCode: Core): void {
+    // Empty
   }
 }
 

@@ -12,14 +12,14 @@ import {
 import {
   ChangeHandlerConfig,
   CommandProviderInterface,
+  Core,
   DontCodeModelPointer,
   DontCodePreviewManager,
-  dtcde,
   PluginModuleInterface,
   PreviewHandler,
 } from '@dontcode/core';
 import {DynamicComponent} from '../common-ui/dynamic-component';
-import {COMMAND_PROVIDER} from '../common-global/globals';
+import {COMMAND_PROVIDER, DONT_CODE_CORE} from '../common-global/globals';
 import {Mutex} from 'async-mutex';
 
 /**
@@ -32,18 +32,18 @@ import {Mutex} from 'async-mutex';
   providedIn: 'root',
 })
 export class ComponentLoaderService {
-  protected previewMgr: DontCodePreviewManager;
-
   protected moduleMap = new Map<string, NgModuleRef<PluginModuleInterface>>();
   mutex = new Mutex();
 
   constructor(
     protected injector: Injector,
+    @Inject(DONT_CODE_CORE)
+    protected dontCodeCore: Core,
+    protected previewMgr: DontCodePreviewManager,
     @Optional()
     @Inject(COMMAND_PROVIDER)
     protected provider?: CommandProviderInterface
   ) {
-    this.previewMgr = dtcde.getPreviewManager();
   }
 
   /**
@@ -76,7 +76,7 @@ export class ComponentLoaderService {
     return this.getOrCreatePluginModuleRef(handlerConfig.class.source).then(moduleRef => {
       if (moduleRef!=null) {
         // Now init the newly loaded module
-        dtcde.initPlugins();
+        this.dontCodeCore.initPlugins();
       }
       return moduleRef;
     })

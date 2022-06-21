@@ -15,6 +15,7 @@ import {
   basicStoreApiUrlConfig,
   SANDBOX_CONFIG
 } from "@dontcode/sandbox";
+import {PluginCommonModule} from "@dontcode/plugin-common";
 
 @NgModule({
   declarations: [AppComponent],
@@ -28,6 +29,7 @@ import {
       relativeLinkResolution: 'corrected',
       initialNavigation: 'enabledBlocking'
     }),
+    PluginCommonModule.forRoot(),
     SandboxModule.forRoot({
       webSocketUrl: environment.webSocketUrl,
       documentUrl: environment.documentApiUrl,

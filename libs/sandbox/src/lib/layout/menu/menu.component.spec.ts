@@ -6,6 +6,7 @@ import {SANDBOX_CONFIG} from "../../shared/config/sandbox-lib-config";
 import {MenuModule} from "primeng/menu";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {PluginCommonModule} from "@dontcode/plugin-common";
 
 describe('MenuComponent', () => {
   let component: MenuComponent;
@@ -14,7 +15,7 @@ describe('MenuComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ MenuComponent ],
-      imports: [BrowserAnimationsModule, RouterTestingModule, HttpClientTestingModule, MenuModule],
+      imports: [BrowserAnimationsModule, RouterTestingModule, HttpClientTestingModule, MenuModule, PluginCommonModule.forRoot()],
       providers: [{
           provide:SANDBOX_CONFIG, useValue:{
           webSocketUrl:''

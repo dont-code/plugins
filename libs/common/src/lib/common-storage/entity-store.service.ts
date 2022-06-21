@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import {dtcde} from "@dontcode/core";
+import {Injectable} from '@angular/core';
+import {DontCodeStoreManager} from "@dontcode/core";
 import {map} from "rxjs/operators";
 
 @Injectable({
@@ -7,10 +7,10 @@ import {map} from "rxjs/operators";
 })
 export class EntityStoreService {
 
-  constructor() { }
+  constructor(protected storeMgr:DontCodeStoreManager) { }
 
   retrieveListManager (position:string, description:any): EntityListManager {
-    return new EntityListManager(position, description);
+    return new EntityListManager(position, description, this.storeMgr);
   }
 }
 
@@ -25,7 +25,7 @@ export class EntityListManager {
    */
   entities = new Array<any>();
 
-  constructor(position:string, description: any) {
+  constructor(position:string, description: any, protected storeMgr:DontCodeStoreManager) {
     this.position = position;
     this.description = description;
   }
@@ -35,12 +35,12 @@ export class EntityListManager {
   }
 
   remove (element:any): Promise<boolean> {
-    return dtcde.getStoreManager().deleteEntity(this.position, element._id).then(deleted => {
+    return this.storeMgr.deleteEntity(this.position, element._id).then(deleted => {
       if( deleted)
         this.entities = this.entities.filter(val => (val!==element));
       return deleted;
     }).catch((reason:Error) => {
-      console.log(reason.message);
+      console.error(reason.message);
       return false;
     });
   }
@@ -50,11 +50,11 @@ export class EntityListManager {
   }
 
   store (element:any): Promise<any> {
-    return dtcde.getStoreManager().storeEntity(this.position, element);
+    return this.storeMgr.storeEntity(this.position, element);
   }
 
   loadAll (): Promise<void> {
-    return dtcde.getStoreManager().searchEntities(this.position).pipe(
+    return this.storeMgr.searchEntities(this.position).pipe(
       map (values => {
         this.entities = [...this.entities, ...values];
       return;

@@ -29,7 +29,8 @@ export class ChangeProviderService implements CommandProviderInterface {
 
   constructor(
     protected changeListener: ChangeListenerService,
-    protected valueService: ValueService
+    protected valueService: ValueService,
+    protected schemaManager: DontCodeSchemaManager
   ) {
     this.subscriptions.add(
       changeListener.getChangeEvents().subscribe((change) => {
@@ -224,11 +225,11 @@ export class ChangeProviderService implements CommandProviderInterface {
   }
 
   getSchemaManager(): DontCodeSchemaManager {
-    return dtcde.getSchemaManager();
+    return this.schemaManager;
   }
 
   calculatePointerFor(position: string): DontCodeModelPointer {
-    const ret = dtcde.getSchemaManager().generateSchemaPointer(position);
+    const ret = this.schemaManager.generateSchemaPointer(position);
     return ret;
   }
 
