@@ -12,7 +12,7 @@ describe('DefaultViewerComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ DefaultViewerComponent ],
-      imports: [ReactiveFormsModule, InputTextModule, PluginCommonModule]
+      imports: [ReactiveFormsModule, InputTextModule, PluginCommonModule.forRoot()]
     })
     .compileComponents();
   }));

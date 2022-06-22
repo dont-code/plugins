@@ -10,6 +10,7 @@ import {OverlayPanelModule} from "primeng/overlaypanel";
 import {SidebarModule} from "primeng/sidebar";
 import {MenuModule} from "primeng/menu";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {PluginCommonModule} from "@dontcode/plugin-common";
 
 describe('MainComponent', () => {
   let component: MainComponent;
@@ -20,7 +21,7 @@ describe('MainComponent', () => {
       declarations: [MainComponent, MenuComponent],
       imports: [
         BrowserAnimationsModule, RouterTestingModule, HttpClientTestingModule,
-        ToolbarModule, OverlayPanelModule, SidebarModule, MenuModule
+        ToolbarModule, OverlayPanelModule, SidebarModule, MenuModule, PluginCommonModule.forRoot()
       ],
       providers: [{
         provide:SANDBOX_CONFIG, useValue:{

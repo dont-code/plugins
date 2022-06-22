@@ -3,6 +3,7 @@ import {IndexedDbStorageService} from "./indexed-db-storage.service";
 import {ValueService} from "../../values/services/value.service";
 import {map} from "rxjs/operators";
 import {lastValueFrom} from "rxjs";
+import {PluginCommonModule} from "@dontcode/plugin-common";
 
 describe('DevTemplateManagerService', () => {
   let service: IndexedDbStorageService;
@@ -10,7 +11,7 @@ describe('DevTemplateManagerService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ ]
+      imports: [ PluginCommonModule.forRoot()]
     });
     service = TestBed.inject(IndexedDbStorageService);
     valueService = TestBed.inject(ValueService);

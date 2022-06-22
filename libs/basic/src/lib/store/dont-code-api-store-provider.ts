@@ -23,9 +23,8 @@ export class DontCodeApiStoreProvider implements DontCodeStoreProvider {
 
   apiUrl: string;
   docUrl: string;
-  modelMgr: DontCodeModelManager;
 
-  constructor(protected http: HttpClient, @Optional() @Inject(DONTCODE_STORE_API_URL) apiUrl?: string, @Optional() @Inject(DONTCODE_DOC_API_URL) docUrl?: string) {
+  constructor(protected http: HttpClient, protected modelMgr: DontCodeModelManager, @Optional() @Inject(DONTCODE_STORE_API_URL) apiUrl?: string, @Optional() @Inject(DONTCODE_DOC_API_URL) docUrl?: string) {
     if (apiUrl)
       this.apiUrl = apiUrl;
     else {
@@ -38,7 +37,6 @@ export class DontCodeApiStoreProvider implements DontCodeStoreProvider {
       this.docUrl = 'https://test.dont-code.net/documents';
       console.log('DONTCODE_STORE_DOC_URL token not provided, hence using default test.dont-code.net/documents url.');
     }
-    this.modelMgr = dtcde.getModelManager();
   }
 
   storeEntity(position: string, data: any): Promise<any> {

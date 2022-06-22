@@ -1,6 +1,14 @@
-import {NgModule} from '@angular/core';
+import {InjectionToken, ModuleWithProviders, NgModule} from '@angular/core';
 import {DynamicInsertPoint} from "./common-ui/abstract-dynamic-loader-component";
-
+import {
+  Core,
+  DontCodeModelManager,
+  DontCodePreviewManager,
+  DontCodeSchemaManager,
+  DontCodeStoreManager,
+  dtcde
+} from "@dontcode/core";
+import {DONT_CODE_CORE} from "./common-global/globals";
 
 @NgModule({
   imports: [],
@@ -8,6 +16,22 @@ import {DynamicInsertPoint} from "./common-ui/abstract-dynamic-loader-component"
   exports: [DynamicInsertPoint]
 })
 export class PluginCommonModule {
+  /**
+   * Injects the DontCode core components into Angular's Dependency injection
+   * @param config
+   */
+  static forRoot(): ModuleWithProviders<PluginCommonModule> {
+    return {
+      ngModule: PluginCommonModule,
+      providers: [
+        {provide:DONT_CODE_CORE, useValue: dtcde},
+        {provide:DontCodeSchemaManager, useValue:dtcde.getSchemaManager()},
+        {provide:DontCodeModelManager, useValue:dtcde.getModelManager()},
+        {provide:DontCodePreviewManager, useValue:dtcde.getPreviewManager()},
+        {provide:DontCodeStoreManager, useValue:dtcde.getStoreManager()}
+      ]
+    }
+  }
 }
 
 export * from './common-global/globals';

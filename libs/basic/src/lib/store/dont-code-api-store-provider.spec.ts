@@ -4,6 +4,7 @@ import {DONTCODE_STORE_API_URL, DONTCODE_DOC_API_URL, DontCodeApiStoreProvider} 
 import {HttpClient} from "@angular/common/http";
 import { dtcde, UploadedDocumentInfo } from '@dontcode/core';
 import {toArray} from "rxjs/operators";
+import {PluginCommonModule} from "@dontcode/plugin-common";
 
 
 describe('DontCode Api Store Manager', () => {
@@ -14,7 +15,7 @@ describe('DontCode Api Store Manager', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [HttpClientTestingModule, PluginCommonModule.forRoot()],
       providers: [ {provide: DONTCODE_STORE_API_URL, useValue: '/testData'},{provide: DONTCODE_DOC_API_URL, useValue: '/testDocs'}]
     }).compileComponents();
 

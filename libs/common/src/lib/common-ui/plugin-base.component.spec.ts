@@ -12,7 +12,7 @@ import {
 } from '@dontcode/core';
 import { Observable } from 'rxjs';
 import { PossibleTemplateList, TemplateList } from './template-list';
-import { ComponentLoaderService } from '@dontcode/plugin-common';
+import {ComponentLoaderService, PluginCommonModule} from '@dontcode/plugin-common';
 import DoneCallback = jest.DoneCallback;
 
 describe('PluginBaseComponent', () => {
@@ -21,6 +21,7 @@ describe('PluginBaseComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
+      imports:[PluginCommonModule.forRoot()],
       declarations: [TestBaseComponent],
     }).compileComponents();
   }));

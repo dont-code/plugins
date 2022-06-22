@@ -1,6 +1,6 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {AbstractDynamicComponent, DynamicComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
-import {dtcde} from "@dontcode/core";
+import {ChangeDetectorRef, Component, OnDestroy, TemplateRef, ViewChild} from '@angular/core';
+import {AbstractDynamicComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
+import {DontCodeStoreManager} from "@dontcode/core";
 import {Subscriber} from "rxjs";
 import {map} from "rxjs/operators";
 import {ConfirmationService} from "primeng/api";
@@ -28,7 +28,7 @@ export class WebFieldsComponent extends AbstractDynamicComponent implements OnDe
 
   protected subscriber = new Subscriber ();
 
-  constructor(protected confirm:ConfirmationService, protected ref:ChangeDetectorRef) {
+  constructor(protected confirm:ConfirmationService, protected storeMgr: DontCodeStoreManager, protected ref:ChangeDetectorRef) {
     super();
   }
 
@@ -66,7 +66,7 @@ export class WebFieldsComponent extends AbstractDynamicComponent implements OnDe
   }
 
   supportsImageUpload (): boolean{
-    return dtcde.getStoreManager().canStoreDocument (this.parentPosition||undefined);
+    return this.storeMgr.canStoreDocument (this.parentPosition||undefined);
   }
 
   uploadImage(event: any) {
@@ -74,10 +74,10 @@ export class WebFieldsComponent extends AbstractDynamicComponent implements OnDe
       header:'Confirm',
       message: 'Uploading:'+JSON.stringify(event, null, 4),
       accept: ()=>{*/
-        console.log("Uploading image", event);
+        console.info("Uploading image", event);
         this.form.get(this.name)?.setValue(undefined);
-        this.subscriber.add(dtcde.getStoreManager().storeDocuments (event.files,this.parentPosition||undefined).pipe(map (loaded => {
-            console.log("File uploaded:", loaded.documentId);
+        this.subscriber.add(this.storeMgr.storeDocuments (event.files,this.parentPosition||undefined).pipe(map (loaded => {
+            console.debug("File uploaded:", loaded.documentId);
             this.form.get(this.name)?.setValue(loaded.documentId);
             return loaded;
           })

@@ -4,13 +4,14 @@ import {RemotePluginLoaderService, RemotePluginModuleOptions} from './remote-plu
 import {dtcde, PluginModuleInterface, RepositoryPluginEntry, RepositoryPluginInfo} from "@dontcode/core";
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
 import {Injectable} from "@angular/core";
+import {PluginCommonModule} from "@dontcode/plugin-common";
 
 describe('RemotePluginLoaderService', () => {
   let service: RemotePluginLoaderService;
   let httpTestingController: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({imports: [HttpClientTestingModule ], providers: [
+    TestBed.configureTestingModule({imports: [HttpClientTestingModule, PluginCommonModule.forRoot() ], providers: [
         {provide: RemotePluginLoaderService, useClass: TestRemotePluginLoaderService}
       ]});
     service = TestBed.inject(RemotePluginLoaderService);
