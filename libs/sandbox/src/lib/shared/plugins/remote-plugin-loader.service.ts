@@ -23,21 +23,10 @@ export class RemotePluginLoaderService {
 
   /**
    * Loads the configuration file of the plugin repository, then loads and configure all plugins in it
-   * @param repoUrl
+   * @param repoUrl: the url to load the repository config from. If undefined, nothing gets loaded, if null, the defaultRepoUrl will be used instead
    */
-  loadPluginsFromRepository (repoUrl:string|undefined, defaultRepoUrl:string) : Promise<RepositorySchema>{
-/*    this.httpClient.get<RepositorySchema>(repoUrl, {observe:'events', responseType:'json'}).subscribe({
-      next: value => {
-        console.log("Received", value);
-      },
-      error: err => {
-        console.error("Error ", err)
-      },
-      complete: () => {
-        console.log("Complete");
-      }
-    });*/
-
+  loadPluginsFromRepository (repoUrl:string|undefined|null, defaultRepoUrl:string) : Promise<RepositorySchema>{
+    if (repoUrl===undefined) return Promise.resolve({name:"No Repository", plugins:[]});
     if( repoUrl==null) repoUrl=defaultRepoUrl;
     // eslint-disable-next-line no-restricted-syntax
     console.info("Loading plugins from repository url", repoUrl);
@@ -64,7 +53,12 @@ export class RemotePluginLoaderService {
     })
       .catch((reason)=> {
       console.error("Cannot load repository config from "+repoUrl+" due to error ", reason);
-      return Promise.reject(reason);
+      if( repoUrl===defaultRepoUrl)
+        return Promise.reject(reason);
+      else {
+        // Try again with the default Url
+        return this.loadPluginsFromRepository(null, defaultRepoUrl);
+      }
     })
   }
 
