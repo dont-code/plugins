@@ -40,6 +40,7 @@ export class DontCodeApiStoreProvider implements DontCodeStoreProvider {
       // Hack for when DI cannot provide the ModelManager due to some weird stuff
     if (this.modelMgr==null) {
       this.modelMgr = dtcde.getModelManager();
+      console.warn("DontCodeModelManager not found by Angular's DI");
     }
   }
 
