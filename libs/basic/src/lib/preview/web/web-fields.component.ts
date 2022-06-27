@@ -1,6 +1,6 @@
-import {ChangeDetectorRef, Component, OnDestroy, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, Optional, TemplateRef, ViewChild} from '@angular/core';
 import {AbstractDynamicComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
-import {DontCodeStoreManager} from "@dontcode/core";
+import {DontCodeStoreManager, dtcde} from "@dontcode/core";
 import {Subscriber} from "rxjs";
 import {map} from "rxjs/operators";
 import {ConfirmationService} from "primeng/api";
@@ -28,8 +28,13 @@ export class WebFieldsComponent extends AbstractDynamicComponent implements OnDe
 
   protected subscriber = new Subscriber ();
 
-  constructor(protected confirm:ConfirmationService, protected storeMgr: DontCodeStoreManager, protected ref:ChangeDetectorRef) {
+  constructor(protected confirm:ConfirmationService, @Optional() protected storeMgr: DontCodeStoreManager, protected ref:ChangeDetectorRef) {
     super();
+      // Hack for when DI doesn't find the storemanager due to mfe stuff
+    if (this.storeMgr==null) {
+      this.storeMgr = dtcde.getStoreManager();
+      console.warn("DontCodeStoreManager not found by Angular's Injector");
+    }
   }
 
   providesTemplates(type:string): TemplateList {

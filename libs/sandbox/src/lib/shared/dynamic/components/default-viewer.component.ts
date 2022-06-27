@@ -50,6 +50,12 @@ export class DefaultViewerComponent extends PluginBaseComponent {
     protected storeMgr:DontCodeStoreManager
   ) {
     super(loader, injector);
+    // Hack for when DI doesn't find the storemanager due to mfe stuff
+    if (this.storeMgr==null) {
+      this.storeMgr = dtcde.getStoreManager();
+      console.warn("DontCodeStoreManager not found by Angular's Injector");
+    }
+
     this.setForm(this.fb.group({}, { updateOn: 'blur' }));
   }
 
