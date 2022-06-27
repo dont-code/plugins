@@ -24,7 +24,8 @@ import {FileUploadModule} from "primeng/fileupload";
 import {ConfirmDialogModule} from "primeng/confirmdialog";
 
 @NgModule({
-    imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ToolbarModule, ButtonModule, PluginCommonModule, ReactiveFormsModule, CalendarModule, TooltipModule, FileUploadModule, ConfirmDialogModule],
+    imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ToolbarModule, ButtonModule, ReactiveFormsModule, CalendarModule, TooltipModule, FileUploadModule, ConfirmDialogModule,
+      PluginCommonModule.forRoot()],
   declarations: [BasicEntityComponent, ListEntityComponent, EditEntityComponent, BasicFieldsComponent, TimeFieldsComponent, WebFieldsComponent],
   providers: [DontCodeApiStoreProvider],
   id:'dontcode-plugin/basic'
