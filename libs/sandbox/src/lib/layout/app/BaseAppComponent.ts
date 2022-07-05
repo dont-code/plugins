@@ -3,10 +3,10 @@ import {
   ChangeType,
   Core,
   DontCodeModel,
-  DontCodeModelManager, DontCodePreviewManager,
+  DontCodeModelManager,
+  DontCodePreviewManager,
   DontCodeStoreManager,
   DontCodeStoreProvider,
-  dtcde,
 } from '@dontcode/core';
 import {IndexedDbStorageService} from '../../shared/storage/services/indexed-db-storage.service';
 import {ChangeListenerService} from '../../shared/change/services/change-listener.service';
@@ -35,6 +35,7 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
     protected pluginLoader: RemotePluginLoaderService,
     protected globalPluginLoader:GlobalPluginLoader,
     protected loaderService:ComponentLoaderService,
+    protected changeProviderService: ChangeProviderService,
     protected injector: Injector,
     @Inject(DONT_CODE_CORE)
     protected dontCodeCore: Core,
@@ -58,8 +59,10 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
 
         // Apply updates from repository
       const repoUpdates = this.pluginLoader.listAllRepositoryConfigUpdates();
-      this.modelMgr.applyPluginConfigUpdates(repoUpdates);
-
+      repoUpdates.forEach(update => {
+        const chg = this.modelMgr.convertToChange(update);
+        this.changeProviderService.pushChange(chg);
+      });
       // eslint-disable-next-line no-restricted-syntax
       console.info('Dynamic Plugins inited');
       // Manage the global plugins

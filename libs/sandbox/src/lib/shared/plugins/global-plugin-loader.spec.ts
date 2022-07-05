@@ -166,7 +166,7 @@ describe('GlobalPluginLoaded', () => {
       notifiedInit.waitUntilComplete();
       notifiedCall.waitUntilComplete();
       expect(notifiedInit).toHaveBeenCalledTimes(1);
-      expect(notifiedCall).toHaveBeenCalledTimes(4);
+      expect(notifiedCall).toHaveBeenCalledTimes(5);
       done();
     });
   });
