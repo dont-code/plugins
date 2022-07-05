@@ -1,14 +1,14 @@
-import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {
   Change,
+  ChangeType,
   CommandProviderInterface,
   DontCodeModelPointer,
   DontCodeSchemaManager,
-  dtcde,
 } from '@dontcode/core';
-import { ValueService } from '../../values/services/value.service';
-import { ChangeListenerService } from '../../change/services/change-listener.service';
+import {ValueService} from '../../values/services/value.service';
+import {ChangeListenerService} from '../../change/services/change-listener.service';
 
 @Injectable({
   providedIn: 'root',
@@ -72,6 +72,7 @@ export class ChangeProviderService implements CommandProviderInterface {
           //console.log("Filtering ok");
           return true;
         } else {
+          // Supports for listeners like "creation/entities", with "name" property that are in fact "creation/entities/xxanyEntityIDxx", with "name" property
           nextPosition = DontCodeModelPointer.nextItemAndPosition(
             change.position,
             nextPosition.pos + 1
@@ -109,9 +110,34 @@ export class ChangeProviderService implements CommandProviderInterface {
     const key = { position, property };
     let item = this.listeners.get(key);
     if (!item) {
-      item = new Subject<Change>();
+      item = new ReplaySubject<Change>(1);
       this.listeners.set(key, item);
       this.listenerCachePerPosition.clear();
+    }
+
+      // In case the model already contains a value the listener is interested in, just call it already
+    const cleanedPosition = this.cleanPosition(position);
+    const existing = this.valueService.findAtPosition(cleanedPosition, false);
+    if (existing!=null) {
+      let chg = new Change(ChangeType.RESET, cleanedPosition, existing, this.schemaManager.generateSchemaPointer(cleanedPosition));
+      if (this.isInterestedIn(position, property, chg)) {
+        item.next(chg);
+      } else {
+        // Try to find if a sub element works (in case the listener wants all changes inside an array, for example "creation/entities" and "name" property)
+        if (property!=null) {
+            for (const propKey in existing) {
+              chg = new Change(ChangeType.RESET, cleanedPosition + '/' + propKey, existing[propKey], this.schemaManager.generateSchemaPointer(cleanedPosition + '/' + propKey));
+              if (this.isInterestedIn(position, property, chg)) {
+                item.next(chg);
+              } else if ((property!=null)&&(existing[propKey][property]!=null)) {
+                chg = new Change(ChangeType.RESET, cleanedPosition + '/' + propKey+'/'+property, existing[propKey][property], this.schemaManager.generateSchemaPointer(cleanedPosition + '/' + propKey+'/'+property));
+                if (this.isInterestedIn(position, property, chg)) {
+                  item.next(chg);
+                }
+              }
+            }
+        }
+      }
     }
     return item;
   }
