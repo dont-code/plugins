@@ -1,32 +1,13 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  Inject,
-  Injector,
-  Input,
-  OnInit,
-  TemplateRef,
-  ViewChild,
-} from '@angular/core';
-import {
-  Change,
-  CommandProviderInterface,
-  DontCodeModel,
-  DontCodeModelPointer,
-} from '@dontcode/core';
+import {ChangeDetectorRef, Component, Injector, Input, OnInit, TemplateRef, ViewChild,} from '@angular/core';
+import {Change, CommandProviderInterface, DontCodeModelPointer,} from '@dontcode/core';
 import {
   ComponentLoaderService,
-  DynamicComponent,
+  FormElement,
   PluginBaseComponent,
   PossibleTemplateList,
   TemplateList,
 } from '@dontcode/plugin-common';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import {FormBuilder, FormGroup,} from '@angular/forms';
 
 @Component({
   selector: 'dontcode-edit-entity',
@@ -34,35 +15,14 @@ import {
   styleUrls: ['./edit-entity.component.scss'],
 })
 export class EditEntityComponent extends PluginBaseComponent implements OnInit {
-  @Input('value') set _value(newval: any) {
-    this.value = newval;
-
-    if (this.value) {
-      // Transforms the stored values into field values
-      this.fields.forEach((field) => {
-        if (field?.component?.managesFormControl()) {
-          field.component.setValue(this.value[field.name]);
-        } else {
-          if (this.form) {
-            const singleVal: { [key: string]: any } = {};
-            singleVal[field.name] = this.value[field.name];
-            this.form.patchValue(singleVal, { emitEvent: false });
-          }
-        }
-      });
-    } else {
-      this.form?.reset({}, { emitEvent: false });
-    }
+  @Input('value') set _value(newVal: any) {
+    this.setValue(newVal);
   }
 
   @ViewChild('defaulteditor')
   private defaultTemplate!: TemplateRef<any>;
 
   //initing = false;
-
-  fields = new Array<FormElement>();
-  fieldsMap = new Map<string, number>();
-
   //formConfig = {};
 
   constructor(
@@ -76,24 +36,7 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({}, { updateOn: 'blur' });
-    this.form.valueChanges.subscribe((change) => {
-      if (this.value) {
-        for (const changeKey in change) {
-          if (change.hasOwnProperty(changeKey)) {
-            const field = this.fields.find((toSearch) => {
-              if (toSearch.name === changeKey) return true;
-              else return false;
-            });
-            let newVal = change[changeKey];
-            if (field?.component?.managesFormControl()) {
-              newVal = field.component.getValue();
-            }
-            this.value[changeKey] = newVal;
-          }
-        }
-        //console.log(this.value);
-      }
-    });
+    this.updateValueOnFormChanges ();
   }
 
   override initCommandFlow(
@@ -123,70 +66,13 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
    */
   override handleChange(change: Change) {
     if (change.position !== this.entityPointer?.position) {
-      this.applyUpdatesToArrayAsync(
-        this.fields,
-        this.fieldsMap,
-        change,
-        null,
-        (position, value) => {
-          return this.loadSubComponent(position, value).then((component) => {
-            if (component) {
-              component.setName(value.name);
-              component.setForm(this.form);
-            }
-            return new FormElement(value.name, value.type, component);
-          });
-        },
-        (elt, key, newVal) => {
-          switch (key) {
-            case DontCodeModel.APP_FIELDS_NAME_NODE:
-              elt.name = newVal;
-              break;
-            default:
-              return false;
-          }
-          return true;
+      this.updateSubFieldsWithChange(change, null).then(value => {
+        if (value != null) {
+          this.ref.markForCheck();
+          this.ref.detectChanges();
         }
-      ).then((updatedFields) => {
-        this.fields = updatedFields;
-        this.rebuildForm();
-        this.ref.markForCheck();
-        this.ref.detectChanges();
-      });
+      })
     }
-  }
-
-  /**
-   * Rebuild the Reactive form from the list of fields configured with the entity
-   * @private
-   */
-  private rebuildForm() {
-    // Updates the formgroup with new fields and remove old fields if necessary
-    const toRemove = new Set<string>();
-    // tslint:disable-next-line:forin
-    for (const formKey in this.form.controls) {
-      toRemove.add(formKey);
-    }
-
-    this.fields.forEach((field) => {
-      let val = null;
-      if (this.value && this.value[field.name]) {
-        val = this.value[field.name];
-      }
-      toRemove.delete(field.name);
-      if (field.component) field.component.setValue(val);
-
-      // Check if the component manages the FormControl itself or if it relies on us
-      if (!field.component?.managesFormControl())
-        this.form.registerControl(
-          field.name,
-          new FormControl(val, Validators.required)
-        );
-    });
-
-    toRemove.forEach((key) => {
-      this.form.removeControl(key);
-    });
   }
 
   providesTemplates(): TemplateList {
@@ -212,16 +98,8 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
       );
     }
   }
-}
 
-class FormElement {
-  type: string;
-  name: string;
-  component: DynamicComponent | null;
-
-  constructor(name: string, type: string, component: DynamicComponent | null) {
-    this.name = name;
-    this.type = type;
-    this.component = component;
+  isShortText(fieldName: string): boolean {
+    return (this.form.get(fieldName)?.value as string).length<50;
   }
 }

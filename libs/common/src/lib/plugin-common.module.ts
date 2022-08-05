@@ -1,7 +1,6 @@
-import {InjectionToken, ModuleWithProviders, NgModule} from '@angular/core';
+import {ModuleWithProviders, NgModule} from '@angular/core';
 import {DynamicInsertPoint} from "./common-ui/abstract-dynamic-loader-component";
 import {
-  Core,
   DontCodeModelManager,
   DontCodePreviewManager,
   DontCodeSchemaManager,
@@ -9,11 +8,12 @@ import {
   dtcde
 } from "@dontcode/core";
 import {DONT_CODE_CORE} from "./common-global/globals";
+import { BeautifierPipe } from './common-ui/pipes/beautifier.pipe';
 
 @NgModule({
   imports: [],
-  declarations: [DynamicInsertPoint],
-  exports: [DynamicInsertPoint]
+  declarations: [DynamicInsertPoint, BeautifierPipe],
+  exports: [DynamicInsertPoint, BeautifierPipe]
 })
 export class PluginCommonModule {
   /**
@@ -28,7 +28,8 @@ export class PluginCommonModule {
         {provide:DontCodeSchemaManager, useValue:dtcde.getSchemaManager()},
         {provide:DontCodeModelManager, useValue:dtcde.getModelManager()},
         {provide:DontCodePreviewManager, useValue:dtcde.getPreviewManager()},
-        {provide:DontCodeStoreManager, useValue:dtcde.getStoreManager()}
+        {provide:DontCodeStoreManager, useValue:dtcde.getStoreManager()},
+        BeautifierPipe
       ]
     }
   }
@@ -42,5 +43,6 @@ export * from './common-ui/template-list';
 export * from './common-ui/dynamic-component';
 export * from './common-ui/abstract-dynamic-component';
 export * from './common-ui/abstract-dynamic-loader-component';
+export * from './common-ui/pipes/beautifier.pipe';
 export * from './common-storage/entity-store.service';
 export * from './common-dynamic/component-loader.service';

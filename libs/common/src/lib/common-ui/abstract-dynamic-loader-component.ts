@@ -44,8 +44,8 @@ export abstract class AbstractDynamicLoaderComponent
   }
 
   loadSubField(
-    type: string,
     formName: string,
+    type: string,
     subValue: any
   ): Promise<DynamicComponent | null> {
     const component = this.componentsByFormName.get(formName);
@@ -54,7 +54,7 @@ export abstract class AbstractDynamicLoaderComponent
         .insertComponentForFieldType(type, this.dynamicInsertPoint)
         .then((component) => {
           if (component!=null) {
-            this.prepareComponent(component, formName, subValue);
+            this.prepareComponent(component, type,formName, subValue);
             return component;
           } else {
             return null;
@@ -65,7 +65,7 @@ export abstract class AbstractDynamicLoaderComponent
     }
   }
 
-  getSubFieldValue(formName: string): any {
+  getSubFieldValue(formName: string, type:string): any {
     const component = this.componentsByFormName.get(formName);
     if (component?.managesFormControl()) {
       return component.getValue();
@@ -81,7 +81,7 @@ export abstract class AbstractDynamicLoaderComponent
     }
   }
 
-  setSubFieldValue(formName: string, val: any) {
+  setSubFieldValue(formName: string, type:string, val: any) {
     const component = this.componentsByFormName.get(formName);
     // Sometimes no subcomponent is loaded, for example when displaying value only
     if (component) {
@@ -90,6 +90,8 @@ export abstract class AbstractDynamicLoaderComponent
       } else {
         if (this.group) {
           const newVal: { [key: string]: any } = {};
+          val = component.transformFromSource (type, val);
+
           newVal[formName] = val;
           this.group.patchValue(newVal, { emitEvent: false });
         } else {
@@ -109,6 +111,7 @@ export abstract class AbstractDynamicLoaderComponent
    */
   loadSubComponent(
     position: DontCodeModelPointer,
+    type:string,
     currentJson?: any
   ): Promise<DynamicComponent | null> {
     if (this.dynamicInsertPoint==null) {
@@ -119,7 +122,7 @@ export abstract class AbstractDynamicLoaderComponent
       .insertComponent(position,this.dynamicInsertPoint, currentJson)
       .then((component) => {
         if (component!=null) {
-          return this.prepareComponent(component, null, currentJson);
+          return this.prepareComponent(component, type,null, currentJson);
         } else {
           //console.warn('No ComponentFactory or missing <dtcde-dynamic></dtcde-dynamic> in template');
           return null;
@@ -129,6 +132,7 @@ export abstract class AbstractDynamicLoaderComponent
 
   prepareComponent(
     component: DynamicComponent,
+    type:string,
     formName: string | null,
     subValue: any
   ): DynamicComponent {
@@ -142,6 +146,7 @@ export abstract class AbstractDynamicLoaderComponent
       component.setForm(this.group);
 
       if (!component.managesFormControl()) {
+        subValue = component.transformFromSource (type,subValue);
         this.group.registerControl(
           formName,
           new FormControl(subValue, { updateOn: 'blur' })

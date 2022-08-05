@@ -42,4 +42,10 @@ export abstract class AbstractDynamicComponent implements DynamicComponent {
     return false;
   }
 
+  transformFromSource(type: string, val: any): any {
+    return val;
+  }
+  transformToSource(type: string, val: any): any {
+    return val;
+  }
 }

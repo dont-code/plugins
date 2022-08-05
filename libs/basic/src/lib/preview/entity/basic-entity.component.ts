@@ -55,7 +55,8 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
       this.list.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
       this.edit.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
       this.store?.loadAll().then (() => {
-        console.log ("Loaded entities");
+        console.debug ("Loaded entities");
+        this.list.dataIsLoaded();
         this.ref.markForCheck();
         this.ref.detectChanges();
       });
@@ -70,9 +71,10 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
       this.subscriptions.add(this.provider.receiveCommands(DontCodeModel.APP_SHARING_WITH).pipe(
         map(change => {
           if (this.store) {
-          console.log("Reloading data due to change of StoreManager");
+          console.debug("Reloading data due to change of StoreManager");
           this.store.reset();
           this.store.loadAll().then (() => {
+            this.list.dataIsLoaded();
             this.ref.markForCheck();
             this.ref.detectChanges();
           })
@@ -121,6 +123,18 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   selectChange($event: any) {
     // console.log("Event:", $event);
     if ($event) {
+      // Load the details of the selected element
+      if( this.store!=null) {
+        this.store.loadDetailOf ($event).then(newValue => {
+          if( newValue!=null) {
+            this.selectedItem=newValue;
+            this.ref.markForCheck();
+            this.ref.detectChanges();
+          }
+        }).catch(reason => {
+          console.error("Ignoring the failed loading of "+$event._id+" due to ", reason);
+        })
+      }
       this.tabIndex = 1;  // Automatically move to edit when selection is made
     }
   }
@@ -148,7 +162,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
         // Ensure all fields are ok
       this.edit.form.updateValueAndValidity({onlySelf:true, emitEvent:false});
       this.store?.store (this.selectedItem).then(value => {
-        console.log("Entity with Id ", value, " stored");
+        console.debug("Entity with Id ", value, " stored");
         this.selectedItem = value;
         this.tabIndex=0;
         this.ref.markForCheck();
