@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   EventEmitter,
@@ -10,12 +9,7 @@ import {
   Output,
   TemplateRef,
 } from '@angular/core';
-import {
-  Change,
-  CommandProviderInterface,
-  DontCodeModelPointer,
-  PreviewHandler,
-} from '@dontcode/core';
+import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler,} from '@dontcode/core';
 import {
   ComponentLoaderService,
   DynamicComponent,
@@ -24,7 +18,6 @@ import {
   PossibleTemplateList,
   TemplateList,
 } from '@dontcode/plugin-common';
-import { Mutex } from 'async-mutex';
 
 @Component({
   selector: 'dontcode-list-entity',
@@ -113,6 +106,7 @@ export class ListEntityComponent
           });
         }
       ).then((updatedColumns) => {
+
         this.cols = updatedColumns;
         //  this.reloadData ();
         this.ref.markForCheck();
@@ -141,6 +135,42 @@ export class ListEntityComponent
   getStoreEntities(): any[] {
     if (this.store) return this.store.entities;
     else return [];
+  }
+
+  dataIsLoaded():void {
+    // Try to reduce the number of columns if some of them don't have values
+    let data = this.getStoreEntities();
+    if( data?.length > 0) {
+      const toRemove = new Array<string>();
+      toRemove.push(...this.cols.map(value => value.field));
+      let row=0;
+      while((toRemove.length>0) && (row<data.length)) {
+        for (let i=0;i<toRemove.length;i++) {
+          const fieldName = toRemove[i];
+          if (data[row][fieldName]!=null) {
+            toRemove.splice(i, 1);
+            i--;
+          }
+        }
+        row++;
+      }
+      // Let's remove some columns
+      if ((toRemove.length>0) && (toRemove.length<this.cols.length)) {
+        for (let colPos=0; colPos < this.cols.length;colPos++) {
+          let colName = this.cols[colPos].field;
+          if (toRemove.indexOf(colName) >=0) {
+            this.cols.splice(colPos, 1);
+            for (let entry of this.colsMap.entries()) {
+              if (entry[1]===colPos) {
+                this.colsMap.delete(entry[0]);
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
   }
 }
 

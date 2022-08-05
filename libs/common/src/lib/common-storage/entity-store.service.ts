@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {DontCodeStoreManager} from "@dontcode/core";
 import {map} from "rxjs/operators";
+import {lastValueFrom} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,21 @@ export class EntityListManager {
     this.entities = [...this.entities, element];
   }
 
+  replace (element:any):boolean {
+    let ret=false;
+    const updated = new Array();
+    this.entities.forEach(value => {
+      if( value._id==element._id) {
+        updated.push(element);
+        ret = true;
+      }else {
+        updated.push(value);
+      }
+    })
+    this.entities = [...updated];
+    return ret;
+  }
+
   remove (element:any): Promise<boolean> {
     return this.storeMgr.deleteEntity(this.position, element._id).then(deleted => {
       if( deleted)
@@ -54,11 +70,33 @@ export class EntityListManager {
   }
 
   loadAll (): Promise<void> {
-    return this.storeMgr.searchEntities(this.position).pipe(
+    return lastValueFrom(this.storeMgr.searchEntities(this.position).pipe(
       map (values => {
-        this.entities = [...this.entities, ...values];
+        this.entities = [...values];
       return;
     })
-    ).toPromise();
+    ), {defaultValue:undefined});
+  }
+
+  /**
+   * Loads the detail of an already loaded item.
+   * @param toLoad
+   */
+  loadDetailFromKey (key:any): Promise<any> {
+    if( key==null)
+      return Promise.reject("Cannot load entity with null key");
+    return this.storeMgr.loadEntity(this.position, key).then(loaded => {
+      if (loaded!=null) {
+        this.replace(loaded);
+      }
+      return loaded;
+    });
+  }
+    /**
+   * Loads the detail of an already loaded item.
+   * @param toLoad
+   */
+  loadDetailOf (toLoad:any): Promise<any> {
+    return this.loadDetailFromKey(toLoad._id);
   }
 }

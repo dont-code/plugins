@@ -2,31 +2,19 @@ import {
   Change,
   CommandProviderInterface,
   DontCodeModel,
-  DontCodeModelPointer, DontCodeStoreManager,
+  DontCodeModelPointer,
+  DontCodeStoreManager,
   DontCodeStoreProvider,
   dtcde,
 } from '@dontcode/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, TemplateRef,} from '@angular/core';
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Injector,
-  OnInit,
-  TemplateRef,
-} from '@angular/core';
-import {
-  ComponentLoaderService,
-  DynamicComponent,
+  ComponentLoaderService, FormElement,
   PluginBaseComponent,
   PossibleTemplateList,
   TemplateList,
 } from '@dontcode/plugin-common';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import {FormBuilder, FormControl, Validators,} from '@angular/forms';
 
 @Component({
   selector: 'dontcode-sandbox-default-viewer',
@@ -35,8 +23,6 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DefaultViewerComponent extends PluginBaseComponent {
-  fields = new Array<Field>();
-  fieldsMap = new Map<string, number>();
 
   entityName = 'Unknown';
 
@@ -88,35 +74,15 @@ export class DefaultViewerComponent extends PluginBaseComponent {
   }
 
   override handleChange(change: Change) {
-    super.handleChange(change);
 
     if (this.entityPointer) {
       if (change?.pointer?.positionInSchema === DontCodeModel.APP_FIELDS) {
-        this.applyUpdatesToArrayAsync(
-          this.fields,
-          this.fieldsMap,
-          change,
-          'fields',
-          (position, value) => {
-            return this.loadSubField(value.type, value.name, null).then(
-              (component) => {
-                const ret = new Field(value.name, value.type);
-                if (component) {
-                  // Keep the component only if it provides the view template
-                  if (component.canProvide(value.type).forInlineView) {
-                    ret.component = component;
-                  }
-                }
-                return ret;
-              }
-            );
+        this.updateSubFieldsWithChange(change, 'fields').then((updatedColumns) => {
+          if (updatedColumns!=null) {
+            //  this.reloadData ();
+            this.ref.markForCheck();
+            this.ref.detectChanges();
           }
-        ).then((updatedColumns) => {
-          this.fields = updatedColumns;
-          this.rebuildForm();
-          //  this.reloadData ();
-          this.ref.markForCheck();
-          this.ref.detectChanges();
         });
       } else if (change?.pointer?.isSubItemOf(this.entityPointer) === 'name') {
         // The name of the entity is being changed, let's update it
@@ -127,7 +93,7 @@ export class DefaultViewerComponent extends PluginBaseComponent {
     }
   }
 
-  templateOf(col: Field, value: any): TemplateRef<any> {
+  templateOf(col: FormElement, value: any): TemplateRef<any> {
     if (col.component) {
       col.component.setValue(value);
       const ref = col.component.providesTemplates(col.type).forInlineView;
@@ -136,7 +102,7 @@ export class DefaultViewerComponent extends PluginBaseComponent {
     throw new Error('No component or template to display ' + col.type);
   }
 
-  editTemplateOf(col: Field, value: any): TemplateRef<any> {
+  editTemplateOf(col: FormElement, value: any): TemplateRef<any> {
     if (col.component) {
       col.component.setValue(value);
       const ref = col.component.providesTemplates(col.type).forFullEdit;
@@ -159,41 +125,6 @@ export class DefaultViewerComponent extends PluginBaseComponent {
     return false;
   }
 
-  /**
-   * Rebuild the Reactive form from the list of fields configured with the entity
-   * @private
-   */
-  private rebuildForm() {
-    if (this.form) {
-      // Updates the formgroup with new fields and remove old fields if necessary
-      const toRemove = new Set<string>();
-      // tslint:disable-next-line:forin
-      for (const formKey in this.form.controls) {
-        toRemove.add(formKey);
-      }
-
-      this.fields.forEach((field) => {
-        let val = null;
-        if (this.value && this.value[field.name]) {
-          val = this.value[field.name];
-        }
-        toRemove.delete(field.name);
-        if (field.component) field.component.setValue(val);
-
-        // Check if the component manages the FormControl itself or if it relies on us
-        if (!field.component?.managesFormControl())
-          this.form.setControl(
-            field.name,
-            new FormControl(val, Validators.required)
-          );
-      });
-
-      toRemove.forEach((key) => {
-        this.form.removeControl(key);
-      });
-    }
-  }
-
   getData(fieldName: string): any | undefined {
     if (this.form.controls[fieldName])
       return this.form.controls[fieldName].value;
@@ -201,14 +132,3 @@ export class DefaultViewerComponent extends PluginBaseComponent {
   }
 }
 
-class Field {
-  name: string;
-  type: string;
-  component: DynamicComponent | null;
-
-  constructor(name: string, type: string) {
-    this.name = name;
-    this.type = type;
-    this.component = null;
-  }
-}

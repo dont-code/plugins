@@ -13,7 +13,7 @@ import {InputNumberModule} from "primeng/inputnumber";
 import {InputTextModule} from "primeng/inputtext";
 import {ToolbarModule} from "primeng/toolbar";
 import {ButtonModule} from "primeng/button";
-import {PluginCommonModule} from "@dontcode/plugin-common";
+import {BeautifierPipe, PluginCommonModule} from "@dontcode/plugin-common";
 import {BasicFieldsComponent} from './preview/fields/basic-fields.component';
 import {DontCodeApiStoreProvider} from "./store/dont-code-api-store-provider";
 import {TimeFieldsComponent} from "./preview/time/time-fields.component";
@@ -22,10 +22,11 @@ import {CalendarModule} from "primeng/calendar";
 import {TooltipModule} from "primeng/tooltip";
 import {FileUploadModule} from "primeng/fileupload";
 import {ConfirmDialogModule} from "primeng/confirmdialog";
+import {InputTextareaModule} from "primeng/inputtextarea";
 
 @NgModule({
-    imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ToolbarModule, ButtonModule, ReactiveFormsModule, CalendarModule, TooltipModule, FileUploadModule, ConfirmDialogModule,
-      PluginCommonModule.forRoot()],
+  imports: [CommonModule, TableModule, TabViewModule, CheckboxModule, FormsModule, InputNumberModule, InputTextModule, ToolbarModule, ButtonModule, ReactiveFormsModule, CalendarModule, TooltipModule, FileUploadModule, ConfirmDialogModule,
+    PluginCommonModule.forRoot(), InputTextareaModule],
   declarations: [BasicEntityComponent, ListEntityComponent, EditEntityComponent, BasicFieldsComponent, TimeFieldsComponent, WebFieldsComponent],
   providers: [DontCodeApiStoreProvider],
   id:'dontcode-plugin/basic'

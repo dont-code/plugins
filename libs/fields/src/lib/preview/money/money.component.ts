@@ -84,12 +84,12 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
       this.value = new MoneyAmount();
       this.valueAmountDefined = false;
     }
-    this.setSubFieldValue('currencyCode', this.value.currencyCode);
+    this.setSubFieldValue('currencyCode', 'Currency',this.value.currencyCode);
   }
 
   override getValue(): any {
     const val = super.getValue() as MoneyAmount;
-    val.currencyCode = this.getSubFieldValue('currencyCode');
+    val.currencyCode = this.getSubFieldValue( 'currencyCode','Currency');
 
     return val;
   }
@@ -103,8 +103,8 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
     // Only load currency component to the cache in edit mode
     if ((this.group!=null)&&(this.dynamicInsertPoint!=null)) {
       this.loadSubField(
-        'Currency',
         'currencyCode',
+        'Currency',
         this.value.currencyCode
       ).then(() => {
         // Nothing to do

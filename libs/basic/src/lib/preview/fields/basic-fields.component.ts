@@ -17,6 +17,8 @@ export class BasicFieldsComponent extends AbstractDynamicComponent {
   @ViewChild('LIST_CHECK')
   private listCheckTemplate!: TemplateRef<any>;
 
+  isJson=false;
+
   providesTemplates(type:string): TemplateList {
     switch (type) {
       case 'Number':
@@ -31,4 +33,24 @@ export class BasicFieldsComponent extends AbstractDynamicComponent {
     return new PossibleTemplateList((type==='Boolean')?true:false, false, true);
   }
 
+  override transformFromSource(type: string, val: any): any {
+    if( type==='Text') {
+      if( typeof val !== 'string') {
+        this.isJson=true;
+        return (val!=null)?JSON.stringify(val,null,2):val;
+      }
+    }
+    return super.transformFromSource(type, val);
+  }
+
+  override transformToSource(type: string, val: any): any {
+    if( this.isJson) {
+      try {
+        const ret=JSON.parse(val);
+        return ret;
+      } catch (error) {
+        console.error("Cannot convert field with name "+this.name+" from text String to an object");
+      }
+    }
+  }
 }

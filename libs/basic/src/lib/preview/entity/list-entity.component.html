@@ -15,7 +15,7 @@
         <ng-container *ngIf="col.component">
           <ng-container *ngTemplateOutlet="templateOf(col, rowData[col.field])"></ng-container>
         </ng-container>
-        <ng-container *ngIf="!col.component">{{rowData[col.field]}}</ng-container>
+        <ng-container *ngIf="!col.component"><span pTooltip="{{rowData[col.field] | beautifier}}">{{rowData[col.field] | beautifier : 50}}</span></ng-container>
       </td>
     </tr>
   </ng-template>
