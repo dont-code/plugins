@@ -100,6 +100,10 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
   }
 
   isShortText(fieldName: string): boolean {
-    return (this.form.get(fieldName)?.value as string).length<50;
+    const val = this.form.get(fieldName)?.value as string;
+    if( val!=null)
+      return val.length<50;
+    else
+      return true;
   }
 }
