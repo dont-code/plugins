@@ -35,6 +35,20 @@ export class EntityListManager {
     this.entities = [...this.entities, element];
   }
 
+  updateWithDetailedEntity (element:any):any {
+    const updated = new Array();
+    this.entities.forEach(value => {
+      if( value._id==element._id) {
+        element={...element, ...value};
+        updated.push(element);
+      }else {
+        updated.push(value);
+      }
+    })
+    this.entities = [...updated];
+    return element;
+  }
+
   replace (element:any):boolean {
     let ret=false;
     const updated = new Array();
@@ -79,7 +93,7 @@ export class EntityListManager {
   }
 
   /**
-   * Loads the detail of an already loaded item.
+   * Loads the detail of an already loaded item. Makes sure it only add any additional fields without changing any values of the item in memory
    * @param toLoad
    */
   loadDetailFromKey (key:any): Promise<any> {
@@ -87,7 +101,7 @@ export class EntityListManager {
       return Promise.reject("Cannot load entity with null key");
     return this.storeMgr.loadEntity(this.position, key).then(loaded => {
       if (loaded!=null) {
-        this.replace(loaded);
+        return this.updateWithDetailedEntity(loaded);
       }
       return loaded;
     });

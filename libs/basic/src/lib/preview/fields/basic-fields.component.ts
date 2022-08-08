@@ -51,6 +51,7 @@ export class BasicFieldsComponent extends AbstractDynamicComponent {
       } catch (error) {
         console.error("Cannot convert field with name "+this.name+" from text String to an object");
       }
-    }
+    } else
+      return val;
   }
 }

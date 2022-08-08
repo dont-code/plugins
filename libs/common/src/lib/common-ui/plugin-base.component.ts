@@ -291,7 +291,10 @@ export abstract class PluginBaseComponent
    * Returns a string that can best display the value or null if it's already a string
    * @param value
    */
-  public static toBeautifyString (value:unknown, maxLength?:number): string {
+  public static toBeautifyString (value:unknown, maxLength?:number): string|null {
+    if( value == null)
+      return null;
+
     let ret="";
 
     if ( Array.isArray(value)) {
@@ -315,7 +318,6 @@ export abstract class PluginBaseComponent
         break;
       }
       default: {
-        if( value!=null)
           ret = (value as any).toLocaleString();
       }
     }
