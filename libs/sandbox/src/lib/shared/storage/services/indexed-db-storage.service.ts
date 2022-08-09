@@ -2,7 +2,7 @@
  * Allow storing of entities in the browser local database
  */
 import {DontCodeStoreCriteria, DontCodeStoreProvider, UploadedDocumentInfo} from "@dontcode/core";
-import {Observable} from "rxjs";
+import {from, Observable} from "rxjs";
 import Dexie, {Table} from "dexie";
 import {Inject, Injectable, Optional} from "@angular/core";
 import {ValueService} from "../../values/services/value.service";
@@ -39,15 +39,11 @@ export class IndexedDbStorageService implements DontCodeStoreProvider {
   }
 
   searchEntities(position: string, ...criteria: DontCodeStoreCriteria[]): Observable<Array<any>> {
-    return new Observable<Array<any>>(subscriber => {
+    return from (
       this.ensurePositionCanBeStored(position, true).then(table => {
       return table.toArray();
-    }).then (array => {
-        subscriber.next(array);
-        subscriber.complete();
-        return array;
-      });
-    });
+    })
+    );
   }
 
   canStoreDocument(position?: string): boolean {
