@@ -45,6 +45,7 @@ export class IndexedDbStorageService implements DontCodeStoreProvider {
     }).then (array => {
         subscriber.next(array);
         subscriber.complete();
+        return array;
       });
     });
   }

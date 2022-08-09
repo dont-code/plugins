@@ -56,7 +56,11 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
       this.edit.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
       this.store?.loadAll().then (() => {
         console.debug ("Loaded entities");
-        this.list.dataIsLoaded();
+        try {
+          this.list.dataIsLoaded();
+        } catch (e) {
+          console.debug("Just ignore errors when calling dataIsloaded")
+        }
         this.ref.markForCheck();
         this.ref.detectChanges();
       });

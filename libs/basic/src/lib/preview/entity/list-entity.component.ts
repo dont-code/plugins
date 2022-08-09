@@ -34,8 +34,6 @@ export class ListEntityComponent
   @Output()
   selectedItemChange = new EventEmitter<any>();
 
-  initing = false;
-
   cols = new Array<PrimeColumn>();
   colsMap = new Map<string, number>();
 
@@ -60,23 +58,17 @@ export class ListEntityComponent
     provider: CommandProviderInterface,
     pointer: DontCodeModelPointer
   ): any {
-    this.initing = true;
-    try {
-      super.initCommandFlow(provider, pointer);
+    super.initCommandFlow(provider, pointer);
 
-      if (!this.entityPointer)
-        throw new Error(
-          'Cannot listen to changes without knowing a base position'
-        );
-      this.decomposeJsonToMultipleChanges(
-        this.entityPointer,
-        provider.getJsonAt(this.entityPointer.position)
-      ); // Dont provide a special handling for initial json, but emulate a list of changes
-      this.initChangeListening(true); // Listen to all changes occuring after entityPointer
-    } finally {
-      this.initing = false;
-    }
-    //    this.reloadData();
+    if (!this.entityPointer)
+      throw new Error(
+        'Cannot listen to changes without knowing a base position'
+      );
+    this.decomposeJsonToMultipleChanges(
+      this.entityPointer,
+      provider.getJsonAt(this.entityPointer.position)
+    ); // Dont provide a special handling for initial json, but emulate a list of changes
+    this.initChangeListening(true); // Listen to all changes occuring after entityPointer
   }
 
   /**
@@ -139,39 +131,40 @@ export class ListEntityComponent
 
   dataIsLoaded():void {
     // Try to reduce the number of columns if some of them don't have values
-    let data = this.getStoreEntities();
-    if( data?.length > 0) {
-      const toRemove = new Array<string>();
-      toRemove.push(...this.cols.map(value => value.field));
-      let row=0;
-      while((toRemove.length>0) && (row<data.length)) {
-        for (let i=0;i<toRemove.length;i++) {
-          const fieldName = toRemove[i];
-          if (data[row][fieldName]!=null) {
-            toRemove.splice(i, 1);
-            i--;
+
+      let data = this.getStoreEntities();
+      if( data?.length > 0) {
+        const toRemove = new Array<string>();
+        toRemove.push(...this.cols.map(value => value.field));
+        let row=0;
+        while((toRemove.length>0) && (row<data.length)) {
+          for (let i=0;i<toRemove.length;i++) {
+            const fieldName = toRemove[i];
+            if (data[row][fieldName]!=null) {
+              toRemove.splice(i, 1);
+              i--;
+            }
           }
+          row++;
         }
-        row++;
-      }
-      // Let's remove some columns
-      if ((toRemove.length>0) && (toRemove.length<this.cols.length)) {
-        for (let colPos=0; colPos < this.cols.length;colPos++) {
-          let colName = this.cols[colPos].field;
-          if (toRemove.indexOf(colName) >=0) {
-            this.cols.splice(colPos, 1);
-            for (let entry of this.colsMap.entries()) {
-              if (entry[1]===colPos) {
-                this.colsMap.delete(entry[0]);
-                break;
+        // Let's remove some columns
+        if ((toRemove.length>0) && (toRemove.length<this.cols.length)) {
+          for (let colPos=0; colPos < this.cols.length;colPos++) {
+            let colName = this.cols[colPos].field;
+            if (toRemove.indexOf(colName) >=0) {
+              this.cols.splice(colPos, 1);
+              for (let entry of this.colsMap.entries()) {
+                if (entry[1]===colPos) {
+                  this.colsMap.delete(entry[0]);
+                  break;
+                }
               }
             }
           }
         }
       }
-    }
 
-  }
+    }
 }
 
 class PrimeColumn {
