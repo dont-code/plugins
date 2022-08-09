@@ -1,7 +1,7 @@
 <h1>Basic editor of {{entityName}}</h1>
 <p-toolbar>
   <ng-template pTemplate="left">
-    <button name="new" pButton icon="pi pi-plus" class="p-button-rounded p-button-success p-mr-2" (click)="newEntity()"></button>
+    <button name="new" pButton icon="pi pi-plus" class="p-button-rounded p-button-success p-mr-2" (click)="newEntity()" [disabled]="dataLoading"></button>
     <button name="delete" pButton icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteEntity()" [disabled]="!selectedItem"></button>
     <i class="pi pi-minus p-mx-2" style="font-size: 0.5rem"></i>
     <button name="save" pButton icon="pi pi-save" class="p-button-rounded p-button-warning" (click)="saveEntity()" [disabled]="!selectedItem"></button>
@@ -18,7 +18,7 @@
 </p-tabView>
 <p-toolbar>
   <ng-template pTemplate="left">
-    <button name="new-bottom" pButton icon="pi pi-plus" class="p-button-rounded p-button-success p-mr-2" (click)="newEntity()"></button>
+    <button name="new-bottom" pButton icon="pi pi-plus" class="p-button-rounded p-button-success p-mr-2" (click)="newEntity()" [disabled]="dataLoading"></button>
     <button name="delete-bottom" pButton icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteEntity()" [disabled]="!selectedItem"></button>
     <i class="pi pi-minus p-mx-2" style="font-size: 0.5rem"></i>
     <button name="save-bottom" pButton icon="pi pi-save" class="p-button-rounded p-button-warning" (click)="saveEntity()" [disabled]="!selectedItem"></button>

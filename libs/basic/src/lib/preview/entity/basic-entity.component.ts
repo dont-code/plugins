@@ -28,6 +28,8 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
 
   tabIndex = 0;
 
+  dataLoading = false;
+
   @ViewChild(ListEntityComponent)
   list!: ListEntityComponent;
 
@@ -54,16 +56,22 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
     if ((this.entityPointer)&&(this.provider)) {
       this.list.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
       this.edit.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
-      this.store?.loadAll().then (() => {
-        console.debug ("Loaded entities");
-        try {
-          this.list.dataIsLoaded();
-        } catch (e) {
-          console.debug("Just ignore errors when calling dataIsloaded")
-        }
-        this.ref.markForCheck();
-        this.ref.detectChanges();
-      });
+      if( this.store!=null) {
+        this.dataLoading=true;
+        this.store.loadAll().then (() => {
+          console.debug ("Loaded entities");
+          try {
+            this.list.dataIsLoaded();
+          } catch (e) {
+            console.debug("Just ignore errors when calling dataIsloaded")
+          }
+          this.dataLoading=false;
+          this.ref.markForCheck();
+          this.ref.detectChanges();
+        }, reason => {
+          this.dataLoading=false;
+        });
+      }
     } else {
       throw new Error ('Cannot create subcomponents before initCommandFlow is called');
     }
@@ -76,11 +84,19 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
         map(change => {
           if (this.store) {
           console.debug("Reloading data due to change of StoreManager");
+          this.dataLoading=true;
           this.store.reset();
           this.store.loadAll().then (() => {
-            this.list.dataIsLoaded();
+            try {
+                this.list.dataIsLoaded();
+              } catch (e) {
+                  console.debug("Just ignore errors when calling dataIsloaded")
+              }
+            this.dataLoading=false;
             this.ref.markForCheck();
             this.ref.detectChanges();
+          }, reason => {
+            this.dataLoading=false;
           })
         } else {
           console.error ('Cannot reload data because store is not set');
