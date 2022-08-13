@@ -95,7 +95,7 @@ export class ChangeListenerService {
     );
     this.channel.onmessage = (msg) => {
       // eslint-disable-next-line no-restricted-syntax
-      console.debug("Received broadcasted change at "+msg.position);
+      // console.debug("Received broadcasted change at "+msg.position);
       this.listOfChanges.push(msg);
       this.changeEmitter.next(msg);
     };

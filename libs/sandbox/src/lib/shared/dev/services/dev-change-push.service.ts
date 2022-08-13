@@ -19,8 +19,7 @@ export class DevChangePushService {
 
   pushChange (toPush:Change): Promise<void> {
     // eslint-disable-next-line no-restricted-syntax
-    console.debug('Dev pushing change for ', toPush.position);
-    //return this.channel.postMessage(toPush);
+    // console.debug('Dev pushing change for ', toPush.position);
     return this.listener.internalPushChange(toPush);
   }
 

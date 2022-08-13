@@ -76,7 +76,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         .pipe(
           map((command) => {
             // eslint-disable-next-line no-restricted-syntax
-            console.debug("Received menu change for ", command.position);
+            // console.debug("Received menu change for ", command.position);
             this.updateMenuName(command, icon);
             this.ref.detectChanges();
           })
@@ -89,7 +89,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         .pipe(
           map((command) => {
             // eslint-disable-next-line no-restricted-syntax
-            console.debug("Received menu change for ", command.position);
+            // console.debug("Received menu change for ", command.position);
             if (command.position.length > itemPosition.length + 1) {
               // Avoid adding empty entities (received due to reset)
               this.updateMenu(command, nameKey, icon);
