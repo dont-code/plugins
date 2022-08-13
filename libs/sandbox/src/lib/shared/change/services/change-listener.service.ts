@@ -91,9 +91,11 @@ export class ChangeListenerService {
     // Listens as well to broadcasted events
     // console.log("Listening to debug broadcasts")
     this.channel = new BroadcastChannel(
-      DevChangePushService.CHANNEL_CHANGE_NAME
+      DevChangePushService.CHANNEL_CHANGE_NAME, {}
     );
     this.channel.onmessage = (msg) => {
+      // eslint-disable-next-line no-restricted-syntax
+      console.debug("Received broadcasted change at "+msg.position);
       this.listOfChanges.push(msg);
       this.changeEmitter.next(msg);
     };
@@ -157,5 +159,11 @@ export class ChangeListenerService {
 
   getSessionIdSubject(): Observable<string|undefined> {
     return this.sessionIdSubject;
+  }
+
+  internalPushChange (toPush:Change): Promise<void> {
+    this.listOfChanges.push(toPush);
+    this.changeEmitter.next(toPush);
+    return Promise.resolve();
   }
 }

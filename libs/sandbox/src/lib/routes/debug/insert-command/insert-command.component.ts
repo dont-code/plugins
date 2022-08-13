@@ -168,12 +168,12 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  sendCommand() {
+  async sendCommand() {
     const tmpl = this.getSelectedTemplate();
     if (tmpl?.sequence) {
-      tmpl.sequence.forEach((step) => {
-        this.pushChange(step.type, step.position, step.value);
-      });
+      for (const step of tmpl.sequence) {
+        await this.pushChange(step.type, step.position, step.value);
+      }
     } else {
       // It's just a step, not from any template
       const step = this.getSelectedStep();
@@ -184,7 +184,7 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
       } catch (error) {
         console.log('Value is not json ', jsonVal, error);
       }
-      this.pushChange(
+      await this.pushChange(
         this.templateForm.get('type')?.value,
         step as string,
         jsonVal
@@ -224,7 +224,7 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
     }
   }
 
-  private pushChange(type: string, position: string, valueOrBeforeKey: any) {
+  private pushChange(type: string, position: string, valueOrBeforeKey: any) : Promise<void> {
     if (position === '/') position = '';
     const toSend = new Change(
       ChangeType[type as keyof typeof ChangeType],
@@ -236,6 +236,6 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
       toSend.oldPosition = position;
       toSend.beforeKey = valueOrBeforeKey as string;
     }
-    this.pushService.pushChange(toSend);
+    return this.pushService.pushChange(toSend);
   }
 }
