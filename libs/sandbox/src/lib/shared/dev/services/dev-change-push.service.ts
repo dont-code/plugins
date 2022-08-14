@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Change} from "@dontcode/core";
 import {BroadcastChannel} from 'broadcast-channel';
 import {ChangeListenerService} from '../../change/services/change-listener.service';
+import {CHANNEL_CHANGE_NAME} from "../../config/sandbox-lib-config";
 
 
 @Injectable({
@@ -9,12 +10,11 @@ import {ChangeListenerService} from '../../change/services/change-listener.servi
 })
 export class DevChangePushService {
 
-  public static readonly CHANNEL_CHANGE_NAME='preview-ui-changes';
   protected channel: BroadcastChannel<Change>;
 
   constructor(protected listener:ChangeListenerService) {
     // console.log('Creating debug broadcast');
-    this.channel = new BroadcastChannel(DevChangePushService.CHANNEL_CHANGE_NAME);
+    this.channel = new BroadcastChannel(CHANNEL_CHANGE_NAME);
   }
 
   pushChange (toPush:Change): Promise<void> {

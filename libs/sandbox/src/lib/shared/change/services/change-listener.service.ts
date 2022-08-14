@@ -4,8 +4,8 @@ import {firstValueFrom, map, Observable, ReplaySubject, Subject} from 'rxjs';
 import { WebSocketSubject } from 'rxjs/webSocket';
 import { webSocket } from 'rxjs/webSocket';
 import { BroadcastChannel } from 'broadcast-channel';
-import { DevChangePushService } from '../../dev/services/dev-change-push.service';
 import {
+  CHANNEL_CHANGE_NAME,
   SANDBOX_CONFIG,
   SandboxLibConfig,
 } from '../../config/sandbox-lib-config';
@@ -92,7 +92,7 @@ export class ChangeListenerService {
       // Listens as well to broadcasted events
       // console.log("Listening to debug broadcasts")
       this.channel = new BroadcastChannel(
-        DevChangePushService.CHANNEL_CHANGE_NAME, {}
+        CHANNEL_CHANGE_NAME, {}
       );
       this.channel.onmessage = (msg) => {
         // eslint-disable-next-line no-restricted-syntax
