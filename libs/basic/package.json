@@ -1,6 +1,6 @@
 {
   "name": "@dontcode/plugin-basic",
-  "version": "0.5.15-12",
+  "version": "0.5.15-26",
   "peerDependencies": {
     "@angular/common": "^13.3.2",
     "@angular/core": "^13.3.2",

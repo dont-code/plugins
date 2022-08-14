@@ -8,10 +8,16 @@ import {lastValueFrom} from "rxjs";
 })
 export class EntityStoreService {
 
+  protected listsByPosition = new Map<string, EntityListManager> ();
   constructor(protected storeMgr:DontCodeStoreManager) { }
 
   retrieveListManager (position:string, description:any): EntityListManager {
-    return new EntityListManager(position, description, this.storeMgr);
+    let newOne = this.listsByPosition.get(position);
+    if (newOne == null){
+      newOne = new EntityListManager(position, description, this.storeMgr);
+      this.listsByPosition.set(position, newOne);
+    }
+    return newOne;
   }
 }
 

@@ -1,4 +1,4 @@
-import {Change, dtcde} from "@dontcode/core";
+import {Change, DontCodeSchemaItem, dtcde, ModelQuerySingleResult} from "@dontcode/core";
 import {Injectable} from "@angular/core";
 import {Subject} from "rxjs";
 import {DontCodeModelManager} from "@dontcode/core";
@@ -54,4 +54,71 @@ export class ValueService {
     return this.modelMgr.findAtPosition(position, create);
   }
 
-}
+  /**
+   * Enable querying the model for any value, following jsonPath model
+   * To use when potentially you expect multiple values
+   * @param query: the query as a jsonPath
+   * @param position: in case the jsonPath is relative
+   */
+  queryModelToArray(query: string, position?: string): Array<any> {
+    return this.modelMgr.queryModelToArray(query, position);
+  }
+
+  /**
+   * Enable querying the model for any value, following jsonPath model
+   * To use when potentially you expect a single value.
+   * @param query: the query as a  jsonPath
+   * @param position: in case the jsonPath is relative
+   */
+  queryModelToSingle(query: string, position?: string): ModelQuerySingleResult {
+    return this.modelMgr.queryModelToSingle(query, position);
+  }
+
+  /**
+   * Returns the list of values that are possible target of a given property path. With this the Builder User Interface can display to the user a combo-box will all targets
+   * For example, with the following model:
+   * "from": {
+   *           "type": "string",
+   *           "format": "$.creation.sources.name"
+   *         }
+   *
+   * findAllPossibleTargetsOrProperty ("from", ...) will returns all sources names.
+   * @param property
+   * @param position
+   * @param schemaItem
+   */
+  findAllPossibleTargetsOfProperty(
+    property: string,
+    position: string,
+    schemaItem?: DontCodeSchemaItem
+  ): Array<any> {
+    return this.modelMgr.findAllPossibleTargetsOfProperty(property, position, schemaItem);
+  }
+
+  /**
+   * Returns the exact element that matches the target of a given property path.
+   *
+   * For example, with the following Dont-code model:
+   * "from": {
+   *           "type": "string",
+   *           "format": "$.creation.sources.name"
+   *         }
+   *
+   * and an instantiated model like this:
+   * {
+   *   "from": "EntityName"
+   * }
+   * findAllPossibleTargetsOrProperty ("from", ...) will return only the source named "EntityName".
+   * @param property
+   * @param position
+   * @param schemaItem
+   */
+  findTargetOfProperty(
+    property: string,
+    position: string,
+    schemaItem?: DontCodeSchemaItem
+  ): ModelQuerySingleResult|null {
+    return this.modelMgr.findTargetOfProperty(property, position, schemaItem);
+    }
+
+  }
