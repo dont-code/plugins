@@ -7,7 +7,7 @@ import {
   DontCodeModelPointer,
   DontCodeSchemaManager,
 } from '@dontcode/core';
-import {ValueService} from '../../values/services/value.service';
+import {ValueService} from '@dontcode/plugin-common';
 import {ChangeListenerService} from '../../change/services/change-listener.service';
 
 @Injectable({

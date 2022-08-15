@@ -46,3 +46,4 @@ export * from './common-ui/abstract-dynamic-loader-component';
 export * from './common-ui/pipes/beautifier.pipe';
 export * from './common-storage/entity-store.service';
 export * from './common-dynamic/component-loader.service';
+export * from './common-values/value.service';

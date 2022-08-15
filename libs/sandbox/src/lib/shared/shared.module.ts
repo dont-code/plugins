@@ -31,4 +31,3 @@ export * from './plugins/remote-plugin-loader.service';
 export * from './config/sandbox-lib-config';
 export * from './command/command.module';
 export * from './plugins/global-plugin-loader';
-export * from './values/services/value.service';

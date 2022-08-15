@@ -5,7 +5,7 @@ import {DontCodeStoreCriteria, DontCodeStoreProvider, UploadedDocumentInfo} from
 import {from, Observable} from "rxjs";
 import Dexie, {Table} from "dexie";
 import {Inject, Injectable, Optional} from "@angular/core";
-import {ValueService} from "../../values/services/value.service";
+import {ValueService} from "@dontcode/plugin-common";
 import {SANDBOX_CONFIG, SandboxLibConfig} from "../../config/sandbox-lib-config";
 
 @Injectable({
