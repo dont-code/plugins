@@ -1,6 +1,6 @@
 import {TestBed} from '@angular/core/testing';
 import {IndexedDbStorageService} from "./indexed-db-storage.service";
-import {ValueService} from "../../values/services/value.service";
+import {ValueService} from "@dontcode/plugin-common";
 import {map} from "rxjs/operators";
 import {lastValueFrom} from "rxjs";
 import {PluginCommonModule} from "@dontcode/plugin-common";

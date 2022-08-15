@@ -244,6 +244,9 @@ export abstract class PluginBaseComponent
    * @protected
    */
   protected rebuildForm() {
+
+    if (this.form==null)  // Ignore if the component doesn't have a form
+      return;
     // Updates the formgroup with new fields and remove old fields if necessary
     const toRemove = new Set<string>();
     // tslint:disable-next-line:forin

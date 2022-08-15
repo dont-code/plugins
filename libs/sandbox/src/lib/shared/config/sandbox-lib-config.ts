@@ -20,3 +20,5 @@ export const basicStoreApiUrlConfig = (config:SandboxLibConfig) => {
 export const basicDocumentApiUrlConfig = (config:SandboxLibConfig) => {
   return config.documentUrl;
 };
+
+export const CHANNEL_CHANGE_NAME='preview-ui-changes';

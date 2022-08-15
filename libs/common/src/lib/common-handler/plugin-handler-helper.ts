@@ -145,7 +145,7 @@ export class PluginHandlerHelper {
     applyProperty?: (target: T, key: string | null, value: any) => boolean
   ): Promise<T[]> {
     // We have the mutex to avoid multiple changes checking the map and target array at the same time...
-    return this.mutex.acquire().then((release) => {
+    return this.mutex.runExclusive(()=> {
       try {
         if (!this.provider)
           throw new Error(
@@ -284,22 +284,18 @@ export class PluginHandlerHelper {
                         ' without knowing the itemId'
                     );
                 }
-                release();
                 return target;
               }),
               takeLast(1),
               catchError((error) => {
-                release();
                 return Promise.reject(error);
               })
             )
           )
         } else {
-          release();
           return Promise.resolve(target);
         }
       } catch (error) {
-        release();
         return Promise.reject(error);
       }
     });

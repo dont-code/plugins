@@ -52,24 +52,31 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.handleEntitiesMenu(
+    this.handleItemMenu(
       DontCodeModel.APP_ENTITIES,
       DontCodeModel.APP_ENTITIES_NAME_NODE,
       'pi-ticket'
     );
-    this.handleEntitiesMenu(
+    this.handleItemMenu(
       DontCodeModel.APP_SCREENS,
       DontCodeModel.APP_SCREENS_NAME_NODE,
       'pi-desktop'
     );
+    this.handleItemMenu(
+      DontCodeModel.APP_REPORTS,
+      DontCodeModel.APP_REPORTS_TITLE_NODE,
+      'pi-chart-pie'
+    );
   }
 
-  handleEntitiesMenu(entity: string, nameKey: string, icon: string) {
+  handleItemMenu(itemPosition: string, nameKey: string, icon: string) {
     this.subscriptions.add(
       this.provider
-        .receiveCommands(entity, nameKey)
+        .receiveCommands(itemPosition, nameKey)
         .pipe(
           map((command) => {
+            // eslint-disable-next-line no-restricted-syntax
+            // console.debug("Received menu change for ", command.position);
             this.updateMenuName(command, icon);
             this.ref.detectChanges();
           })
@@ -78,12 +85,14 @@ export class MenuComponent implements OnInit, OnDestroy {
     );
     this.subscriptions.add(
       this.provider
-        .receiveCommands(entity + '/?')
+        .receiveCommands(itemPosition + '/?')
         .pipe(
           map((command) => {
-            if (command.position.length > entity.length + 1) {
+            // eslint-disable-next-line no-restricted-syntax
+            // console.debug("Received menu change for ", command.position);
+            if (command.position.length > itemPosition.length + 1) {
               // Avoid adding empty entities (received due to reset)
-              this.updateMenu(command, icon);
+              this.updateMenu(command, nameKey, icon);
               this.ref.detectChanges();
             } else if (!command.value) {
               // Reset all menus
@@ -150,16 +159,16 @@ export class MenuComponent implements OnInit, OnDestroy {
     return position;
   }
 
-  private updateMenu(change: Change, icon: string) {
+  private updateMenu(change: Change, nameKey:string, icon: string) {
     const key = change.position;
     const pos = this.findMenuPosOf(key);
     let menu;
 
     if (pos === -1) {
-      if (change.value?.name) {
+      if (change.value?.[nameKey]!=null) {
         menu = {
           routerLink: [key],
-          label: change.value.name,
+          label: change.value[nameKey],
           icon: 'pi ' + icon,
         };
       } else return;
@@ -195,8 +204,14 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   private updateMenuName(command: Change, icon: string) {
+    const parentPos =DontCodeModelPointer.parentPosition(command.position);
+    if (parentPos==null) {
+      console.error("Cannot update menu name for "+command.position+" with no parent position");
+      return;
+    }
+
     const key = this.cleanPosition(
-      DontCodeModelPointer.parentPosition(command.position)!
+      parentPos
     );
     const pos = this.findMenuPosOf(key);
     const name = command.value;
