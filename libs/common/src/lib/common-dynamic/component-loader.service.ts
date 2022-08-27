@@ -126,6 +126,7 @@ export class ComponentLoaderService {
           return this.createComponent(componentClass, insertPoint, moduleRef, isPointer?schemaPosition as DontCodeModelPointer:null);
         })
         .catch((reason) => {
+          console.error ("Cannot load module because of ", reason);
           return Promise.reject(
             'Cannot load module for source ' +
               handlerConfig.class.source +

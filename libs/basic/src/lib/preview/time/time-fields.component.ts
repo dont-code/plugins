@@ -26,7 +26,11 @@ export class TimeFieldsComponent extends AbstractDynamicComponent {
   @ViewChild('READ_TIME', { static: true })
   private readTimeTemplate!: TemplateRef<any>;
 
+  longConverter = Intl.DateTimeFormat(navigator.language, { weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', timeZoneName:'long'});
+  shortConverter = Intl.DateTimeFormat(navigator.language, { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', timeZoneName:'short'});
+
   providesTemplates(type: string): TemplateList {
+    this.updateConverters(type);
     switch (type) {
       case 'Date':
         return new TemplateList(
@@ -48,6 +52,32 @@ export class TimeFieldsComponent extends AbstractDynamicComponent {
           this.editTimeTemplate
         );
     }
+  }
+
+  updateConverters (type:string):void {
+    switch (type) {
+      case 'Date':
+        this.longConverter = Intl.DateTimeFormat(navigator.language, { weekday:'long', day:'numeric', month:'long', year:'numeric'});
+        this.shortConverter = Intl.DateTimeFormat(navigator.language, { day:'2-digit', month:'2-digit', year:'numeric'});
+        break;
+      case 'Date & Time':
+        this.longConverter = Intl.DateTimeFormat(navigator.language, { weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', timeZoneName:'long'});
+        this.shortConverter = Intl.DateTimeFormat(navigator.language, { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', timeZoneName:'short'});
+        break;
+      case 'Time':
+      default:
+        this.longConverter = Intl.DateTimeFormat(navigator.language, { hour:'2-digit', minute:'2-digit', second:'2-digit', timeZoneName:'long'});
+        this.shortConverter = Intl.DateTimeFormat(navigator.language, {hour:'2-digit', minute:'2-digit', second:'2-digit', timeZoneName:'short'});
+
+    }
+  }
+
+  localizeLongDate (value:Date): string {
+    return this.longConverter.format(value);
+  }
+
+  localizeShortDate (value:Date): string {
+    return this.shortConverter.format(value);
   }
 
   canProvide(type?: string): PossibleTemplateList {
