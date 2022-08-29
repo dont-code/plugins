@@ -71,7 +71,15 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
   }
 
   localizedAmount (amount:number): string {
-    return this.converter.format(amount);
+    const ret= this.converter.format(amount);
+
+    /*const chars=[];
+    for (let i=0;i<ret.length;i++) {
+      chars.push(ret.charCodeAt(i));
+    }
+    console.log("Generated:",ret, ...chars);
+*/
+    return ret;
   }
 
   /**

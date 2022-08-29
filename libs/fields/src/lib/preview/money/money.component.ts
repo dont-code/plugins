@@ -108,7 +108,8 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
   }
 
   localizedAmount (amount:number): string {
-    return this.converter.format(amount);
+    const ret = this.converter.format(amount);
+    return ret;
   }
 
   preloadCurrencyField() {
