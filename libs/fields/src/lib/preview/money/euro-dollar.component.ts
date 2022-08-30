@@ -24,11 +24,18 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
 
   control:FormControl = new FormControl(null,{updateOn:'blur'})
 
+  converter = Intl.NumberFormat(navigator.language, { style:'currency', currency:'EUR'});
+
+  constructor() {
+    super();
+  }
+
   providesTemplates (key?:string): TemplateList {
     switch (key) {
       case 'Euro':
       case 'Dollar':
         this.value.currencyCode=(key==='Euro')?'EUR':'USD';
+        this.updateConverter ();
         return new TemplateList (this.inlineView, null, this.fullEditView);
       default:
         return new TemplateList(null, null, null);
@@ -36,7 +43,7 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
   }
 
   override setValue(val: any):void {
-    if( val) {
+    if( val != null) {
       this.value = val;
       this.control.setValue(this.value.amount, {emitEvent: false});
       this.valueAmountDefined=true;
@@ -51,10 +58,28 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
       case 'Euro':
       case 'Dollar':
         this.value.currencyCode=(key==='Euro')?'EUR':'USD';
+        this.updateConverter();
         return new PossibleTemplateList(true, false, true);
     }
 
     return new PossibleTemplateList(false, false, false);
+  }
+
+  updateConverter (): void {
+    if (this.value?.currencyCode!=null)
+      this.converter =Intl.NumberFormat(navigator.language, { style:'currency', currency:this.value.currencyCode});
+  }
+
+  localizedAmount (amount:number): string {
+    const ret= this.converter.format(amount);
+
+    /*const chars=[];
+    for (let i=0;i<ret.length;i++) {
+      chars.push(ret.charCodeAt(i));
+    }
+    console.log("Generated:",ret, ...chars);
+*/
+    return ret;
   }
 
   /**

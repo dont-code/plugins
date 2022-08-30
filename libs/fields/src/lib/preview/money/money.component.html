@@ -1,5 +1,5 @@
 <dtcde-dynamic></dtcde-dynamic>
-<ng-template #inlineView><span *ngIf="value?.currencyCode" class="numeric">{{value.amount | currency:value.currencyCode}}</span></ng-template>
+<ng-template #inlineView><span *ngIf="value?.currencyCode" class="numeric">{{localizedAmount(value.amount)}}</span></ng-template>
 <ng-template #fullEditView>
   <ng-container *ngIf="group" [formGroup]="group">
     <div class="grid">

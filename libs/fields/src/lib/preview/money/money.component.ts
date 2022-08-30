@@ -28,6 +28,8 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
 
   control: FormControl = new FormControl(null, { updateOn: 'blur' });
 
+  converter = Intl.NumberFormat(navigator.language, { style:'currency', currency:'EUR'});
+
   constructor(injector: Injector, loaderService: ComponentLoaderService) {
     super(loaderService, injector);
   }
@@ -85,6 +87,7 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
       this.valueAmountDefined = false;
     }
     this.setSubFieldValue('currencyCode', 'Currency',this.value.currencyCode);
+    this.updateConverter();
   }
 
   override getValue(): any {
@@ -97,6 +100,16 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
   override ngAfterViewInit() {
     super.ngAfterViewInit();
     this.preloadCurrencyField();
+  }
+
+  updateConverter (): void {
+    if (this.value?.currencyCode!=null)
+      this.converter =Intl.NumberFormat(navigator.language, { style:'currency', currency:this.value.currencyCode});
+  }
+
+  localizedAmount (amount:number): string {
+    const ret = this.converter.format(amount);
+    return ret;
   }
 
   preloadCurrencyField() {

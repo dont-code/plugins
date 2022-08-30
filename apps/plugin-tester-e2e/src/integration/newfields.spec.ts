@@ -66,9 +66,19 @@ describe('New fields', () => {
 
       getTabWithName ('List').click();
 
-      getListRowWithText("5/5/04");
+      getListRowWithText(DateUtils.generateShortDate(new Date (2004, 4, 5)));
 
     });
   });
 
+
+
 });
+
+export class DateUtils {
+  static formatter = Intl.DateTimeFormat(navigator.language, { day:'2-digit', month:'2-digit', year:'numeric'});
+
+  public static generateShortDate (dateToTest:Date): string {
+    return DateUtils.formatter.format(dateToTest);
+  }
+}

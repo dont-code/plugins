@@ -89,8 +89,8 @@ describe('Edit', () => {
 
       getTabWithName ('List').click();
       getListRowWithText ( "Book 1");
-      getListRowWithText ( "$1,234");
-      getListRowWithText ("CA$2,121");
+      getListRowWithText ( FormatUtils.generateMoney(1234,"USD"));
+      getListRowWithText (FormatUtils.generateMoney(2121,"CAD"));
       getListRowWithText ("CUP");
 
       getButtonWithName ('new').click();
@@ -104,9 +104,9 @@ describe('Edit', () => {
       //getButtonWithName ('save').click();
 
       getTabWithName ('List').click();
-      getListRowWithText ("$1,234");
-      getListRowWithText ("€8,765");
-      getListRowWithText ("CA$9,090");
+      getListRowWithText (FormatUtils.generateMoney(1234, "USD"));
+      getListRowWithText (FormatUtils.generateMoney(8765, "EUR"));
+      getListRowWithText (FormatUtils.generateMoney(9090, "CAD"));
 
       getListRowWithText ("Book 2").click();
       getListRowWithText ("Book 2").click();
@@ -116,19 +116,19 @@ describe('Edit', () => {
       getDropdownListItemWithName('Algerian Dinar - DZD').click();
 
       getButtonWithName ('save').click();
-      getListRowWithText ("€4,321");
-      getListRowWithText ( "DZD9,090");
+      getListRowWithText (FormatUtils.generateMoney(4321, "EUR"));
+      getListRowWithText ( FormatUtils.generateMoney(9090, "DZD"));
 
       getSubMenuWithText('Dev').click();// Move to dev page
       getSubMenuWithText('Book').click();// Returns to list page
-      getListRowWithText ( "€9,870");
-      getListRowWithText ( "DZD9,090");
+      getListRowWithText ( FormatUtils.generateMoney(9870, "EUR"));
+      getListRowWithText ( FormatUtils.generateMoney(9090, "DZD"));
       getListRowWithText ( "CUP");
-      getListRowWithText( "€4,321").click(); // Move to edit
+      getListRowWithText( FormatUtils.generateMoney(4321,"EUR")).click(); // Move to edit
       getInputWithName('EUR').clear(); // Empty the amount
       getButtonWithName ('save').click();
 
-      getColumn (getListRowWithText("$1,234"), 3).should ("be.empty");
+      getColumn (getListRowWithText(FormatUtils.generateMoney(1234, "USD")), 3).should ("be.empty");
 
 
     },(reason) => {
@@ -136,3 +136,19 @@ describe('Edit', () => {
     });
   });
 });
+
+export class FormatUtils {
+  public static generateMoney (amount:number, currencyCode:string): string {
+    let ret= Intl.NumberFormat (navigator.language, {style:'currency', currency:currencyCode}).format(amount);
+
+    // Replace nbsps with space
+    ret = ret.replace ("\u00a0", " ");
+    ret = ret.replace ("\u202F", " ");
+ /*   const chars=[];
+    for (let i=0;i<ret.length;i++) {
+      chars.push(ret.charCodeAt(i));
+    }
+    console.log("Checked:",ret, ...chars);*/
+    return ret;
+  }
+}
