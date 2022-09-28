@@ -73,8 +73,8 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
   }
 
   template(): TemplateRef<any> | null {
-    const comp = this.componentsByFormName.get('currencyCode');
-    if (comp) return comp.providesTemplates().forFullEdit;
+    const comp = this.componentsByFormName.get('currencyCode')?.component;
+    if (comp!=null) return comp.providesTemplates().forFullEdit;
     else throw new Error('Cannot find component handling currencyCode');
   }
 
