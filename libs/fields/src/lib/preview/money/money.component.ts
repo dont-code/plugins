@@ -6,7 +6,7 @@ import {
   PossibleTemplateList,
   TemplateList,
 } from '@dontcode/plugin-common';
-import { FormControl, FormGroup } from '@angular/forms';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 /**
  * Display or edit a country value
@@ -26,12 +26,11 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
   override value: MoneyAmount = new MoneyAmount();
   valueAmountDefined = false;
 
-  control: FormControl = new FormControl(null, { updateOn: 'blur' });
-
   converter = Intl.NumberFormat(navigator.language, { style:'currency', currency:'EUR'});
 
   constructor(injector: Injector, loaderService: ComponentLoaderService) {
     super(loaderService, injector);
+    this.defineSubField ('currencyCode', 'Currency');
   }
 
   override providesTemplates(key?: string): TemplateList {
@@ -42,19 +41,9 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
     return new PossibleTemplateList(true, false, true);
   }
 
-  /**
-   * We are managing our own FormControl to store both the amount and currency
-   */
-  override managesFormControl(): boolean {
-    return true;
-  }
-
   override setForm(form: FormGroup) {
     super.setForm(form);
-    if (this.group) {
-      this.group.registerControl('amount', this.control);
-      this.preloadCurrencyField();
-    } else throw new Error('Group must be created before setting parent form');
+    this.group?.registerControl('amount', new FormControl(this.amount));
   }
 
   get amount(): number | undefined {
@@ -69,13 +58,6 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
     } else {
       this.valueAmountDefined = false;
     }
-    this.control.setValue(newAmount);
-  }
-
-  template(): TemplateRef<any> | null {
-    const comp = this.componentsByFormName.get('currencyCode')?.component;
-    if (comp!=null) return comp.providesTemplates().forFullEdit;
-    else throw new Error('Cannot find component handling currencyCode');
   }
 
   override setValue(val: any) {
@@ -86,42 +68,42 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
       this.value = new MoneyAmount();
       this.valueAmountDefined = false;
     }
-    this.setSubFieldValue('currencyCode', 'Currency',this.value.currencyCode);
     this.updateConverter();
   }
 
   override getValue(): any {
     const val = super.getValue() as MoneyAmount;
-    val.currencyCode = this.getSubFieldValue( 'currencyCode','Currency');
-
     return val;
   }
 
-  override ngAfterViewInit() {
-    super.ngAfterViewInit();
-    this.preloadCurrencyField();
-  }
 
   updateConverter (): void {
     if (this.value?.currencyCode!=null)
       this.converter =Intl.NumberFormat(navigator.language, { style:'currency', currency:this.value.currencyCode});
   }
 
-  localizedAmount (amount:number): string {
+  localizedAmount (amount:number|null): string {
+    if( amount==null)
+      return this.value?.currencyCode??"";
     const ret = this.converter.format(amount);
     return ret;
   }
 
-  preloadCurrencyField() {
-    // Only load currency component to the cache in edit mode
-    if ((this.group!=null)&&(this.dynamicInsertPoint!=null)) {
-      this.loadSubField(
-        'currencyCode',
-        'Currency',
-        this.value.currencyCode
-      ).then(() => {
-        // Nothing to do
-      });
+
+  override transformToSource(type: string, val: any): any {
+    const ret= super.transformToSource(type, val);
+/*    if( !this.valueAmountDefined) {
+      ret.amount = undefined;
+    }*/
+    return ret;
+  }
+
+  override transformFromSource(type: string, val: any): any {
+    if (val?.amount==null) {
+      this.valueAmountDefined=false;
+    } else {
+      this.valueAmountDefined=true;
     }
+    return super.transformFromSource(type, val);
   }
 }

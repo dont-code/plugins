@@ -4,10 +4,10 @@
   <ng-container *ngIf="group" [formGroup]="group">
     <div class="grid">
       <div class="col-12 md:col-8">
-        <p-inputNumber [name]="name" [(ngModel)]="amount" [ngModelOptions]="{standalone:true}" [minFractionDigits]="2"></p-inputNumber>
+        <p-inputNumber formControlName="amount" [minFractionDigits]="2"></p-inputNumber>
       </div>
       <div class="col-12 md:col-4">
-        <ng-container *ngTemplateOutlet="template()"></ng-container>
+        <ng-container *ngTemplateOutlet="subFieldFullEditTemplate('currencyCode')"></ng-container>
       </div>
     </div>
   </ng-container>

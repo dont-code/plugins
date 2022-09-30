@@ -2,7 +2,7 @@ import {AbstractDynamicComponent} from './abstract-dynamic-component';
 import {DynamicComponent} from './dynamic-component';
 import {AfterViewInit, Component, Directive, Injector, TemplateRef, ViewChild, ViewContainerRef,} from '@angular/core';
 import {DontCodeModelPointer} from '@dontcode/core';
-import {FormControl, FormGroup} from '@angular/forms';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ComponentLoaderService} from '../common-dynamic/component-loader.service';
 import {Observable, ReplaySubject, Subscriber, Subscription} from "rxjs";
 
@@ -282,12 +282,13 @@ export abstract class AbstractDynamicLoaderComponent
         const name = element[0];
         const info=element[1];
         if( info?.component==null) {
+          const valueSafe =this.value?this.value[name]:undefined;
           this.loadSubField(
             name,
             info.type,
-            this.value?this.value[name]:undefined
+            valueSafe
           ).then(() => {
-            // Nothing to do
+              // Nothing to do
           });
         }
       }
