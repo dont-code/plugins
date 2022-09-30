@@ -70,7 +70,9 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
       this.converter =Intl.NumberFormat(navigator.language, { style:'currency', currency:this.value.currencyCode});
   }
 
-  localizedAmount (amount:number): string {
+  localizedAmount (amount?:number): string {
+    if( amount==null)
+      return this.value.currencyCode??"";
     const ret= this.converter.format(amount);
 
     /*const chars=[];

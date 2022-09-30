@@ -60,7 +60,7 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
       this.converter =Intl.NumberFormat(navigator.language, { style:'currency', currency:this.value.currencyCode});
   }
 
-  localizedAmount (amount:number|null): string {
+  localizedAmount (amount:number|undefined): string {
     if( amount==null)
       return this.value?.currencyCode??"";
     const ret = this.converter.format(amount);
