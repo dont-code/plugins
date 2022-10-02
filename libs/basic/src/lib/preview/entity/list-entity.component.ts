@@ -19,6 +19,10 @@ import {
   TemplateList,
 } from '@dontcode/plugin-common';
 
+/**
+ * Displays a read-only list of entity in a table.
+ * Each field of the entity is a column and managed by one component only (we call setValue for each row we display)
+ */
 @Component({
   selector: 'dontcode-list-entity',
   templateUrl: './list-entity.component.html',
@@ -116,7 +120,7 @@ export class ListEntityComponent
   }
 
   templateOf(col: PrimeColumn, value: any): TemplateRef<any> {
-    if (col.component) {
+    if (col.component!=null) {
       col.component.setValue(value);
       const ref = col.component.providesTemplates(col.type).forInlineView;
       if (ref) return ref;

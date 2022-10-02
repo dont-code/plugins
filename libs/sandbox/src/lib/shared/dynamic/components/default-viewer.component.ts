@@ -9,12 +9,12 @@ import {
 } from '@dontcode/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, TemplateRef,} from '@angular/core';
 import {
-  ComponentLoaderService, FormElement,
+  ComponentLoaderService,
   PluginBaseComponent,
-  PossibleTemplateList,
+  PossibleTemplateList, SubFieldInfo,
   TemplateList,
 } from '@dontcode/plugin-common';
-import {FormBuilder, FormControl, Validators,} from '@angular/forms';
+import {FormBuilder,} from '@angular/forms';
 
 @Component({
   selector: 'dontcode-sandbox-default-viewer',
@@ -93,7 +93,7 @@ export class DefaultViewerComponent extends PluginBaseComponent {
     }
   }
 
-  templateOf(col: FormElement, value: any): TemplateRef<any> {
+  templateOf(col: SubFieldInfo, value: any): TemplateRef<any> {
     if (col.component) {
       col.component.setValue(value);
       const ref = col.component.providesTemplates(col.type).forInlineView;
@@ -102,7 +102,7 @@ export class DefaultViewerComponent extends PluginBaseComponent {
     throw new Error('No component or template to display ' + col.type);
   }
 
-  editTemplateOf(col: FormElement, value: any): TemplateRef<any> {
+  editTemplateOf(col: SubFieldInfo, value: any): TemplateRef<any> {
     if (col.component) {
       col.component.setValue(value);
       const ref = col.component.providesTemplates(col.type).forFullEdit;

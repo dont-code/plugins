@@ -1,10 +1,10 @@
 <dtcde-dynamic></dtcde-dynamic>
 <ng-template #inlineView><span *ngIf="value?.currencyCode" class="numeric">{{localizedAmount(value.amount)}}</span></ng-template>
 <ng-template #fullEditView>
-  <ng-container *ngIf="group" [formGroup]="group">
+  <ng-container *ngIf="form" [formGroup]="form">
     <div class="grid">
       <div class="col-12 md:col-8">
-        <p-inputNumber [name]="name" formControlName="amount" [minFractionDigits]="2"></p-inputNumber>
+        <p-inputNumber [name]="name" [formControl]="control" [minFractionDigits]="2"></p-inputNumber>
       </div>
       <div class="col-12 md:col-4">
         <ng-container *ngTemplateOutlet="subFieldFullEditTemplate('currencyCode')"></ng-container>

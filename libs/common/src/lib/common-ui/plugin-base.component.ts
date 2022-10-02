@@ -6,7 +6,7 @@ import {
   PreviewHandler,
 } from '@dontcode/core';
 import { ComponentLoaderService } from '../common-dynamic/component-loader.service';
-import { AbstractDynamicLoaderComponent } from './abstract-dynamic-loader-component';
+import {AbstractDynamicLoaderComponent, SubFieldInfo} from './abstract-dynamic-loader-component';
 import { PluginHandlerHelper } from '../common-handler/plugin-handler-helper';
 import { Subscription } from 'rxjs';
 import {DynamicComponent} from "./dynamic-component";
@@ -26,12 +26,6 @@ export abstract class PluginBaseComponent
   entityPointer: DontCodeModelPointer | null = null;
   protected provider: CommandProviderInterface | null = null;
 
-  /**
-   * Manages the components that are bound to the form
-   */
-  fields = new Array<FormElement>();
-  fieldsMap = new Map<string, number>();
-
   constructor(loader: ComponentLoaderService, injector: Injector) {
     super(loader, injector);
   }
@@ -46,44 +40,11 @@ export abstract class PluginBaseComponent
   }
 
   /**
-   * Propagate the values to the form if needed
-   * @param val
-   */
-  override setValue(val: any) {
-    super.setValue(val);
-
-    if (val) {
-      // Transforms the stored values into field values
-      this.fields.forEach((field) => {
-        if (field.component?.managesFormControl()) {
-          field.component.setValue(this.value[field.name]);
-        } else {
-          if (this.form) {
-            const singleVal: { [key: string]: any } = {};
-            let updatedValue=this.value[field.name];
-            if (field.component!=null) {
-              updatedValue = field.component.transformFromSource (field?.type,this.value[field.name]);
-            } else {
-              // No components will manage the value, so let's transform it to a displayable string
-              updatedValue = PluginBaseComponent.toBeautifyString(updatedValue);
-            }
-            singleVal[field.name] = updatedValue;
-            this.form.patchValue(singleVal, { emitEvent: false });
-          }
-        }
-      });
-    } else {
-      this.form?.reset({}, { emitEvent: false });
-    }
-
-  }
-
-  /**
    * Listen to this.form updates and update this.value accordingly
    * @protected
    */
   protected updateValueOnFormChanges():void {
-    this.subscriptions.add(this.form.valueChanges.subscribe((change) => {
+/*    this.subscriptions.add(this.form.valueChanges.subscribe((change) => {
       if (this.value) {
         for (const changeKey in change) {
           if (change.hasOwnProperty(changeKey)) {
@@ -93,11 +54,7 @@ export abstract class PluginBaseComponent
             });
             let newVal = change[changeKey];
             if (field?.component!=null) {
-              if (field.component.managesFormControl()) {
-                newVal = field.component.getValue();
-              } else {
-                newVal = field.component.transformToSource(field.type, newVal);
-              }
+             newVal = field.component.getValue();
             }
             this.value[changeKey] = newVal;
           }
@@ -105,7 +62,7 @@ export abstract class PluginBaseComponent
         //console.log(this.value);
       }
     })
-    );
+    );*/
   }
 
   initCommandFlow(
@@ -207,7 +164,7 @@ export abstract class PluginBaseComponent
    * @param change
    * @protected
    */
-  protected updateSubFieldsWithChange(change: Change, subProperty:string|null): Promise<FormElement[]|null> {
+  protected updateSubFieldsWithChange(change: Change, subProperty:string|null): Promise<SubFieldInfo[]|null> {
       return this.applyUpdatesToArrayAsync(
         this.fields,
         this.fieldsMap,
@@ -219,7 +176,7 @@ export abstract class PluginBaseComponent
               component.setName(value.name);
               component.setForm(this.form);
             }
-            return new FormElement(value.name, value.type, component);
+            return new SubFieldInfo(value.name, value.type, component??undefined);
           });
         },
         (elt, key, newVal) => {
@@ -254,101 +211,28 @@ export abstract class PluginBaseComponent
       toRemove.add(formKey);
     }
 
-    this.fields.forEach((field) => {
+    for (const field of this.fields) {
       let val = null;
       if (this.value && this.value[field.name]) {
         val = this.value[field.name];
       }
       toRemove.delete(field.name);
-      field.component?.setValue(val);
 
       // Check if the component manages the FormControl itself or if it relies on us
-      if (!field.component?.managesFormControl()) {
-        if (field.component!=null) {
-          val = field.component.transformFromSource(field.type, val);
-        } else {
-          val = PluginBaseComponent.toBeautifyString(val);
-        }
+      if (field.component!=null) {
+        field.component?.setValue(val);
+      } else {
+        val = PluginBaseComponent.toBeautifyString(val);
         this.form.registerControl(
           field.name,
           new FormControl(val, Validators.required)
         );
       }
-    });
+    }
 
     toRemove.forEach((key) => {
       this.form.removeControl(key);
     });
   }
 
-  protected applyTransformationFromSource (fieldType:string, comp:DynamicComponent|null, value:unknown): unknown {
-    if (comp!=null) {
-      return comp.transformToSource(fieldType, value);
-    } else if (fieldType==="Text") {
-        return PluginBaseComponent.toBeautifyString (value);
-    } else
-      return value;
-  }
-
-  /**
-   * Returns a string that can best display the value or null if it's already a string
-   * @param value
-   */
-  public static toBeautifyString (value:unknown, maxLength?:number): string|null {
-    if( value == null)
-      return null;
-
-    let ret="";
-
-    if ( Array.isArray(value)) {
-      value = value[0];
-    }
-    // Try to see if we have json or Date or something else
-    switch (typeof value) {
-      case "string": {
-        ret = value;
-        break;
-      }
-      case "object": {
-        if (value instanceof Date) {
-          ret = value.toLocaleDateString();
-        } else {
-          ret = JSON.stringify(value, null, 2);
-        }
-        break;
-      }
-      case "undefined": {
-        break;
-      }
-      default: {
-          ret = (value as any).toLocaleString();
-      }
-    }
-
-    if( maxLength!=null) {
-      if (ret.length> maxLength) {
-        ret = ret.substring(0,maxLength-3)+'...';
-      }
-    }
-
-    return ret;
-  }
-
-
-
-}
-
-/**
- * Stores information about an element in the form
- */
-export class FormElement {
-  type: string;
-  name: string;
-  component: DynamicComponent | null;
-
-  constructor(name: string, type: string, component: DynamicComponent | null) {
-    this.name = name;
-    this.type = type;
-    this.component = component;
-  }
 }

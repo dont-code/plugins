@@ -18,12 +18,14 @@ import {FormControl, FormGroup} from '@angular/forms';
 })
 export class MoneyComponent extends AbstractDynamicLoaderComponent {
   @ViewChild('inlineView', { static: true })
-  private inlineView!: TemplateRef<any>;
+  protected inlineView!: TemplateRef<any>;
 
   @ViewChild('fullEditView', { static: true })
-  private fullEditView!: TemplateRef<any>;
+  protected fullEditView!: TemplateRef<any>;
 
   override value: MoneyAmount = new MoneyAmount();
+
+  control = new FormControl(null, {updateOn:"blur"});
 
   converter = Intl.NumberFormat(navigator.language, { style:'currency', currency:'EUR'});
 
@@ -43,7 +45,7 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
 
   override setForm(form: FormGroup) {
     super.setForm(form);
-    this.group?.registerControl('amount', new FormControl(this.getAmountSafe()));
+    this.form.registerControl('amount', this.control);
   }
 
   getAmountSafe(): number | undefined {
@@ -51,6 +53,9 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
   }
 
   override setValue(val: any) {
+    if( val==null) {
+      val = new MoneyAmount();
+    }
     super.setValue(val);
     this.updateConverter();
   }

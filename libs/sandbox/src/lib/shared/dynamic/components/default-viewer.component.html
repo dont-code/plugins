@@ -10,14 +10,14 @@
 
   <form [formGroup]="form">
     <div class="p-fluid">
-      <div class="p-field p-grid" *ngFor="let field of fields">
+      <div class="p-field p-grid" *ngFor="let field of getSubFields()">
         <label [for]="field.name" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">{{
           field.name
         }}</label>
         <div class="p-col-12 p-md-10">
           <ng-container *ngIf="field.component">
             <ng-container
-              *ngTemplateOutlet="editTemplateOf(field, getData(field.name))"
+              *ngTemplateOutlet="subFieldFullEditTemplate(field)"
             ></ng-container>
           </ng-container>
           <ng-container *ngIf="!field.component">
@@ -33,11 +33,11 @@
   </form>
 
   <p>The values of the {{ entityName }} entity are:</p>
-  <div *ngFor="let field of fields">
+  <div *ngFor="let field of getSubFields()">
     Value of {{ field.name }}:
     <ng-container *ngIf="field.component">
       <ng-container
-        *ngTemplateOutlet="templateOf(field, getData(field.name))"
+        *ngTemplateOutlet="subFieldInlineViewTemplate(field)"
       ></ng-container>
     </ng-container>
     <ng-container *ngIf="!field.component">{{
