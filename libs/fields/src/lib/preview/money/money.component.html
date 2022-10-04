@@ -4,7 +4,7 @@
   <ng-container *ngIf="form" [formGroup]="form">
     <div class="grid">
       <div class="col-12 md:col-8">
-        <p-inputNumber [name]="name" [formControl]="control" [minFractionDigits]="2"></p-inputNumber>
+        <p-inputNumber name="amount" formControlName="amount" [minFractionDigits]="2"></p-inputNumber>
       </div>
       <div class="col-12 md:col-4">
         <ng-container *ngTemplateOutlet="subFieldFullEditTemplate('currencyCode')"></ng-container>

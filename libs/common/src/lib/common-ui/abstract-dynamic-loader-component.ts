@@ -67,7 +67,7 @@ export abstract class AbstractDynamicLoaderComponent
    */
   protected getSubField (propertyAndFormName:string): SubFieldInfo|undefined {
     const pos = this.fieldsMap.get(propertyAndFormName);
-    if (pos)
+    if (pos!=null)
       return this.fields[pos];
     else
       return;
@@ -75,7 +75,7 @@ export abstract class AbstractDynamicLoaderComponent
 
   protected addSubField (toAdd:SubFieldInfo): number {
     const pos = this.fields.push( toAdd);
-    this.fieldsMap.set(toAdd.name, pos);
+    this.fieldsMap.set(toAdd.name, pos-1);
     return pos;
   }
 
@@ -99,6 +99,49 @@ export abstract class AbstractDynamicLoaderComponent
       this.parentForm = null;
     }
     this.preloadSubFields();
+  }
+
+  override hydrateValueToForm() {
+      // Don't try to update the form as if it is a standard component
+      // as most likely we have created a new FormGroup
+    if (this.parentForm==null)
+      super.hydrateValueToForm();
+    else {
+      let formValue = this.transformToFormGroupValue(this.value);
+      // Sets the form value that are not managed directly by a field
+      for (const key in this.form.controls) {
+        if (this.fieldsMap.get(key)==null) {
+          const control = this.form.get(key);
+          control?.setValue(formValue?formValue[key]:formValue, {emitEvent: false});
+        }
+      }
+    }
+  }
+
+  override updateValueFromForm(): boolean {
+    if (this.parentForm==null)
+      return super.updateValueFromForm();
+    else {
+      let isChanged = false;
+      // Sets the form value that are not managed directly by a field
+      for (const key in this.form.controls) {
+        if (this.fieldsMap.get(key) == null) {
+          const control = this.form.get(key);
+          if( control!=null) {
+            if( control.dirty) {
+              const value = this.transformFromFormGroupValue(control?.value);
+              if (this.value==null) {
+                this.value={};
+              }
+              this.value[key]=value;
+              isChanged=true;
+              control.markAsPristine({onlySelf: true});
+            }
+          }
+        }
+      }
+      return isChanged;
+    }
   }
 
   override setValue(val: any) {
@@ -295,6 +338,8 @@ export abstract class AbstractDynamicLoaderComponent
       if( info==null) {
         info = new SubFieldInfo(formName, type, component);
         this.addSubField (info);
+      }else {
+        info.component=component;
       }
     }
     return component;

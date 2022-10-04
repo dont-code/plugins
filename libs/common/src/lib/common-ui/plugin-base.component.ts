@@ -8,9 +8,10 @@ import {
 import { ComponentLoaderService } from '../common-dynamic/component-loader.service';
 import {AbstractDynamicLoaderComponent, SubFieldInfo} from './abstract-dynamic-loader-component';
 import { PluginHandlerHelper } from '../common-handler/plugin-handler-helper';
-import { Subscription } from 'rxjs';
+import {debounceTime, Subscription} from 'rxjs';
 import {DynamicComponent} from "./dynamic-component";
 import {FormControl, Validators} from "@angular/forms";
+import {map} from "rxjs/operators";
 
 /**
  * A component that can be loaded by the framework, load subcomponents, listen to model changes, and so on...
@@ -44,25 +45,14 @@ export abstract class PluginBaseComponent
    * @protected
    */
   protected updateValueOnFormChanges():void {
-/*    this.subscriptions.add(this.form.valueChanges.subscribe((change) => {
-      if (this.value) {
-        for (const changeKey in change) {
-          if (change.hasOwnProperty(changeKey)) {
-            const field = this.fields.find((toSearch) => {
-              if (toSearch.name === changeKey) return true;
-              else return false;
-            });
-            let newVal = change[changeKey];
-            if (field?.component!=null) {
-             newVal = field.component.getValue();
-            }
-            this.value[changeKey] = newVal;
-          }
-        }
-        //console.log(this.value);
-      }
-    })
-    );*/
+    this.subscriptions.add(this.form.valueChanges.pipe(
+      map (value => {
+        // Force the recalculation of the data from the form
+        this.getValue();
+        return value;
+      })
+      ).subscribe()
+    );
   }
 
   initCommandFlow(

@@ -20,8 +20,6 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
 
   override value = new MoneyAmount();
 
-  control:FormControl = new FormControl(null,{updateOn:'blur'})
-
   converter = Intl.NumberFormat(navigator.language, { style:'currency', currency:'EUR'});
 
   constructor() {
@@ -82,12 +80,6 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
 */
     return ret;
   }
-
-  override setForm(form: FormGroup) {
-    super.setForm(form);
-    this.form.registerControl(this.name, this.control);
-  }
-
 
   override transformToFormGroupValue(val: any): any {
     if (val?.amount==null) {

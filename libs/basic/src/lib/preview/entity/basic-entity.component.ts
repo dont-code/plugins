@@ -141,7 +141,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   }
 
   selectChange($event: any) {
-    console.log("Event:", $event);
+//    console.log("Event:", $event);
     if ($event) {
       // Load the details of the selected element
       if( this.store!=null) {
@@ -201,6 +201,3 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
     return new PossibleTemplateList(false,false,false);
   }
 }
-
-
-

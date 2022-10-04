@@ -25,8 +25,6 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
 
   override value: MoneyAmount = new MoneyAmount();
 
-  control = new FormControl(null, {updateOn:"blur"});
-
   converter = Intl.NumberFormat(navigator.language, { style:'currency', currency:'EUR'});
 
   constructor(injector: Injector, loaderService: ComponentLoaderService) {
@@ -43,9 +41,8 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
     return new PossibleTemplateList(true, false, true);
   }
 
-  override setForm(form: FormGroup) {
-    super.setForm(form);
-    this.form.registerControl('amount', this.control);
+  override createAndRegisterFormControls (): void {
+    this.form.registerControl('amount', new FormControl(null, {updateOn:"blur"}));
   }
 
   getAmountSafe(): number | undefined {

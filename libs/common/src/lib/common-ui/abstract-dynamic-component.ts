@@ -1,5 +1,5 @@
 import {DynamicComponent} from "./dynamic-component";
-import {FormGroup} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 import {PossibleTemplateList, TemplateList} from "./template-list";
 
 /**
@@ -21,7 +21,7 @@ export abstract class AbstractDynamicComponent implements DynamicComponent {
   }
 
   getValue(): any {
-    if ((this.form!=null) && (this.name!=null))
+    if (this.form!=null)
       this.updateValueFromForm();
     return this.value;
   }
@@ -29,7 +29,7 @@ export abstract class AbstractDynamicComponent implements DynamicComponent {
   setValue(val: any): void {
     this.value=val;
 
-    if ((this.form!=null) && (this.name!=null))
+    if (this.form!=null)
       this.hydrateValueToForm ();
   }
 
@@ -42,12 +42,23 @@ export abstract class AbstractDynamicComponent implements DynamicComponent {
 
   setForm(form: FormGroup): void {
     this.form=form;
+    if ((this.form!=null) && (this.name!=null)) {
+      this.createAndRegisterFormControls();
+    }
   }
 
   getForm (): FormGroup {
     return this.form;
   }
 
+  /**
+   * By default registers a single control with the name this.name
+   * @protected
+   */
+  protected createAndRegisterFormControls (): void {
+    const control = new FormControl (null, {updateOn:'blur'});
+    this.form.registerControl(this.name, control);
+  }
   /**
    * This method allows components to generate a value manageable in FormControl from the original value (set by setValue ())
    * By default the same value is used
@@ -70,12 +81,14 @@ export abstract class AbstractDynamicComponent implements DynamicComponent {
    * Updates the form with the value
    */
   hydrateValueToForm ():void {
-    const control = this.form.get(this.name);
-    if( control==null) {
-      throw new Error("No form control for the name "+this.name);
-    } else {
-      const formValue = this.transformToFormGroupValue(this.value);
-      control.setValue(formValue, { emitEvent: false });
+    if (this.name!=null) {
+      const control = this.form.get(this.name);
+      if( control==null) {
+        throw new Error("No form control for the name "+this.name);
+      } else {
+        const formValue = this.transformToFormGroupValue(this.value);
+        control.setValue(formValue, { emitEvent: false });
+      }
     }
   }
 
@@ -84,6 +97,8 @@ export abstract class AbstractDynamicComponent implements DynamicComponent {
    * @return true if value have been updated
    */
   updateValueFromForm ():boolean {
+    if (this.name==null)
+      return false;
     const control = this.form.get(this.name);
     if( control==null) {
       throw new Error("No form control for the name "+this.name);
