@@ -6,7 +6,7 @@ import {
   PossibleTemplateList,
   TemplateList,
 } from '@dontcode/plugin-common';
-import {FormControl, FormGroup} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 
 /**
  * Display or edit a country value

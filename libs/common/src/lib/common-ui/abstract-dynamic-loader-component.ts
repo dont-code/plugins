@@ -182,7 +182,7 @@ export abstract class AbstractDynamicLoaderComponent
     if (component!=null) {
       ret = component.providesTemplates().forFullEdit;
     }
-    if( ret==null)
+    if( subField==null)
       throw new Error ("No template for subField "+subInfo?.name+" of component "+this.name);
     else
       return ret;
@@ -199,7 +199,7 @@ export abstract class AbstractDynamicLoaderComponent
     if (component!=null) {
       ret = component.providesTemplates().forInlineView;
     }
-    if( ret==null)
+    if( subField==null)
       throw new Error ("No template for subField "+subInfo?.name+" of component "+this.name);
     else
       return ret;
@@ -216,7 +216,7 @@ export abstract class AbstractDynamicLoaderComponent
     if (component!=null) {
       ret = component.providesTemplates().forFullView;
     }
-    if( ret==null)
+    if( subField==null)
       throw new Error ("No template for subField "+subInfo?.name+" of component "+this.name);
     else
       return ret;
