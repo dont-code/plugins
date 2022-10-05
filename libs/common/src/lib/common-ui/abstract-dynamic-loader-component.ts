@@ -206,6 +206,23 @@ export abstract class AbstractDynamicLoaderComponent
   }
 
   /**
+   * Retrieve the fulledittemplate for a subfield
+   * * @param formName
+   */
+  subFieldFullViewTemplate (subField:string|SubFieldInfo): TemplateRef<any> | null {
+    const subInfo = (typeof subField === 'string')?this.getSubField(subField as string):subField as SubFieldInfo;
+    const component = subInfo?.component;
+    let ret= null;
+    if (component!=null) {
+      ret = component.providesTemplates().forFullView;
+    }
+    if( ret==null)
+      throw new Error ("No template for subField "+subInfo?.name+" of component "+this.name);
+    else
+      return ret;
+  }
+
+  /**
    * Dynamically loads the component to handle the subfield
    * @param formName
    * @param type
