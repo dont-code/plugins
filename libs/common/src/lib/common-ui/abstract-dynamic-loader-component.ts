@@ -1,10 +1,10 @@
 import {AbstractDynamicComponent} from './abstract-dynamic-component';
 import {DynamicComponent} from './dynamic-component';
-import {AfterViewInit, Component, Directive, Injector, ViewChild, ViewContainerRef,} from '@angular/core';
+import {AfterViewInit, Component, Directive, Injector, TemplateRef, ViewChild, ViewContainerRef,} from '@angular/core';
 import {DontCodeModelPointer} from '@dontcode/core';
-import {FormControl, FormGroup} from '@angular/forms';
+import {FormGroup} from '@angular/forms';
 import {ComponentLoaderService} from '../common-dynamic/component-loader.service';
-import {Observable, ReplaySubject, Subscriber, Subscription} from "rxjs";
+import {ReplaySubject} from "rxjs";
 
 /** A component must be attached to a insertionpoint in the template **/
 @Directive({ selector: 'dtcde-dynamic' })
@@ -24,9 +24,21 @@ export abstract class AbstractDynamicLoaderComponent
   @ViewChild(DynamicInsertPoint, { read: ViewContainerRef, static: false })
   dynamicInsertPoint!: ViewContainerRef;
 
-  protected componentsByFormName = new Map<string, DynamicComponent>();
-  group: FormGroup | null = null; // Manages the formGroup for all subcomponents
+  /**
+   * Manages the components that are bound to the form
+   */
+  protected fields = new Array<SubFieldInfo>();
+  /**
+   * Stores the position of subField in fields depending on its name
+   * @protected
+   */
+  protected fieldsMap = new Map<string, number>();
+  protected parentForm: FormGroup|null = null;
 
+  /**
+   * Any action that needs to happen after ngAfterViewInit can be added to this.
+   * @protected
+   */
   protected componentInited = new ReplaySubject<boolean> ();
 
   protected constructor(
@@ -36,28 +48,199 @@ export abstract class AbstractDynamicLoaderComponent
     super();
   }
 
+
+  /**
+   * Define that a subvalue named propertyAndFormName will be managed by a subcomponent of type type
+   * Example: defineSubFields ('currencyCode', 'Currency') will handle a plugin to manage the currency
+   * @param formName
+   * @param type
+   */
+  defineSubField (propertyAndFormName:string, type:string) {
+    const newSubField = new SubFieldInfo(propertyAndFormName, type);
+    this.addSubField(newSubField);
+  }
+
+  /**
+   * Retrieve the information of the subfield at the given name.
+   * @param propertyAndFormName
+   * @protected
+   */
+  protected getSubField (propertyAndFormName:string): SubFieldInfo|undefined {
+    const pos = this.fieldsMap.get(propertyAndFormName);
+    if (pos!=null)
+      return this.fields[pos];
+    else
+      return;
+  }
+
+  protected addSubField (toAdd:SubFieldInfo): number {
+    const pos = this.fields.push( toAdd);
+    this.fieldsMap.set(toAdd.name, pos-1);
+    return pos;
+  }
+
+  getSubFields (): SubFieldInfo[] {
+    return this.fields;
+  }
+
+  /**
+   * This component will load subfields, so unless it doesn't have a name, it creates a new FormGroup
+   * @param form
+   */
   override setForm(form: FormGroup): void {
-    super.setForm(form);
+      // Register a FormGroup for this component has it will have to manage values from subFields as well
     if (this.name) {
-      this.group = new FormGroup({}, { updateOn: 'blur' });
-      this.form.registerControl(this.name, this.group);
+      const formGroup = new FormGroup({}, { updateOn: 'blur' });
+      form.registerControl(this.name, formGroup);
+      super.setForm(formGroup);
+      this.parentForm = form;
     } else {
-      this.group = this.form; // No need to create a subgroup
+      super.setForm(form);
+      this.parentForm = null;
+    }
+    this.preloadSubFields();
+  }
+
+  override hydrateValueToForm() {
+      // Don't try to update the form as if it is a standard component
+      // as most likely we have created a new FormGroup
+    if (this.parentForm==null)
+      super.hydrateValueToForm();
+    else {
+      let formValue = this.transformToFormGroupValue(this.value);
+      // Sets the form value that are not managed directly by a field
+      for (const key in this.form.controls) {
+        if (this.fieldsMap.get(key)==null) {
+          const control = this.form.get(key);
+          control?.setValue(formValue?formValue[key]:formValue, {emitEvent: false});
+        }
+      }
     }
   }
 
+  override updateValueFromForm(): boolean {
+    if (this.parentForm==null)
+      return super.updateValueFromForm();
+    else {
+      let isChanged = false;
+      // Sets the form value that are not managed directly by a field
+      for (const key in this.form.controls) {
+        if (this.fieldsMap.get(key) == null) {
+          const control = this.form.get(key);
+          if( control!=null) {
+            if( control.dirty) {
+              const value = this.transformFromFormGroupValue(control?.value);
+              if (this.value==null) {
+                this.value={};
+              }
+              this.value[key]=value;
+              isChanged=true;
+              control.markAsPristine({onlySelf: true});
+            }
+          }
+        }
+      }
+      return isChanged;
+    }
+  }
+
+  override setValue(val: any) {
+    super.setValue(val);
+
+      // Split the value into its subcomponents
+    for (const element of this.fields) {
+      if (val!=null)
+        this.setSubFieldValue(element, val[element.name]);
+      else
+        this.setSubFieldValue(element, undefined);
+    }
+  }
+
+
+  override getValue(): any {
+    const val = super.getValue();
+    // Adds subfield values into the main value
+    if (val!=null) {
+      for (const element of this.fields) {
+        const subFieldValue = this.getSubFieldValue(element);
+        if( val[element.name]!==subFieldValue)
+          val[element.name]=subFieldValue;
+      }
+    }
+    return val;
+  }
+
+
+  /**
+   * Retrieve the fulledittemplate for a subfield
+   * * @param formName
+   */
+  subFieldFullEditTemplate (subField:string|SubFieldInfo): TemplateRef<any> | null {
+    const subInfo = (typeof subField === 'string')?this.getSubField(subField as string):subField as SubFieldInfo;
+    const component = subInfo?.component;
+    let ret= null;
+    if (component!=null) {
+      ret = component.providesTemplates().forFullEdit;
+    }
+    if( ret==null)
+      throw new Error ("No template for subField "+subInfo?.name+" of component "+this.name);
+    else
+      return ret;
+  }
+
+  /**
+   * Retrieve the fulledittemplate for a subfield
+   * * @param formName
+   */
+  subFieldInlineViewTemplate (subField:string|SubFieldInfo): TemplateRef<any> | null {
+    const subInfo = (typeof subField === 'string')?this.getSubField(subField as string):subField as SubFieldInfo;
+    const component = subInfo?.component;
+    let ret= null;
+    if (component!=null) {
+      ret = component.providesTemplates().forInlineView;
+    }
+    if( ret==null)
+      throw new Error ("No template for subField "+subInfo?.name+" of component "+this.name);
+    else
+      return ret;
+  }
+
+  /**
+   * Retrieve the fulledittemplate for a subfield
+   * * @param formName
+   */
+  subFieldFullViewTemplate (subField:string|SubFieldInfo): TemplateRef<any> | null {
+    const subInfo = (typeof subField === 'string')?this.getSubField(subField as string):subField as SubFieldInfo;
+    const component = subInfo?.component;
+    let ret= null;
+    if (component!=null) {
+      ret = component.providesTemplates().forFullView;
+    }
+    if( ret==null)
+      throw new Error ("No template for subField "+subInfo?.name+" of component "+this.name);
+    else
+      return ret;
+  }
+
+  /**
+   * Dynamically loads the component to handle the subfield
+   * @param formName
+   * @param type
+   * @param subValue
+   */
   loadSubField(
-    formName: string,
+    subField: string | SubFieldInfo,
     type: string,
     subValue: any
   ): Promise<DynamicComponent | null> {
-    const component = this.componentsByFormName.get(formName);
+    const subInfo = (typeof subField === 'string')?this.getSubField(subField as string):subField as SubFieldInfo;
+    const component = subInfo?.component;
     if (component == null) {
       return this.loader
         .insertComponentForFieldType(type, this.dynamicInsertPoint)
         .then((component) => {
           if (component!=null) {
-            this.prepareComponent(component, type,formName, subValue);
+            this.prepareComponent(component, type,(subInfo!=null)?subInfo.name:null, subValue);
             return component;
           } else {
             return null;
@@ -68,45 +251,53 @@ export abstract class AbstractDynamicLoaderComponent
     }
   }
 
-  getSubFieldValue(formName: string, type:string): any {
-    const component = this.componentsByFormName.get(formName);
-    if (component?.managesFormControl()) {
+  /**
+   * Retrieve the subField value from the component handling it
+   * @param formName
+   * @param type
+   */
+  getSubFieldValue(subField: string | SubFieldInfo): any {
+    const subInfo = (typeof subField === 'string')?this.getSubField(subField as string):subField as SubFieldInfo;
+    const component = subInfo?.component;
+    if (component!=null) {
       return component.getValue();
     } else {
-      const subControl = this.group?.get(formName);
-      if (subControl) {
-        return subControl.value;
+      // No component is handling this subField so we have to do it ourselves
+      if ((this.form!=null)&&(subInfo!=null)) {
+        return this.form.get(subInfo.name)?.value;
       } else {
         throw new Error(
-          'Cannot provide value for non existent subField ' + formName
+          'Cannot provide value for non existent subField ' + subField
         );
       }
     }
   }
 
-  setSubFieldValue(formName: string, type:string, val: any) {
-    const component = this.componentsByFormName.get(formName);
+  /**
+   * Programmatically sets the value of the component handling the subfield
+   * @param formName
+   * @param type
+   * @param val
+   */
+  setSubFieldValue(subField: string|SubFieldInfo, val: any) {
+    const subInfo = (typeof subField === 'string')?this.getSubField(subField as string):subField as SubFieldInfo;
+    const component = subInfo?.component;
     // Sometimes no subcomponent is loaded, for example when displaying value only
-    if (component) {
-      if (component.managesFormControl()) {
+    if (component!=null) {
         component.setValue(val);
-      } else {
-        if (this.group) {
-          const newVal: { [key: string]: any } = {};
-          val = component.transformFromSource (type, val);
-
-          newVal[formName] = val;
-          this.group.patchValue(newVal, { emitEvent: false });
-        } else {
-          throw new Error(
-            'Cannot setSubFieldValue for ' +
-              formName +
-              ' without the FormGroup defined'
-          );
-        }
+    }  else {
+      // No components will manage the value, so let's transform it to a displayable string
+      if ((this.form!=null) && (subInfo!=null)) {
+        const singleVal: { [key: string]: any } = {};
+        let updatedValue = AbstractDynamicLoaderComponent.toBeautifyString(val);
+        if (updatedValue == undefined)  // You cannot set a value to undefined
+          updatedValue = null;
+        singleVal[subInfo.name] = updatedValue;
+        this.form.patchValue(singleVal, {emitEvent: false});
       }
     }
   }
+
   /**
    * Loads the component that will handle the display and edit for the item at the specified position
    * @param position: Either the schemaPosition as string or as DontCodeModelPointer
@@ -152,23 +343,21 @@ export abstract class AbstractDynamicLoaderComponent
   ): DynamicComponent {
     // Manages dynamic forms if needed
     if (formName) {
-      if (!this.group)
+      if (!this.form)
         throw new Error(
-          'Cannot prepare a self managing control component without a FormGroup'
+          'Cannot prepare a subField component without a FormGroup'
         );
       component.setName(formName);
-      component.setForm(this.group);
+      component.setForm(this.form);
+      component.setValue(subValue);
 
-      if (!component.managesFormControl()) {
-        subValue = component.transformFromSource (type,subValue);
-        this.group.registerControl(
-          formName,
-          new FormControl(subValue, { updateOn: 'blur' })
-        );
-      } else {
-        component.setValue(subValue);
+      let info =this.getSubField(formName);
+      if( info==null) {
+        info = new SubFieldInfo(formName, type, component);
+        this.addSubField (info);
+      }else {
+        info.component=component;
       }
-      this.componentsByFormName.set(formName, component);
     }
     return component;
   }
@@ -176,5 +365,85 @@ export abstract class AbstractDynamicLoaderComponent
   ngAfterViewInit(): void {
 //    console.debug ("DynamicInsertPoint for "+this.constructor.name, this.dynamicInsertPoint);
     this.componentInited.complete();
+    this.preloadSubFields();
   }
+
+  private preloadSubFields(): void {
+    // Only load currency component to the cache in edit mode
+    if ((this.form!=null)&&(this.dynamicInsertPoint!=null)) {
+      for (const element of this.fields) {
+        if( element.component==null) {
+          const valueSafe =this.value?this.value[element.name]:undefined;
+          this.loadSubField(
+            element.name,
+            element.type,
+            valueSafe
+          ).then(() => {
+              // Nothing to do
+          });
+        }
+      }
+    }
+  }
+
+  /**
+   * Returns a string that can best display the value or null if it's already a string
+   * @param value
+   */
+  public static toBeautifyString (value:unknown, maxLength?:number): string|null {
+    if( value == null)
+      return null;
+
+    let ret="";
+
+    if ( Array.isArray(value)) {
+      value = value[0];
+    }
+    // Try to see if we have json or Date or something else
+    switch (typeof value) {
+      case "string": {
+        ret = value;
+        break;
+      }
+      case "object": {
+        if (value instanceof Date) {
+          ret = value.toLocaleDateString();
+        } else {
+          ret = JSON.stringify(value, null, 2);
+        }
+        break;
+      }
+      case "undefined": {
+        break;
+      }
+      default: {
+        ret = (value as any).toLocaleString();
+      }
+    }
+
+    if( maxLength!=null) {
+      if (ret.length> maxLength) {
+        ret = ret.substring(0,maxLength-3)+'...';
+      }
+    }
+
+    return ret;
+  }
+
+}
+
+/**
+ * Store information to configure a subfield
+ */
+export class SubFieldInfo {
+  name: string;
+  type: string;
+  component: DynamicComponent | undefined;
+
+  constructor(name:string, type:string, comp?:DynamicComponent) {
+    this.name = name;
+    this.type = type;
+    this.component = comp;
+  }
+
 }

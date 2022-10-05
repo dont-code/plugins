@@ -1,12 +1,12 @@
-import { Component, Injector, TemplateRef, ViewChild } from '@angular/core';
-import { MoneyAmount } from '@dontcode/core';
+import {Component, Injector, TemplateRef, ViewChild} from '@angular/core';
+import {MoneyAmount} from '@dontcode/core';
 import {
   AbstractDynamicLoaderComponent,
   ComponentLoaderService,
   PossibleTemplateList,
   TemplateList,
 } from '@dontcode/plugin-common';
-import { FormControl, FormGroup } from '@angular/forms';
+import {FormControl, FormGroup} from '@angular/forms';
 
 /**
  * Display or edit a country value
@@ -18,20 +18,19 @@ import { FormControl, FormGroup } from '@angular/forms';
 })
 export class MoneyComponent extends AbstractDynamicLoaderComponent {
   @ViewChild('inlineView', { static: true })
-  private inlineView!: TemplateRef<any>;
+  protected inlineView!: TemplateRef<any>;
 
   @ViewChild('fullEditView', { static: true })
-  private fullEditView!: TemplateRef<any>;
+  protected fullEditView!: TemplateRef<any>;
 
   override value: MoneyAmount = new MoneyAmount();
-  valueAmountDefined = false;
-
-  control: FormControl = new FormControl(null, { updateOn: 'blur' });
 
   converter = Intl.NumberFormat(navigator.language, { style:'currency', currency:'EUR'});
 
   constructor(injector: Injector, loaderService: ComponentLoaderService) {
     super(loaderService, injector);
+    // We use Dont-code framework to find the component that will manage the currency selection
+    this.defineSubField ('currencyCode', 'Currency');
   }
 
   override providesTemplates(key?: string): TemplateList {
@@ -42,64 +41,20 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
     return new PossibleTemplateList(true, false, true);
   }
 
-  /**
-   * We are managing our own FormControl to store both the amount and currency
-   */
-  override managesFormControl(): boolean {
-    return true;
+  override createAndRegisterFormControls (): void {
+    this.form.registerControl('amount', new FormControl(null, {updateOn:"blur"}));
   }
 
-  override setForm(form: FormGroup) {
-    super.setForm(form);
-    if (this.group) {
-      this.group.registerControl('amount', this.control);
-      this.preloadCurrencyField();
-    } else throw new Error('Group must be created before setting parent form');
-  }
-
-  get amount(): number | undefined {
-    if (this.valueAmountDefined) return this.value.amount;
-    else return;
-  }
-
-  set amount(newAmount) {
-    if (newAmount) {
-      this.value.amount = newAmount;
-      this.valueAmountDefined = true;
-    } else {
-      this.valueAmountDefined = false;
-    }
-    this.control.setValue(newAmount);
-  }
-
-  template(): TemplateRef<any> | null {
-    const comp = this.componentsByFormName.get('currencyCode');
-    if (comp) return comp.providesTemplates().forFullEdit;
-    else throw new Error('Cannot find component handling currencyCode');
+  getAmountSafe(): number | undefined {
+    return this.value?.amount;
   }
 
   override setValue(val: any) {
-    super.setValue(val);
-    if (this.value) {
-      this.valueAmountDefined = true;
-    } else {
-      this.value = new MoneyAmount();
-      this.valueAmountDefined = false;
+    if( val==null) {
+      val = new MoneyAmount();
     }
-    this.setSubFieldValue('currencyCode', 'Currency',this.value.currencyCode);
+    super.setValue(val);
     this.updateConverter();
-  }
-
-  override getValue(): any {
-    const val = super.getValue() as MoneyAmount;
-    val.currencyCode = this.getSubFieldValue( 'currencyCode','Currency');
-
-    return val;
-  }
-
-  override ngAfterViewInit() {
-    super.ngAfterViewInit();
-    this.preloadCurrencyField();
   }
 
   updateConverter (): void {
@@ -107,21 +62,11 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
       this.converter =Intl.NumberFormat(navigator.language, { style:'currency', currency:this.value.currencyCode});
   }
 
-  localizedAmount (amount:number): string {
+  localizedAmount (amount:number|undefined): string {
+    if( amount==null)
+      return this.value?.currencyCode??"";
     const ret = this.converter.format(amount);
     return ret;
   }
 
-  preloadCurrencyField() {
-    // Only load currency component to the cache in edit mode
-    if ((this.group!=null)&&(this.dynamicInsertPoint!=null)) {
-      this.loadSubField(
-        'currencyCode',
-        'Currency',
-        this.value.currencyCode
-      ).then(() => {
-        // Nothing to do
-      });
-    }
-  }
 }

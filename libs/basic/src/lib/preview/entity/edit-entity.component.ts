@@ -2,9 +2,8 @@ import {ChangeDetectorRef, Component, Injector, Input, OnInit, TemplateRef, View
 import {Change, CommandProviderInterface, DontCodeModelPointer,} from '@dontcode/core';
 import {
   ComponentLoaderService,
-  FormElement,
   PluginBaseComponent,
-  PossibleTemplateList,
+  PossibleTemplateList, SubFieldInfo,
   TemplateList,
 } from '@dontcode/plugin-common';
 import {FormBuilder, FormGroup,} from '@angular/forms';
@@ -83,7 +82,7 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
     return new PossibleTemplateList(false, false, false);
   }
 
-  templateOf(field: FormElement): TemplateRef<any> {
+  templateOf(field: SubFieldInfo): TemplateRef<any> {
     let ref = field.component?.providesTemplates(field.type).forFullEdit;
     if (!ref) ref = this.defaultTemplate;
 

@@ -7,14 +7,14 @@ import {
   DontCodeStoreProvider,
   dtcde,
 } from '@dontcode/core';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, TemplateRef,} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, OnInit, TemplateRef,} from '@angular/core';
 import {
-  ComponentLoaderService, FormElement,
+  ComponentLoaderService,
   PluginBaseComponent,
-  PossibleTemplateList,
+  PossibleTemplateList, SubFieldInfo,
   TemplateList,
 } from '@dontcode/plugin-common';
-import {FormBuilder, FormControl, Validators,} from '@angular/forms';
+import {FormBuilder,} from '@angular/forms';
 
 @Component({
   selector: 'dontcode-sandbox-default-viewer',
@@ -22,7 +22,7 @@ import {FormBuilder, FormControl, Validators,} from '@angular/forms';
   styleUrls: ['./default-viewer.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DefaultViewerComponent extends PluginBaseComponent {
+export class DefaultViewerComponent extends PluginBaseComponent implements OnInit {
 
   entityName = 'Unknown';
 
@@ -41,8 +41,14 @@ export class DefaultViewerComponent extends PluginBaseComponent {
       this.storeMgr = dtcde.getStoreManager();
       console.warn("DontCodeStoreManager not found by Angular's Injector");
     }
+    this.form = this.fb.group({}, { updateOn: 'blur' });
 
-    this.setForm(this.fb.group({}, { updateOn: 'blur' }));
+  }
+
+  ngOnInit():void {
+    if (this.value==null)
+      this.value={};
+    this.updateValueOnFormChanges ();
   }
 
   override initCommandFlow(
@@ -91,24 +97,6 @@ export class DefaultViewerComponent extends PluginBaseComponent {
         this.ref.detectChanges();
       }
     }
-  }
-
-  templateOf(col: FormElement, value: any): TemplateRef<any> {
-    if (col.component) {
-      col.component.setValue(value);
-      const ref = col.component.providesTemplates(col.type).forInlineView;
-      if (ref) return ref;
-    }
-    throw new Error('No component or template to display ' + col.type);
-  }
-
-  editTemplateOf(col: FormElement, value: any): TemplateRef<any> {
-    if (col.component) {
-      col.component.setValue(value);
-      const ref = col.component.providesTemplates(col.type).forFullEdit;
-      if (ref) return ref;
-    }
-    throw new Error('No component or template to display ' + col.type);
   }
 
   canProvide(key?: string): PossibleTemplateList {

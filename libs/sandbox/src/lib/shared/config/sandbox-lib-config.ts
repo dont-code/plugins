@@ -1,4 +1,5 @@
 import {Inject, InjectionToken, Optional} from "@angular/core";
+import {MenuItem} from "primeng/api";
 
 export interface SandboxLibConfig {
   webSocketUrl?: string;
@@ -22,3 +23,12 @@ export const basicDocumentApiUrlConfig = (config:SandboxLibConfig) => {
 };
 
 export const CHANNEL_CHANGE_NAME='preview-ui-changes';
+
+/**
+ * Allows application to add any menu
+ */
+export interface MenuUpdater {
+  additionalMenus (): MenuItem[];
+}
+
+export const SANDBOX_MENUS = new InjectionToken<MenuUpdater>('Allows addition of menus');

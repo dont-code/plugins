@@ -141,7 +141,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   }
 
   selectChange($event: any) {
-    // console.log("Event:", $event);
+//    console.log("Event:", $event);
     if ($event) {
       // Load the details of the selected element
       if( this.store!=null) {
@@ -178,9 +178,11 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   }
 
   saveEntity() {
+
     if( this.selectedItem) {
         // Ensure all fields are ok
-      this.edit.form.updateValueAndValidity({onlySelf:true, emitEvent:false});
+      //this.edit.form.updateValueAndValidity({onlySelf:true, emitEvent:false});
+      this.edit.getValue();
       this.store?.store (this.selectedItem).then(value => {
         console.debug("Entity with Id ", value, " stored");
         this.selectedItem = value;
@@ -199,6 +201,3 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
     return new PossibleTemplateList(false,false,false);
   }
 }
-
-
-

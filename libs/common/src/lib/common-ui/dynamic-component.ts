@@ -1,12 +1,23 @@
 import {PossibleTemplateList, TemplateList} from "./template-list";
 import {FormGroup} from "@angular/forms";
 
+/**
+ * An Angular component that can be dynamically loaded and instantiated by the Dont-code Framework.
+ * It provides UI through TemplateRefs for viewing inline, viewing fully or editing a value.
+ * For read-only, setValue / getValue are used.
+ * For editing, a form is created and setName, setForm are called. Then setValue / getValue is used to communicate the value edited. The component must hydrate this value to the FormGroup, including for any subFields it manages
+ */
 export interface DynamicComponent {
 
-  setName  (name:string): void;
-
+  /**
+   * Sets the value to be managed by the component. For edit mode, the component must spread it to Angular's form
+   * @param val
+   */
   setValue (val:any):void;
 
+  /**
+   * The value managed by the component and its children is returned here, in a format that can be stored. This value will be attached to the parent component and stored
+   */
   getValue (): any;
 
   /**
@@ -15,6 +26,11 @@ export interface DynamicComponent {
    */
   setParentPosition (position:string): void;
 
+  /**
+   * Returns true or false depending what kind of display type it supports (ViewInline, ViewFull or Edit).
+   * Same as providesTemplates however it is called sooner in the lifecycle, including before the component is inited (and TemplateRefs are not created yet)
+   * @param key
+   */
   canProvide (key?:string): PossibleTemplateList;
   /**
    * Returns the list of templates the component is providing
@@ -23,30 +39,20 @@ export interface DynamicComponent {
   providesTemplates (key?:string): TemplateList;
 
   /**
+   * The name of the component when used in a Form for editing
+   * @param name
+   */
+  setName  (name:string): void;
+
+  /**
    * Sets the formgroup to use in case of edition
    * @param form
    */
   setForm (form: FormGroup): void;
 
   /**
-   * Is the component managing its own FormControl or does it rely on the framework to create one for it ?
+   * The form used
    */
-  managesFormControl (): boolean;
-
-  /**
-   * If needed, the Dont-code framework will let the component change the source values into something accepted.
-   * This is only called for components that doesn't manage their own form (managesFormControl() returns false)
-   * @param type
-   * @param val
-   */
-  transformFromSource(type: string, val: any): any;
-
-  /**
-   * If needed, the Dont-code framework will let the component change the value to be stored.
-   * This is only called for components that doesn't manage their own form (managesFormControl() returns false)
-   * @param type
-   * @param val
-   */
-  transformToSource(type: string, val: any): any;
+  getForm (): FormGroup;
 
 }

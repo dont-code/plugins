@@ -97,9 +97,9 @@ describe('Edit', () => {
       getInputWithName('Name').type('Book 2');
       getInputWithName('USD').type('5678');
       getInputWithName('EUR').type('8765');
-      getInputWithName('Other').type('9090');
+      getInputWithName('Other').clear().type('9090');
       getDropdownWithName('currencyCode').click();
-      getDropdownFilter().type ('canadi');
+      getDropdownFilter().clear().type ('canadi');
       getDropdownListItemWithName('Canadian Dollar - CAD').click();
       //getButtonWithName ('save').click();
 

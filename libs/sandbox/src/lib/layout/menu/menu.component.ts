@@ -1,10 +1,10 @@
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Component,
+  Component, Inject,
   NgZone,
   OnDestroy,
-  OnInit,
+  OnInit, Optional,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -17,6 +17,7 @@ import {
 import { Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { ChangeProviderService } from '../../shared/command/services/change-provider.service';
+import {MenuUpdater, SANDBOX_MENUS} from "../../shared/config/sandbox-lib-config";
 
 @Component({
   selector: 'dontcode-sandbox-menu',
@@ -41,6 +42,9 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   constructor(
     protected provider: ChangeProviderService,
+    @Optional()
+    @Inject(SANDBOX_MENUS)
+    menuUpdater:MenuUpdater,
     private ref: ChangeDetectorRef,
     public router: Router,
     public ngZone: NgZone
@@ -48,6 +52,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     const config = (window as any).dontCodeConfig;
     if (config?.runtime === true || config?.projectId != null)
       this.runtime = true;
+    if (menuUpdater!=null) {
+      this.templateMenus[0].items!.push(...menuUpdater.additionalMenus());
+    }
     this.menus = this.generateMenu();
   }
 
