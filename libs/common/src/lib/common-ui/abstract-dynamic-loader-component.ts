@@ -168,14 +168,16 @@ export abstract class AbstractDynamicLoaderComponent
 
 
   override getValue(): any {
-    const val = super.getValue();
+    let val = super.getValue();
     // Adds subfield values into the main value
-    if (val!=null) {
-      for (const element of this.fields) {
-        const subFieldValue = this.getSubFieldValue(element);
-        if( val[element.name]!==subFieldValue)
-          val[element.name]=subFieldValue;
+    for (const element of this.fields) {
+      const subFieldValue = this.getSubFieldValue(element);
+      if( (subFieldValue!=null) && (val==null)) {
+        this.value={};
+        val=this.value;
       }
+      if( val[element.name]!==subFieldValue)
+        val[element.name]=subFieldValue;
     }
     return val;
   }
@@ -399,50 +401,6 @@ export abstract class AbstractDynamicLoaderComponent
         }
       }
     }
-  }
-
-  /**
-   * Returns a string that can best display the value or null if it's already a string
-   * @param value
-   */
-  public static toBeautifyString (value:unknown, maxLength?:number): string|null {
-    if( value == null)
-      return null;
-
-    let ret="";
-
-    if ( Array.isArray(value)) {
-      value = value[0];
-    }
-    // Try to see if we have json or Date or something else
-    switch (typeof value) {
-      case "string": {
-        ret = value;
-        break;
-      }
-      case "object": {
-        if (value instanceof Date) {
-          ret = value.toLocaleDateString();
-        } else {
-          ret = JSON.stringify(value, null, 2);
-        }
-        break;
-      }
-      case "undefined": {
-        break;
-      }
-      default: {
-        ret = (value as any).toLocaleString();
-      }
-    }
-
-    if( maxLength!=null) {
-      if (ret.length> maxLength) {
-        ret = ret.substring(0,maxLength-3)+'...';
-      }
-    }
-
-    return ret;
   }
 
 }
