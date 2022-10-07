@@ -45,11 +45,11 @@ export class ListEntityComponent
   store: EntityListManager | null = null;
 
   constructor(
-    private ref: ChangeDetectorRef,
+    ref: ChangeDetectorRef,
     injector: Injector,
     @Inject(ComponentLoaderService) componentLoader: ComponentLoaderService
   ) {
-    super(componentLoader, injector);
+    super(componentLoader, injector, ref);
   }
 
   ngOnInit(): void {}

@@ -25,12 +25,12 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
   //formConfig = {};
 
   constructor(
-    private ref: ChangeDetectorRef,
+    ref: ChangeDetectorRef,
     protected fb: FormBuilder,
     injector: Injector,
     componentLoader: ComponentLoaderService
   ) {
-    super(componentLoader, injector);
+    super(componentLoader, injector, ref);
   }
 
   ngOnInit(): void {

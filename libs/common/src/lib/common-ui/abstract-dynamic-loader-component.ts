@@ -1,6 +1,15 @@
 import {AbstractDynamicComponent} from './abstract-dynamic-component';
 import {DynamicComponent} from './dynamic-component';
-import {AfterViewInit, Component, Directive, Injector, TemplateRef, ViewChild, ViewContainerRef,} from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  Directive,
+  Injector,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import {DontCodeModelPointer} from '@dontcode/core';
 import {FormGroup} from '@angular/forms';
 import {ComponentLoaderService} from '../common-dynamic/component-loader.service';
@@ -43,7 +52,8 @@ export abstract class AbstractDynamicLoaderComponent
 
   protected constructor(
     protected loader: ComponentLoaderService,
-    protected injector: Injector
+    protected injector: Injector,
+    protected ref: ChangeDetectorRef
   ) {
     super();
   }
@@ -371,6 +381,7 @@ export abstract class AbstractDynamicLoaderComponent
   private preloadSubFields(): void {
     // Only load currency component to the cache in edit mode
     if ((this.form!=null)&&(this.dynamicInsertPoint!=null)) {
+      let detectCheckDone=false;
       for (const element of this.fields) {
         if( element.component==null) {
           const valueSafe =this.value?this.value[element.name]:undefined;
@@ -378,8 +389,12 @@ export abstract class AbstractDynamicLoaderComponent
             element.name,
             element.type,
             valueSafe
-          ).then(() => {
-              // Nothing to do
+          ).then((value) => {
+              if( (this.value!=null)&&(!detectCheckDone))
+              {
+                this.ref.detectChanges();
+                detectCheckDone=true;
+              }
           });
         }
       }

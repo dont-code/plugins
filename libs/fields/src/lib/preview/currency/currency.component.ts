@@ -1,7 +1,7 @@
-import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {AbstractDynamicComponent, DynamicComponent, PossibleTemplateList, TemplateList} from '@dontcode/plugin-common';
+import {Component, TemplateRef, ViewChild} from '@angular/core';
+import {AbstractDynamicComponent, PossibleTemplateList, TemplateList} from '@dontcode/plugin-common';
 import country from 'all-country-data';
-import {FormControl, FormGroup} from "@angular/forms";
+
 /**
  * Display or edit a country value
  */
@@ -10,7 +10,7 @@ import {FormControl, FormGroup} from "@angular/forms";
   templateUrl: './currency.component.html',
   styleUrls: ['./currency.component.css']
 })
-export class CurrencyComponent extends  AbstractDynamicComponent implements OnInit{
+export class CurrencyComponent extends  AbstractDynamicComponent{
   @ViewChild('inlineView',{static:true})
   private inlineView!: TemplateRef<any>;
 
@@ -19,8 +19,9 @@ export class CurrencyComponent extends  AbstractDynamicComponent implements OnIn
 
   currencies = new Array<{ currency:string, currencyCode:string }>();
 
-  ngOnInit(): void {
-
+  constructor() {
+    super();
+      // Prepare the list of currencies
     const currencySet = new Map<string, string>();
     country.countryCurrencyList().forEach((country: { currency: string; currency_code: string; }) => {
       if ((country.currency && country.currency_code)) {
@@ -28,14 +29,14 @@ export class CurrencyComponent extends  AbstractDynamicComponent implements OnIn
       }
     }); // Remove duplicates
 
-   this.currencies=[];
-   currencySet.forEach((value1, key) => {
-     this.currencies.push({currency: key, currencyCode:value1});
-   });
+    this.currencies=[];
+    currencySet.forEach((code, key) => {
+      this.currencies.push({currency: key, currencyCode:code});
+    });
 
-   this.currencies = this.currencies.sort((a, b) => {
-     return a.currency.localeCompare( b.currency);
-   })
+    this.currencies = this.currencies.sort((a, b) => {
+      return a.currency.localeCompare( b.currency);
+    })
   }
 
   providesTemplates (): TemplateList {

@@ -1,4 +1,4 @@
-import { Component, Injector, OnDestroy } from '@angular/core';
+import {ChangeDetectorRef, Component, Injector, OnDestroy} from '@angular/core';
 import {
   Change,
   CommandProviderInterface, DontCodeModel,
@@ -27,8 +27,8 @@ export abstract class PluginBaseComponent
   entityPointer: DontCodeModelPointer | null = null;
   protected provider: CommandProviderInterface | null = null;
 
-  constructor(loader: ComponentLoaderService, injector: Injector) {
-    super(loader, injector);
+  constructor(loader: ComponentLoaderService, injector: Injector,ref: ChangeDetectorRef) {
+    super(loader, injector, ref);
   }
 
   ngOnDestroy(): void {

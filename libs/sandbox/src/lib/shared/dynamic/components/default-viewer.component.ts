@@ -31,11 +31,11 @@ export class DefaultViewerComponent extends PluginBaseComponent implements OnIni
   constructor(
     loader: ComponentLoaderService,
     injector: Injector,
-    protected ref: ChangeDetectorRef,
+    ref: ChangeDetectorRef,
     protected fb: FormBuilder,
     protected storeMgr:DontCodeStoreManager
   ) {
-    super(loader, injector);
+    super(loader, injector, ref);
     // Hack for when DI doesn't find the storemanager due to mfe stuff
     if (this.storeMgr==null) {
       this.storeMgr = dtcde.getStoreManager();

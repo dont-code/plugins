@@ -1,9 +1,9 @@
-import {Component, Injector, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, Injector, TemplateRef, ViewChild} from '@angular/core';
 import {MoneyAmount} from '@dontcode/core';
 import {
   AbstractDynamicLoaderComponent,
-  ComponentLoaderService,
-  PossibleTemplateList,
+  ComponentLoaderService, DynamicComponent,
+  PossibleTemplateList, SubFieldInfo,
   TemplateList,
 } from '@dontcode/plugin-common';
 import {FormControl} from '@angular/forms';
@@ -27,8 +27,8 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
 
   converter = Intl.NumberFormat(navigator.language, { style:'currency', currency:'EUR'});
 
-  constructor(injector: Injector, loaderService: ComponentLoaderService) {
-    super(loaderService, injector);
+  constructor(loaderService: ComponentLoaderService, injector: Injector, ref: ChangeDetectorRef ) {
+    super(loaderService, injector, ref);
     // We use Dont-code framework to find the component that will manage the currency selection
     this.defineSubField ('currencyCode', 'Currency');
   }
@@ -43,6 +43,11 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
 
   override createAndRegisterFormControls (): void {
     this.form.registerControl('amount', new FormControl(null, {updateOn:"blur"}));
+  }
+
+  override loadSubField(subField: string | SubFieldInfo, type: string, subValue: any): Promise<DynamicComponent | null> {
+//    console.debug ("Loading SubField ", subField);
+    return super.loadSubField(subField, type, subValue);
   }
 
   getAmountSafe(): number | undefined {
@@ -66,6 +71,11 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
     if( amount==null)
       return this.value?.currencyCode??"";
     const ret = this.converter.format(amount);
+    return ret;
+  }
+
+  override subFieldFullEditTemplate(subField: string | SubFieldInfo): TemplateRef<any> | null {
+    const ret= super.subFieldFullEditTemplate(subField);
     return ret;
   }
 
