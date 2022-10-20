@@ -105,4 +105,8 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
     else
       return true;
   }
+
+  override getValue(): any {
+    return super.getValue();
+  }
 }

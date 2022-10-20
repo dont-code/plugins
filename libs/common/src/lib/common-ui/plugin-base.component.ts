@@ -162,11 +162,7 @@ export abstract class PluginBaseComponent
         change,
         subProperty,
         (position, value) => {
-          return this.loadSubComponent(position, value).then((component) => {
-            if (component) {
-              component.setName(value.name);
-              component.setForm(this.form);
-            }
+          return this.loadSubComponent(position, value.type, value.name, value).then((component) => {
             return new SubFieldInfo(value.name, value.type, component??undefined);
           });
         },

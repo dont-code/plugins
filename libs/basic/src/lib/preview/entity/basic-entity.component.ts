@@ -75,6 +75,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
     } else {
       throw new Error ('Cannot create subcomponents before initCommandFlow is called');
     }
+    super.ngAfterViewInit();
   }
 
   protected override initChangeListening() {

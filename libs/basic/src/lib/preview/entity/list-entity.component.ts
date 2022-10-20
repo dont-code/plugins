@@ -30,7 +30,7 @@ import {
 })
 export class ListEntityComponent
   extends PluginBaseComponent
-  implements PreviewHandler, OnInit
+  implements PreviewHandler
 {
   @Input()
   selectedItem: any;
@@ -51,8 +51,6 @@ export class ListEntityComponent
   ) {
     super(componentLoader, injector, ref);
   }
-
-  ngOnInit(): void {}
 
   selectionChange(event: any): void {
     this.selectedItemChange.emit(event);
@@ -90,12 +88,13 @@ export class ListEntityComponent
         change,
         null,
         (position, value) => {
-          return this.loadSubComponent(position, value).then((component) => {
+          return this.loadSubComponent(position, value.type, value.name).then((component) => {
             const ret = new PrimeColumn(value.name, value.name, value.type);
             if (component) {
               // Keep the component only if it provides the view template
               if (component.canProvide(value.type).forInlineView) {
                 ret.component = component;
+                this.applyComponentToSubField(component, value.type, value.name);
               }
             }
             return ret;
