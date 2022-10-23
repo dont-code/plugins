@@ -79,7 +79,7 @@ describe('Edit', () => {
       getInputWithName('USD').type('1234');
       getInputWithName('EUR').type('4321');
       getInputWithName('Other').type('2121');
-      getDropdownWithName('currencyCode').click();
+      getDropdownWithName('currencyCode').click('right');
       getDropdownFilter().type ('canadi');
       getDropdownListItemWithName('Canadian Dollar - CAD').click();
       getDropdownWithName('ConvertTo').click();
@@ -98,7 +98,7 @@ describe('Edit', () => {
       getInputWithName('USD').type('5678');
       getInputWithName('EUR').type('8765');
       getInputWithName('Other').clear().type('9090');
-      getDropdownWithName('currencyCode').click();
+      getDropdownWithName('currencyCode').click('right');
       getDropdownFilter().clear().type ('canadi');
       getDropdownListItemWithName('Canadian Dollar - CAD').click();
       //getButtonWithName ('save').click();
@@ -111,7 +111,7 @@ describe('Edit', () => {
       getListRowWithText ("Book 2").click();
       getListRowWithText ("Book 2").click();
       getInputWithName('EUR').clear().type('9870');
-      getDropdownWithName('currencyCode').click();
+      getDropdownWithName('currencyCode').click('right');
       getDropdownFilter().type ('dinar');
       getDropdownListItemWithName('Algerian Dinar - DZD').click();
 

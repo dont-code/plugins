@@ -36,8 +36,8 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   @ViewChild(EditEntityComponent)
   edit!: EditEntityComponent;
 
-  constructor(protected entityService:EntityStoreService, private ref:ChangeDetectorRef, componentLoader: ComponentLoaderService, injector:Injector) {
-    super(componentLoader, injector);
+  constructor(protected entityService:EntityStoreService, ref:ChangeDetectorRef, componentLoader: ComponentLoaderService, injector:Injector) {
+    super(componentLoader, injector, ref);
   }
 
 
@@ -75,6 +75,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
     } else {
       throw new Error ('Cannot create subcomponents before initCommandFlow is called');
     }
+    super.ngAfterViewInit();
   }
 
   protected override initChangeListening() {

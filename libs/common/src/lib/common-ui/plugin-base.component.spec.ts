@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { PluginBaseComponent } from './plugin-base.component';
-import { Component, Injector } from '@angular/core';
+import {ChangeDetectorRef, Component, Injector} from '@angular/core';
 import {
   Change,
   CommandProviderInterface,
@@ -719,8 +719,8 @@ class TestProviderInterface implements CommandProviderInterface {
   template: ``,
 })
 class TestBaseComponent extends PluginBaseComponent {
-  constructor(protected cls: ComponentLoaderService, protected inj: Injector) {
-    super(cls, inj);
+  constructor(cls: ComponentLoaderService, inj: Injector, ref: ChangeDetectorRef) {
+    super(cls, inj, ref);
   }
 
   override handleChange(change: Change) {}

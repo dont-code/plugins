@@ -41,6 +41,7 @@ export * from './common-handler/plugin-handler-helper';
 export * from './common-ui/plugin-base.component';
 export * from './common-ui/template-list';
 export * from './common-ui/dynamic-component';
+export * from './common-ui/dynamic-event';
 export * from './common-ui/abstract-dynamic-component';
 export * from './common-ui/abstract-dynamic-loader-component';
 export * from './common-ui/pipes/beautifier.pipe';

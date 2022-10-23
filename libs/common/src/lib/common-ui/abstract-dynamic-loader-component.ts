@@ -1,6 +1,15 @@
 import {AbstractDynamicComponent} from './abstract-dynamic-component';
 import {DynamicComponent} from './dynamic-component';
-import {AfterViewInit, Component, Directive, Injector, TemplateRef, ViewChild, ViewContainerRef,} from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  Directive,
+  Injector,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import {DontCodeModelPointer} from '@dontcode/core';
 import {FormGroup} from '@angular/forms';
 import {ComponentLoaderService} from '../common-dynamic/component-loader.service';
@@ -43,7 +52,8 @@ export abstract class AbstractDynamicLoaderComponent
 
   protected constructor(
     protected loader: ComponentLoaderService,
-    protected injector: Injector
+    protected injector: Injector,
+    protected ref: ChangeDetectorRef
   ) {
     super();
   }
@@ -158,14 +168,16 @@ export abstract class AbstractDynamicLoaderComponent
 
 
   override getValue(): any {
-    const val = super.getValue();
+    let val = super.getValue();
     // Adds subfield values into the main value
-    if (val!=null) {
-      for (const element of this.fields) {
-        const subFieldValue = this.getSubFieldValue(element);
-        if( val[element.name]!==subFieldValue)
-          val[element.name]=subFieldValue;
+    for (const element of this.fields) {
+      const subFieldValue = this.getSubFieldValue(element);
+      if( (subFieldValue!=null) && (val==null)) {
+        this.value={};
+        val=this.value;
       }
+      if( val[element.name]!==subFieldValue)
+        val[element.name]=subFieldValue;
     }
     return val;
   }
@@ -182,7 +194,7 @@ export abstract class AbstractDynamicLoaderComponent
     if (component!=null) {
       ret = component.providesTemplates().forFullEdit;
     }
-    if( ret==null)
+    if( subField==null)
       throw new Error ("No template for subField "+subInfo?.name+" of component "+this.name);
     else
       return ret;
@@ -199,7 +211,7 @@ export abstract class AbstractDynamicLoaderComponent
     if (component!=null) {
       ret = component.providesTemplates().forInlineView;
     }
-    if( ret==null)
+    if( subField==null)
       throw new Error ("No template for subField "+subInfo?.name+" of component "+this.name);
     else
       return ret;
@@ -216,7 +228,7 @@ export abstract class AbstractDynamicLoaderComponent
     if (component!=null) {
       ret = component.providesTemplates().forFullView;
     }
-    if( ret==null)
+    if( subField==null)
       throw new Error ("No template for subField "+subInfo?.name+" of component "+this.name);
     else
       return ret;
@@ -306,6 +318,7 @@ export abstract class AbstractDynamicLoaderComponent
   loadSubComponent(
     position: DontCodeModelPointer,
     type:string,
+    formName:string|null,
     currentJson?: any
   ): Promise<DynamicComponent | null> {
       // Make sure you wait until the component itself is init (and the dynamicInsertPoint is valid)
@@ -318,15 +331,15 @@ export abstract class AbstractDynamicLoaderComponent
           reject(err);
         }
       })).then( () => {
-//        console.debug("SubComponent:"+position.position, this.dynamicInsertPoint);
+        console.debug("LoadSubComponent:"+position.position+' with type '+type, this.dynamicInsertPoint);
         if (this.dynamicInsertPoint==null) {
-          return Promise.resolve(null);
+          return null;
         }
         return this.loader
           .insertComponent(position, this.dynamicInsertPoint, currentJson)
           .then((component) => {
             if (component != null) {
-              return this.prepareComponent(component, type, null, currentJson);
+              return this.prepareComponent(component, type, formName, currentJson);
             } else {
               //console.warn('No ComponentFactory or missing <dtcde-dynamic></dtcde-dynamic> in template');
               return null;
@@ -343,23 +356,31 @@ export abstract class AbstractDynamicLoaderComponent
   ): DynamicComponent {
     // Manages dynamic forms if needed
     if (formName) {
-      if (!this.form)
+      /*if (!this.form)
         throw new Error(
           'Cannot prepare a subField component without a FormGroup'
-        );
-      component.setName(formName);
-      component.setForm(this.form);
+        );*/
+      // Tells the component he's part of a form
+      if (this.form!=null) {
+        component.setName(formName);
+        component.setForm(this.form);
+      }
       component.setValue(subValue);
 
-      let info =this.getSubField(formName);
-      if( info==null) {
-        info = new SubFieldInfo(formName, type, component);
-        this.addSubField (info);
-      }else {
-        info.component=component;
-      }
     }
     return component;
+  }
+
+  applyComponentToSubField (component: DynamicComponent, type:string, formName:string): boolean {
+    let info =this.getSubField(formName);
+    if( info==null) {
+      info = new SubFieldInfo(formName, type, component);
+      this.addSubField (info);
+      return true;
+    }else {
+      info.component=component;
+      return false;
+    }
   }
 
   ngAfterViewInit(): void {
@@ -369,8 +390,8 @@ export abstract class AbstractDynamicLoaderComponent
   }
 
   private preloadSubFields(): void {
-    // Only load currency component to the cache in edit mode
-    if ((this.form!=null)&&(this.dynamicInsertPoint!=null)) {
+    if (this.dynamicInsertPoint!=null) {
+      let detectCheckDone=false;
       for (const element of this.fields) {
         if( element.component==null) {
           const valueSafe =this.value?this.value[element.name]:undefined;
@@ -378,56 +399,19 @@ export abstract class AbstractDynamicLoaderComponent
             element.name,
             element.type,
             valueSafe
-          ).then(() => {
-              // Nothing to do
+          ).then((component) => {
+            if (component!=null) {
+              this.applyComponentToSubField(component, element.type, element.name);
+            }
+            if( (this.value!=null)&&(!detectCheckDone))
+              {
+                this.ref.detectChanges();
+                detectCheckDone=true;
+              }
           });
         }
       }
     }
-  }
-
-  /**
-   * Returns a string that can best display the value or null if it's already a string
-   * @param value
-   */
-  public static toBeautifyString (value:unknown, maxLength?:number): string|null {
-    if( value == null)
-      return null;
-
-    let ret="";
-
-    if ( Array.isArray(value)) {
-      value = value[0];
-    }
-    // Try to see if we have json or Date or something else
-    switch (typeof value) {
-      case "string": {
-        ret = value;
-        break;
-      }
-      case "object": {
-        if (value instanceof Date) {
-          ret = value.toLocaleDateString();
-        } else {
-          ret = JSON.stringify(value, null, 2);
-        }
-        break;
-      }
-      case "undefined": {
-        break;
-      }
-      default: {
-        ret = (value as any).toLocaleString();
-      }
-    }
-
-    if( maxLength!=null) {
-      if (ret.length> maxLength) {
-        ret = ret.substring(0,maxLength-3)+'...';
-      }
-    }
-
-    return ret;
   }
 
 }

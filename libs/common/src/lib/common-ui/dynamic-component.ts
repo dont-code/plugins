@@ -1,5 +1,7 @@
 import {PossibleTemplateList, TemplateList} from "./template-list";
 import {FormGroup} from "@angular/forms";
+import {DynamicEventSource, DynamicEventType} from "./dynamic-event";
+
 
 /**
  * An Angular component that can be dynamically loaded and instantiated by the Dont-code Framework.
@@ -55,4 +57,15 @@ export interface DynamicComponent {
    */
   getForm (): FormGroup;
 
+  /**
+   * List the events that the component can send
+   */
+  listEventSources (): Array<DynamicEventSource>;
+
+  /**
+   * Finds and returns a single event source corresponding to this type and optionally name
+   * @param type
+   * @param name
+   */
+  selectEventSourceFor (type:DynamicEventType, name?:string): DynamicEventSource|null;
 }

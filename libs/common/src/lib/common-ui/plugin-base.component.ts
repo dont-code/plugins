@@ -1,4 +1,4 @@
-import { Component, Injector, OnDestroy } from '@angular/core';
+import {ChangeDetectorRef, Component, Injector, OnDestroy} from '@angular/core';
 import {
   Change,
   CommandProviderInterface, DontCodeModel,
@@ -22,22 +22,17 @@ export abstract class PluginBaseComponent
   extends AbstractDynamicLoaderComponent
   implements PreviewHandler, OnDestroy
 {
-  protected subscriptions = new Subscription();
   protected pluginHelper = new PluginHandlerHelper();
   entityPointer: DontCodeModelPointer | null = null;
   protected provider: CommandProviderInterface | null = null;
 
-  constructor(loader: ComponentLoaderService, injector: Injector) {
-    super(loader, injector);
+  constructor(loader: ComponentLoaderService, injector: Injector,ref: ChangeDetectorRef) {
+    super(loader, injector, ref);
   }
 
-  ngOnDestroy(): void {
-    this.forceUnsubscribe();
-  }
-
-  protected forceUnsubscribe(): void {
+  override ngOnDestroy(): void {
     this.pluginHelper.unsubscribe();
-    this.subscriptions.unsubscribe();
+    super.ngOnDestroy();
   }
 
   /**
@@ -47,6 +42,7 @@ export abstract class PluginBaseComponent
   protected updateValueOnFormChanges():void {
     this.subscriptions.add(this.form.valueChanges.pipe(
       map (value => {
+        console.debug("Value changed", value);
         // Force the recalculation of the data from the form
         this.getValue();
         return value;
@@ -161,11 +157,7 @@ export abstract class PluginBaseComponent
         change,
         subProperty,
         (position, value) => {
-          return this.loadSubComponent(position, value).then((component) => {
-            if (component) {
-              component.setName(value.name);
-              component.setForm(this.form);
-            }
+          return this.loadSubComponent(position, value.type, value.name, value).then((component) => {
             return new SubFieldInfo(value.name, value.type, component??undefined);
           });
         },

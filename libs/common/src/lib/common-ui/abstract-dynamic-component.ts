@@ -1,6 +1,9 @@
 import {DynamicComponent} from "./dynamic-component";
 import {FormControl, FormGroup} from "@angular/forms";
 import {PossibleTemplateList, TemplateList} from "./template-list";
+import {DynamicEventSource, DynamicEventType} from "./dynamic-event";
+import {Subscription} from "rxjs";
+import {Component, OnDestroy} from "@angular/core";
 
 /**
  * A component that can be dynamically loaded by the dont-code framework.
@@ -8,13 +11,16 @@ import {PossibleTemplateList, TemplateList} from "./template-list";
  * To dynamically load other Dont-code components for subFields, you should use AbstractDynamicLoaderComponent instead
  * To listen to model change, you have to derive from PluginBaseComponent instead.
  */
-export abstract class AbstractDynamicComponent implements DynamicComponent {
+@Component({template:''})
+export abstract class AbstractDynamicComponent implements DynamicComponent, OnDestroy{
 
   name!: string;
   value: any;
   form!: FormGroup;
 
   parentPosition:string|null=null;
+
+  subscriptions = new Subscription();
 
   setName(name: string): void {
     this.name = name;
@@ -110,6 +116,72 @@ export abstract class AbstractDynamicComponent implements DynamicComponent {
       }
     }
     return false;
+  }
+
+  /**
+   * Returns a string that can best display the value or null if it's already a string
+   * @param value
+   */
+  public static toBeautifyString (value:unknown, maxLength?:number): string|null {
+    if( value == null)
+      return null;
+
+    let ret="";
+
+    if ( Array.isArray(value)) {
+      value = value[0];
+    }
+    // Try to see if we have json or Date or something else
+    switch (typeof value) {
+      case "string": {
+        ret = value;
+        break;
+      }
+      case "object": {
+        if (value instanceof Date) {
+          ret = value.toLocaleDateString();
+        } else {
+          ret = JSON.stringify(value, null, 2);
+        }
+        break;
+      }
+      case "undefined": {
+        break;
+      }
+      default: {
+        ret = (value as any).toLocaleString();
+      }
+    }
+
+    if( maxLength!=null) {
+      if (ret.length> maxLength) {
+        ret = ret.substring(0,maxLength-3)+'...';
+      }
+    }
+
+    return ret;
+  }
+
+  listEventSources(): DynamicEventSource[] {
+    return [];
+  }
+
+  selectEventSourceFor(type: DynamicEventType, name?: string): DynamicEventSource | null {
+    const sources=this.listEventSources();
+    for (const src of sources) {
+      if( src.type===type) {
+        if (name==null)
+          return src;
+        else if (src.name==name) {
+          return src;
+        }
+      }
+    }
+    return null;
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
 }

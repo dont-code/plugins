@@ -1,20 +1,20 @@
   <dtcde-dynamic></dtcde-dynamic>
   <ng-container *ngIf="value">
     <form [formGroup]="form">
-    <div class="p-fluid">
-      <div class="field grid" *ngFor="let field of getSubFields()">
-        <label [for]="field.name" class="col-12 mb:col-2 md:col-2 md:mb-0">{{field.name}}</label>
-        <div class="col-12 md:col-10">
-          <ng-container *ngTemplateOutlet="templateOf(field); context:{ fieldName:field.name}"></ng-container>
+      <div class="formgrid grid" *ngFor="let field of getSubFields()">
+        <div class="field col-12">
+          <label [for]="field.name">{{field.name}}</label>
+          <div>
+            <ng-container *ngTemplateOutlet="templateOf(field); context:{ fieldName:field.name}"></ng-container>
+          </div>
         </div>
-      </div>
     </div>
     </form>
 </ng-container>
 
 <ng-template #defaulteditor let-name="fieldName">
   <ng-container [formGroup]="form">
-    <ng-container *ngIf="isShortText(name); else smallText"><input [name]="name" [formControlName]="name" pInputText /></ng-container>
+    <ng-container *ngIf="isShortText(name); else smallText"><input [name]="name" [formControlName]="name" pInputText class="w-full" /></ng-container>
     <ng-template #smallText><textarea [name]="name" [formControlName]="name" pInputTextarea [autoResize]="true"></textarea> </ng-template>
   </ng-container>
 </ng-template>

@@ -25,12 +25,12 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
   //formConfig = {};
 
   constructor(
-    private ref: ChangeDetectorRef,
+    ref: ChangeDetectorRef,
     protected fb: FormBuilder,
     injector: Injector,
     componentLoader: ComponentLoaderService
   ) {
-    super(componentLoader, injector);
+    super(componentLoader, injector, ref);
   }
 
   ngOnInit(): void {
@@ -104,5 +104,9 @@ export class EditEntityComponent extends PluginBaseComponent implements OnInit {
       return val.length<50;
     else
       return true;
+  }
+
+  override getValue(): any {
+    return super.getValue();
   }
 }

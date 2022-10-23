@@ -1,6 +1,6 @@
 <ng-template #inlineView >{{value}}</ng-template>
 <ng-template #fullEditView>
-  <ng-container [formGroup]="form">
+  <ng-container *ngIf="form" [formGroup]="form">
     <p-dropdown [options]="currencies" [formControlName]="name" optionValue="currencyCode" [filter]="true" filterBy="currency" [showClear]="true" placeholder="Select a Currency">
       <ng-template pTemplate="selectedItem">
         <div *ngIf="form.controls[name].value">
