@@ -1,7 +1,6 @@
 import {ChangeDetectorRef, Component, OnDestroy, Optional, TemplateRef, ViewChild} from '@angular/core';
 import {AbstractDynamicComponent, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
 import {DontCodeStoreManager, dtcde} from "@dontcode/core";
-import {Subscriber} from "rxjs";
 import {map} from "rxjs/operators";
 import {ConfirmationService} from "primeng/api";
 import {FileUpload} from "primeng/fileupload";
@@ -25,8 +24,6 @@ export class WebFieldsComponent extends AbstractDynamicComponent implements OnDe
 
   @ViewChild(FileUpload)
   private fileUpload!:FileUpload;
-
-  protected subscriber = new Subscriber ();
 
   constructor(protected confirm:ConfirmationService, @Optional() protected storeMgr: DontCodeStoreManager, protected ref:ChangeDetectorRef) {
     super();
@@ -81,7 +78,7 @@ export class WebFieldsComponent extends AbstractDynamicComponent implements OnDe
       accept: ()=>{*/
         console.info("Uploading image", event);
         this.form.get(this.name)?.setValue(undefined);
-        this.subscriber.add(this.storeMgr.storeDocuments (event.files,this.parentPosition||undefined).pipe(map (loaded => {
+        this.subscriptions.add(this.storeMgr.storeDocuments (event.files,this.parentPosition||undefined).pipe(map (loaded => {
             console.debug("File uploaded:", loaded.documentId);
             this.form.get(this.name)?.setValue(loaded.documentId);
             return loaded;
@@ -113,7 +110,4 @@ export class WebFieldsComponent extends AbstractDynamicComponent implements OnDe
  //   });
   }
 
-  ngOnDestroy() {
-    this.subscriber.unsubscribe();
-  }
 }

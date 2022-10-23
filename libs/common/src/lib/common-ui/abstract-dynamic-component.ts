@@ -1,7 +1,9 @@
 import {DynamicComponent} from "./dynamic-component";
 import {FormControl, FormGroup} from "@angular/forms";
 import {PossibleTemplateList, TemplateList} from "./template-list";
-import {DynamicEventSource} from "./dynamic-event";
+import {DynamicEventSource, DynamicEventType} from "./dynamic-event";
+import {Subscription} from "rxjs";
+import {Component, OnDestroy} from "@angular/core";
 
 /**
  * A component that can be dynamically loaded by the dont-code framework.
@@ -9,13 +11,16 @@ import {DynamicEventSource} from "./dynamic-event";
  * To dynamically load other Dont-code components for subFields, you should use AbstractDynamicLoaderComponent instead
  * To listen to model change, you have to derive from PluginBaseComponent instead.
  */
-export abstract class AbstractDynamicComponent implements DynamicComponent {
+@Component({template:''})
+export abstract class AbstractDynamicComponent implements DynamicComponent, OnDestroy{
 
   name!: string;
   value: any;
   form!: FormGroup;
 
   parentPosition:string|null=null;
+
+  subscriptions = new Subscription();
 
   setName(name: string): void {
     this.name = name;
@@ -158,7 +163,25 @@ export abstract class AbstractDynamicComponent implements DynamicComponent {
   }
 
   listEventSources(): DynamicEventSource[] {
-    throw new Error("Method not implemented.");
+    return [];
+  }
+
+  selectEventSourceFor(type: DynamicEventType, name?: string): DynamicEventSource | null {
+    const sources=this.listEventSources();
+    for (const src of sources) {
+      if( src.type===type) {
+        if (name==null)
+          return src;
+        else if (src.name==name) {
+          return src;
+        }
+      }
+    }
+    return null;
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
 }

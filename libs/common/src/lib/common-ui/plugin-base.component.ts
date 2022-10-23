@@ -22,7 +22,6 @@ export abstract class PluginBaseComponent
   extends AbstractDynamicLoaderComponent
   implements PreviewHandler, OnDestroy
 {
-  protected subscriptions = new Subscription();
   protected pluginHelper = new PluginHandlerHelper();
   entityPointer: DontCodeModelPointer | null = null;
   protected provider: CommandProviderInterface | null = null;
@@ -31,13 +30,9 @@ export abstract class PluginBaseComponent
     super(loader, injector, ref);
   }
 
-  ngOnDestroy(): void {
-    this.forceUnsubscribe();
-  }
-
-  protected forceUnsubscribe(): void {
+  override ngOnDestroy(): void {
     this.pluginHelper.unsubscribe();
-    this.subscriptions.unsubscribe();
+    super.ngOnDestroy();
   }
 
   /**

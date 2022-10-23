@@ -1,6 +1,6 @@
 import {PossibleTemplateList, TemplateList} from "./template-list";
 import {FormGroup} from "@angular/forms";
-import {DynamicEventSource} from "./dynamic-event";
+import {DynamicEventSource, DynamicEventType} from "./dynamic-event";
 
 
 /**
@@ -61,4 +61,11 @@ export interface DynamicComponent {
    * List the events that the component can send
    */
   listEventSources (): Array<DynamicEventSource>;
+
+  /**
+   * Finds and returns a single event source corresponding to this type and optionally name
+   * @param type
+   * @param name
+   */
+  selectEventSourceFor (type:DynamicEventType, name?:string): DynamicEventSource|null;
 }
