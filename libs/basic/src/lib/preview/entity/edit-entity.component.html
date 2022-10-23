@@ -14,7 +14,7 @@
 
 <ng-template #defaulteditor let-name="fieldName">
   <ng-container [formGroup]="form">
-    <ng-container *ngIf="isShortText(name); else smallText"><input [name]="name" [formControlName]="name" pInputText /></ng-container>
+    <ng-container *ngIf="isShortText(name); else smallText"><input [name]="name" [formControlName]="name" pInputText class="w-full" /></ng-container>
     <ng-template #smallText><textarea [name]="name" [formControlName]="name" pInputTextarea [autoResize]="true"></textarea> </ng-template>
   </ng-container>
 </ng-template>
