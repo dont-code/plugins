@@ -1,6 +1,7 @@
 import {DynamicComponent} from "./dynamic-component";
 import {FormControl, FormGroup} from "@angular/forms";
 import {PossibleTemplateList, TemplateList} from "./template-list";
+import {DynamicEventSource} from "./dynamic-event";
 
 /**
  * A component that can be dynamically loaded by the dont-code framework.
@@ -155,4 +156,9 @@ export abstract class AbstractDynamicComponent implements DynamicComponent {
 
     return ret;
   }
+
+  listEventSources(): DynamicEventSource[] {
+    throw new Error("Method not implemented.");
+  }
+
 }
