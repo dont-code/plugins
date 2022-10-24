@@ -1,6 +1,7 @@
 import {ModuleWithProviders, NgModule} from '@angular/core';
 import {DynamicInsertPoint} from "./common-ui/abstract-dynamic-loader-component";
 import {
+  DontCodeChangeManager,
   DontCodeModelManager,
   DontCodePreviewManager,
   DontCodeSchemaManager,
@@ -29,6 +30,7 @@ export class PluginCommonModule {
         {provide:DontCodeModelManager, useValue:dtcde.getModelManager()},
         {provide:DontCodePreviewManager, useValue:dtcde.getPreviewManager()},
         {provide:DontCodeStoreManager, useValue:dtcde.getStoreManager()},
+        {provide:DontCodeChangeManager, useValue:dtcde.getChangeManager()},
         BeautifierPipe
       ]
     }

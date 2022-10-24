@@ -28,7 +28,7 @@ describe('RemotePluginLoaderService', () => {
       expect (value.plugins).toHaveLength(2);
       const configs=service.listAllRepositoryConfigUpdates();
       expect(configs).toHaveLength(1);
-      dtcde.getModelManager().applyPluginConfigUpdates(configs);
+      dtcde.getChangeManager().applyPluginConfigUpdates(configs);
       const added = dtcde.getModelManager().findAtPosition("creation/sources/a");
       expect(added).toEqual({
         name:"Test"
@@ -50,7 +50,7 @@ describe('RemotePluginLoaderService', () => {
       expect (value.plugins).toHaveLength(2);
       const configs=service.listAllRepositoryConfigUpdates();
       expect(configs).toHaveLength(1);
-      dtcde.getModelManager().applyPluginConfigUpdates(configs);
+      dtcde.getChangeManager().applyPluginConfigUpdates(configs);
       const added = dtcde.getModelManager().findAtPosition("creation/sources/a");
       expect(added).toEqual({
         name:"Test"
@@ -64,13 +64,14 @@ describe('RemotePluginLoaderService', () => {
   });
 
   it('should handle config overloading', (done) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     TestRemotePluginLoaderService.listOfInfoToTest.push(...TEST_OVERLOAD_JSON.plugins.map((val:RepositoryPluginEntry) => val.info));
     service.loadPluginsFromRepository("assets/repositories/test-overload.json","assets/repositories/default.json").then(value => {
       expect (value.plugins).toHaveLength(2);
       const configs=service.listAllRepositoryConfigUpdates();
       expect(configs).toHaveLength(1);
-      dtcde.getModelManager().applyPluginConfigUpdates(configs);
+      dtcde.getChangeManager().applyPluginConfigUpdates(configs);
       const added = dtcde.getModelManager().findAtPosition("creation/entities/a");
       expect(added).toEqual({
         name:"TestOverload"
