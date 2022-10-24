@@ -7,7 +7,7 @@
         <p-fileUpload *ngIf="supportsImageUpload()" mode="basic" chooseLabel="Browse" [name]="name+'-img'" [auto]="true" [multiple]="false" accept="image/*" [customUpload]="true" (uploadHandler)="uploadImage ($event)"></p-fileUpload>
       </div>
       <div class="col-10">
-        <input [name]="name" [formControlName]="name" pInputText />
+        <input [name]="name" [formControlName]="name" pInputText class="w-full" />
       </div>
     </div>
   </ng-container>

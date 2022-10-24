@@ -78,9 +78,11 @@ export class WebFieldsComponent extends AbstractDynamicComponent implements OnDe
       accept: ()=>{*/
         console.info("Uploading image", event);
         this.form.get(this.name)?.setValue(undefined);
+        this.value=null;
         this.subscriptions.add(this.storeMgr.storeDocuments (event.files,this.parentPosition||undefined).pipe(map (loaded => {
             console.debug("File uploaded:", loaded.documentId);
             this.form.get(this.name)?.setValue(loaded.documentId);
+            this.value=loaded.documentId;
             return loaded;
           })
         ).subscribe({
