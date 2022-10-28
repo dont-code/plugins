@@ -157,7 +157,7 @@ export abstract class PluginBaseComponent
         change,
         subProperty,
         (position, value) => {
-          return this.loadSubComponent(position, value.type, value.name, value).then((component) => {
+          return this.loadSubComponent(position, value.type, value.name).then((component) => {
             return new SubFieldInfo(value.name, value.type, component??undefined);
           });
         },

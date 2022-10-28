@@ -9,12 +9,16 @@ import {
   dtcde
 } from "@dontcode/core";
 import {DONT_CODE_CORE} from "./common-global/globals";
-import { BeautifierPipe } from './common-ui/pipes/beautifier.pipe';
+import {BeautifierPipe} from './common-ui/pipes/beautifier.pipe';
+import {DropdownModule} from "primeng/dropdown";
+import {ReactiveFormsModule} from "@angular/forms";
+import {CommonModule} from "@angular/common";
+import {AbstractReferenceComponent} from "./common-ui/abstract-reference.component";
 
 @NgModule({
-  imports: [],
-  declarations: [DynamicInsertPoint, BeautifierPipe],
-  exports: [DynamicInsertPoint, BeautifierPipe]
+  imports: [CommonModule, DropdownModule, ReactiveFormsModule],
+  declarations: [DynamicInsertPoint, BeautifierPipe, AbstractReferenceComponent],
+  exports: [DynamicInsertPoint, BeautifierPipe, AbstractReferenceComponent]
 })
 export class PluginCommonModule {
   /**
@@ -46,6 +50,7 @@ export * from './common-ui/dynamic-component';
 export * from './common-ui/dynamic-event';
 export * from './common-ui/abstract-dynamic-component';
 export * from './common-ui/abstract-dynamic-loader-component';
+export * from './common-ui/abstract-reference.component';
 export * from './common-ui/pipes/beautifier.pipe';
 export * from './common-storage/entity-store.service';
 export * from './common-dynamic/component-loader.service';
