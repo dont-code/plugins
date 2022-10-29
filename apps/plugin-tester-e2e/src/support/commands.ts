@@ -35,7 +35,7 @@ function getAngular () {
     });
 }
 
-Cypress.Commands.add('getService', (service:any) => {
+/*Cypress.Commands.add('getService', (service:any) => {
   let angular!: any;
   return getAngular()
     .then((ng) => {
@@ -45,7 +45,7 @@ Cypress.Commands.add('getService', (service:any) => {
     .then ((doc) => {
     return angular.getInjector (doc.querySelector('preview-ui-main')).get(service);
   });
-});
+});*/
 //
 // -- This is a parent command --
 
