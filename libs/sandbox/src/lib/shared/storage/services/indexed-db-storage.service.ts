@@ -1,7 +1,7 @@
 /**
  * Allow storing of entities in the browser local database
  */
-import {DontCodeStoreCriteria, DontCodeStoreProvider, UploadedDocumentInfo} from "@dontcode/core";
+import {AbstractDontCodeStoreProvider, DontCodeStoreCriteria, UploadedDocumentInfo} from "@dontcode/core";
 import {from, Observable} from "rxjs";
 import Dexie, {Table} from "dexie";
 import {Inject, Injectable, Optional} from "@angular/core";
@@ -11,7 +11,7 @@ import {SANDBOX_CONFIG, SandboxLibConfig} from "../../config/sandbox-lib-config"
 @Injectable({
   providedIn: 'root'
 })
-export class IndexedDbStorageService implements DontCodeStoreProvider {
+export class IndexedDbStorageService extends AbstractDontCodeStoreProvider {
 
   protected static globalDb: Dexie;
 
@@ -20,6 +20,7 @@ export class IndexedDbStorageService implements DontCodeStoreProvider {
   constructor(protected values: ValueService,
               @Optional() @Inject(SANDBOX_CONFIG) private config?: SandboxLibConfig
   ) {
+    super();
     this.createDatabase();
   }
 
@@ -41,7 +42,9 @@ export class IndexedDbStorageService implements DontCodeStoreProvider {
   searchEntities(position: string, ...criteria: DontCodeStoreCriteria[]): Observable<Array<any>> {
     return from (
       this.ensurePositionCanBeStored(position, true).then(table => {
-      return table.toArray();
+      return table.toArray().then(list => {
+        return this.applyFilters(list, ...criteria);
+      });
     })
     );
   }
