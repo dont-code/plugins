@@ -71,6 +71,13 @@ export class EntityListManager {
   }
 
   remove (element:any): Promise<boolean> {
+    if (element._id==null)  // Not saved yet, so just remove it from the list
+    {
+      return new Promise (resolve => {
+        this.entities = this.entities.filter(val => (val!==element));
+        resolve( true);
+      });
+    }else {
     return this.storeMgr.deleteEntity(this.position, element._id).then(deleted => {
       if( deleted)
         this.entities = this.entities.filter(val => (val!==element));
@@ -79,6 +86,7 @@ export class EntityListManager {
       console.error(reason.message);
       return false;
     });
+    }
   }
 
   reset (): void {
