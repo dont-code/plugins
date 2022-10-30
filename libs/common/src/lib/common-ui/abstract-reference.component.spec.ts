@@ -28,6 +28,17 @@ describe('AbstractReferenceComponent', () => {
     const core=dtcde.reset();
     const modelMgr = core.getModelManager();
 
+    DontCodeTestManager.addDummyProviderFromContent('creation/entities/ab', [
+      {
+        'Name': 'Find1',
+        'Type': 'TypeFind1'
+      },
+      {
+        'Name': 'Find2',
+        'Type': 'TypeFind2'
+      }]
+    );
+
     modelMgr.applyChange(DontCodeTestManager.createTestChange('creation', null, 'entities', 'aa', {
       'name':'OtherEntity',
       'fields': {
@@ -60,16 +71,6 @@ describe('AbstractReferenceComponent', () => {
     expect(result).toBeTruthy ();
     expect (component.getTargetEntitiesPos()).toEqual('creation/entities/ab')
 
-    DontCodeTestManager.addDummyProviderFromContent('creation/entities/ab', [
-      {
-      'Name': 'Find1',
-      'Type': 'TypeFind1'
-      },
-      {
-        'Name': 'Find2',
-        'Type': 'TypeFind2'
-      }]
-    );
     // And list the correct values:
     component.possibleValues().subscribe({
       next: (list)=> {
