@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Output, TemplateRef, ViewChild} from "@angular/core";
-import { DontCodeModelManager, DontCodeModelPointer, DontCodeSchemaManager, DontCodeStoreManager } from "@dontcode/core";
+import {DontCodeModelManager, DontCodeStoreManager} from "@dontcode/core";
 import {AbstractDynamicComponent} from "./abstract-dynamic-component";
 import {PossibleTemplateList, TemplateList} from "./template-list";
-import {from, Observable} from "rxjs";
+import {Observable} from "rxjs";
 import {map} from "rxjs/operators";
 import {
   BaseDynamicEvent,
