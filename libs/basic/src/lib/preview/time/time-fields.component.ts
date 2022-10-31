@@ -1,11 +1,6 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import {
-  AbstractDynamicComponent,
-  DynamicComponent,
-  PossibleTemplateList,
-  TemplateList,
-} from '@dontcode/plugin-common';
-import { FormGroup } from '@angular/forms';
+import {Component, TemplateRef, ViewChild} from '@angular/core';
+import {AbstractDynamicComponent, PossibleTemplateList, TemplateList,} from '@dontcode/plugin-common';
+import {FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'plugins-time-fields',

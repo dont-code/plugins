@@ -1,0 +1,15 @@
+<ng-template #inlineView>{{this.value}}</ng-template>
+<ng-template #fullEditView>
+  <ng-container *ngIf="form" [formGroup]="form!">
+    <p-dropdown [options]="options" [formControlName]="name" [filter]="true" [showClear]="true" placeholder="Select a reference" (onChange)="valueChanged ($event)">
+      <ng-template pTemplate="selectedItem">
+        <div *ngIf="this.value">
+          {{this.value}}
+        </div>
+      </ng-template>
+      <ng-template let-reference pTemplate="item">
+        {{reference}}
+      </ng-template>
+    </p-dropdown>
+  </ng-container>
+</ng-template>

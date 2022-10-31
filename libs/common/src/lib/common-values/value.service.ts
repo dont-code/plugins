@@ -3,6 +3,7 @@ import {Injectable} from "@angular/core";
 
 /**
  * Stores and constantly updates the json (as an instance of the DontCodeSchema) as it is being edited / modified through Change events
+ * It's a wrapper around DontCodeModelManager
  * It does not store the entity values but the description of entities, screens... as defined in the Editor
  */
 @Injectable({
@@ -39,9 +40,9 @@ export class ValueService {
    * Apply the change to the model and returns the list of subchanges implied by it
    * @param chg
    */
-  applyChange (chg: Change): Change[] {
+/*  applyChange (chg: Change): Change[] {
     return this.modelMgr.applyChange(chg);
-  }
+  }*/
   /**
    * Provides the json extract at the given position.
    * For example, findAtPosition ('creation/entities/a') will returns the description (fields...) of the first entity created with the editor
