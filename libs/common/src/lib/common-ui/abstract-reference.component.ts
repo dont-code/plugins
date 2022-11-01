@@ -63,8 +63,13 @@ export class AbstractReferenceComponent extends AbstractDynamicComponent {
     if (this.targetEntitiesPos==null)  return false;
     else {
       this.targetEntitiesProperty= propertyName??null;
-      this.subscriptions.add(this.possibleValues().subscribe (value => {
-        this.options=value;
+      this.subscriptions.add(this.possibleValues().subscribe ({
+        next: (value) => {
+          this.options=value;
+          },
+        error: (err) => {
+          this.options=['Shop 1', 'Shop 2'];
+        }
       }));
       return true;
     }
