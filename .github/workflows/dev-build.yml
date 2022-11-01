@@ -19,26 +19,45 @@ jobs:
         browser: [chromium, chrome]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
+          repository: dont-code/plugins
+          path: plugins
+          fetch-depth: 0
           ref: Development
-      - name: Use Node.js 16
-        uses: actions/setup-node@v2
+          token: ${{secrets.DONTCODE_ACTIONS_TOKEN}}
+      - name: Setup build environment
+        uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
+      - run: npm install -g nx
+      - run: npm version prerelease
+        working-directory: 'plugins/libs/common'
+      - run: npm version prerelease
+        working-directory: 'plugins/libs/sandbox'
+      - run: npm version prerelease
+        working-directory: 'plugins/libs/basic'
+      - run: npm version prerelease
+        working-directory: 'plugins/libs/fields'
+      - run: npm version prerelease
+        working-directory: 'plugins/libs/screen'
       - name: Install
         run: |
-          npm install -g nx
-          npm install @dontcode/core@latest --no-optional
-          npm ci
-      - name: Build
-        run: |
+          npm install --force
+          npm install @dontcode/core@next --no-optional
           nx run common:build:production
+          nx run common:test
           nx run sandbox:build:production
+          nx run sandbox:test
           nx run basic:build:production
-          nx run screen:build:production
+          nx run basic:test
           nx run fields:build:production
+          nx run fields:test
+          nx run screen:build:production
+          nx run screen:test
+        working-directory: 'plugins'
       - name: Unit tests
         run: |
           nx run common:test
@@ -47,18 +66,29 @@ jobs:
           nx run basic:test
           nx run fields:test
           nx run plugin-tester:test
-      - name: E2E Tests on ${{matrix.browser}}
-        run: |
-          nx run plugin-tester-e2e:e2e --browser ${{matrix.browser}}
-      - uses: actions/upload-artifact@v2
+      - run: |
+          nx run plugin-tester-e2e:e2e --browser chromium
+          nx run plugin-tester-e2e:e2e --browser chrome
+        working-directory: 'plugins'
+      - uses: actions/upload-artifact@v3
         # Test run screenshots only on failure
         if: failure()
         with:
           name: cypress-screenshots
-          path: dist/cypress/apps/plugin-tester-e2e/screenshots
-        # Test run video was always captured, so this action uses "always()" condition
-      - uses: actions/upload-artifact@v2
-        if: always()
+          path: plugins/dist/cypress/apps/plugin-tester-e2e/screenshots
+          # Test run video was always captured, so this action uses "always()" condition
+      - uses: actions/upload-artifact@v3
+        if: failure()
         with:
           name: cypress-videos
-          path: dist/cypress/apps/plugin-tester-e2e/videos
+          path: plugins/dist/cypress/apps/plugin-tester-e2e/videos
+      - name: Publish all libraries
+        if: ${{ success() }}
+        run: |
+          npm publish plugins/dist/libs/common --access public --tag next
+          npm publish plugins/dist/libs/sandbox --access public --tag next
+          npm publish plugins/dist/libs/basic --access public --tag next
+          npm publish plugins/dist/libs/fields --access public --tag next
+          npm publish plugins/dist/libs/screen --access public --tag next
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
