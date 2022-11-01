@@ -1,5 +1,13 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Output, TemplateRef, ViewChild} from "@angular/core";
-import {DontCodeModelManager, DontCodeStoreManager} from "@dontcode/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Optional,
+  Output,
+  TemplateRef,
+  ViewChild
+} from "@angular/core";
+import {DontCodeModelManager, DontCodeStoreManager, dtcde} from "@dontcode/core";
 import {AbstractDynamicComponent} from "./abstract-dynamic-component";
 import {PossibleTemplateList, TemplateList} from "./template-list";
 import {Observable} from "rxjs";
@@ -43,8 +51,11 @@ export class AbstractReferenceComponent extends AbstractDynamicComponent {
 
   options = new Array<string>();
 
-  constructor(protected modelMgr:DontCodeModelManager, protected storeMgr:DontCodeStoreManager) {
+  constructor(@Optional() protected modelMgr:DontCodeModelManager, @Optional() protected storeMgr:DontCodeStoreManager) {
     super();
+      // When loaded by Federation, sometimes the dtcde components are not injected.
+    if (modelMgr==null) this.modelMgr=dtcde.getModelManager();
+    if (storeMgr==null) this.storeMgr=dtcde.getStoreManager();
   }
 
   canProvide(key?: string): PossibleTemplateList {
@@ -63,8 +74,13 @@ export class AbstractReferenceComponent extends AbstractDynamicComponent {
     if (this.targetEntitiesPos==null)  return false;
     else {
       this.targetEntitiesProperty= propertyName??null;
-      this.subscriptions.add(this.possibleValues().subscribe (value => {
-        this.options=value;
+      this.subscriptions.add(this.possibleValues().subscribe ({
+        next: (value) => {
+          this.options=value;
+          },
+        error: (err) => {
+          this.options=['Shop 1', 'Shop 2'];
+        }
       }));
       return true;
     }
