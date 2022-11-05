@@ -1,4 +1,5 @@
 import {
+  AbstractDontCodeStoreProvider,
   DontCodeModelManager,
   DontCodeStoreCriteria,
   DontCodeStoreProvider,
@@ -19,12 +20,13 @@ export const DONTCODE_DOC_API_URL = new InjectionToken<string>('DontCodeStoreDoc
 @Injectable({
   providedIn: 'root'
 })
-export class DontCodeApiStoreProvider implements DontCodeStoreProvider {
+export class DontCodeApiStoreProvider extends AbstractDontCodeStoreProvider {
 
   apiUrl: string;
   docUrl: string;
 
   constructor(protected http: HttpClient, @Optional() protected modelMgr: DontCodeModelManager, @Optional() @Inject(DONTCODE_STORE_API_URL) apiUrl?: string, @Optional() @Inject(DONTCODE_DOC_API_URL) docUrl?: string) {
+    super();
     if (apiUrl)
       this.apiUrl = apiUrl;
     else {
@@ -85,7 +87,7 @@ export class DontCodeApiStoreProvider implements DontCodeStoreProvider {
     }
 
     return this.http.get(this.apiUrl+'/'+entity.name, {observe:"body", responseType:"json"}).pipe(map(value => {
-            return value as Array<any>;
+            return this.applyFilters( value as Array<any>, ...criteria);
           }
         ));
     }
