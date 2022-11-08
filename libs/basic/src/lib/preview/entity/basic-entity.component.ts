@@ -201,4 +201,9 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   canProvide(key?: string): PossibleTemplateList {
     return new PossibleTemplateList(false,false,false);
   }
+
+  refreshScreen():void {
+    this.ref.markForCheck();
+    this.ref.detectChanges();
+  }
 }
