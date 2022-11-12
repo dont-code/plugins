@@ -1,8 +1,8 @@
 <div *ngIf="(context$ | async) as ctx">
   <p-toolbar id="mainToolbar">
     <div class="p-toolbar-group-left">
+      <button pButton type="button" style="margin-right: 10px" class="md:hidden p-button-rounded p-button-outlined" icon="pi pi-bars" (click)="sidePanelVisible=!sidePanelVisible"></button>
       <a href="https://dont-code.net/apps.html"><img [src]="themedLogo ()" width="119" height="66"/></a>
-      <button pButton type="button" class="md:hidden p-button-rounded p-button-outlined" icon="pi pi-bars" (click)="sidePanelVisible=!sidePanelVisible"></button>
     </div>
     <h1>{{appName}}</h1>
     <div class="p-toolbar-group-right">
