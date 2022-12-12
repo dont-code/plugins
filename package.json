@@ -8,6 +8,7 @@
     "start": "nx serve",
     "build": "nx build",
     "test": "nx test",
+    "build-all": "nx run common:build:development && nx run sandbox:build:development && nx run basic:build:development && nx run fields:build:development",
     "push-all": "cd libs/common && npm version prerelease && cd ../sandbox && npm version prerelease && cd ../basic && npm version prerelease && cd ../fields && npm version prerelease && cd ../.. && nx run common:build:development && nx run sandbox:build:development && nx run basic:build:development && nx run fields:build:development && cd dist/libs/common && yalc push && cd ../sandbox && yalc push && cd ../basic && yalc push && cd ../fields && yalc push",
     "push": "cd libs/${npm_config_dir} && npm version prerelease && cd ../.. && nx run ${npm_config_dir}:build:development && cd dist/libs/${npm_config_dir} && yalc push"
   },
@@ -23,7 +24,7 @@
     "@angular/platform-browser": "^13.3.2",
     "@angular/platform-browser-dynamic": "^13.3.2",
     "@angular/router": "^13.3.2",
-    "@dontcode/core": "^0.5.40",
+    "@dontcode/core": "^0.5.41",
     "@fortawesome/angular-fontawesome": "^0.10.2",
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
     "@fortawesome/free-regular-svg-icons": "^6.1.1",

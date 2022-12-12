@@ -1,11 +1,11 @@
 {
   "name": "@dontcode/plugin-basic",
-  "version": "0.5.41-1",
+  "version": "0.5.41",
   "peerDependencies": {
     "@angular/common": "^13.3.2",
     "@angular/core": "^13.3.2",
-    "@dontcode/core": "^0.5.40",
-    "@dontcode/plugin-common": "^0.5.40",
+    "@dontcode/core": "^0.5.41",
+    "@dontcode/plugin-common": "^0.5.41",
     "rxjs": "^7.5.5"
   },
   "dependencies": {

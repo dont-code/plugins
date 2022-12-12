@@ -1,6 +1,6 @@
 {
   "name": "@dontcode/sandbox",
-  "version": "0.5.41-0",
+  "version": "0.5.41",
   "peerDependencies": {
     "@angular/common": "^13.3.2",
     "@angular/core": "^13.3.2",
@@ -8,8 +8,8 @@
     "primeflex": "^3.1.3",
     "primeicons": "^5.0.0",
     "primeng": "^13.3.2",
-    "@dontcode/core": "^0.5.40",
-    "@dontcode/plugin-common": "^0.5.40",
+    "@dontcode/core": "^0.5.41",
+    "@dontcode/plugin-common": "^0.5.41",
     "rxjs": "^7.5.5"
   },
   "dependencies": {
