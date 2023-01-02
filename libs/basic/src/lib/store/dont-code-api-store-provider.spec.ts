@@ -1,6 +1,6 @@
 import {TestBed} from '@angular/core/testing';
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
-import {DONTCODE_STORE_API_URL, DONTCODE_DOC_API_URL, DontCodeApiStoreProvider} from "./dont-code-api-store-provider";
+import {DONT_CODE_STORE_API_URL, DONT_CODE_DOC_API_URL, DontCodeApiStoreProvider} from "./dont-code-api-store-provider";
 import {HttpClient} from "@angular/common/http";
 import { dtcde, UploadedDocumentInfo } from '@dontcode/core';
 import {toArray} from "rxjs/operators";

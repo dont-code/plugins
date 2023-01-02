@@ -2,17 +2,14 @@ import {
   AbstractDontCodeStoreProvider,
   DontCodeModelManager,
   DontCodeStoreCriteria,
-  DontCodeStoreProvider,
   dtcde,
   UploadedDocumentInfo
 } from "@dontcode/core";
 import {Observable, throwError} from "rxjs";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {Inject, Injectable, InjectionToken, Optional} from "@angular/core";
+import {Inject, Injectable, Optional} from "@angular/core";
 import {map, mergeAll} from "rxjs/operators";
-
-export const DONTCODE_STORE_API_URL = new InjectionToken<string>('DontCodeStoreApiUrl');
-export const DONTCODE_DOC_API_URL = new InjectionToken<string>('DontCodeStoreDocUrl');
+import {DONT_CODE_DOC_API_URL, DONT_CODE_STORE_API_URL} from "@dontcode/plugin-common";
 
 /**
  * A Store Provider that uses the DontCode API to store / read application data
@@ -25,7 +22,7 @@ export class DontCodeApiStoreProvider extends AbstractDontCodeStoreProvider {
   apiUrl: string;
   docUrl: string;
 
-  constructor(protected http: HttpClient, @Optional() protected modelMgr: DontCodeModelManager, @Optional() @Inject(DONTCODE_STORE_API_URL) apiUrl?: string, @Optional() @Inject(DONTCODE_DOC_API_URL) docUrl?: string) {
+  constructor(protected http: HttpClient, @Optional() protected modelMgr: DontCodeModelManager, @Optional() @Inject(DONT_CODE_STORE_API_URL) apiUrl?: string, @Optional() @Inject(DONT_CODE_DOC_API_URL) docUrl?: string) {
     super();
     if (apiUrl)
       this.apiUrl = apiUrl;
