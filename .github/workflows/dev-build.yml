@@ -14,17 +14,13 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        browser: [chromium, chrome]
-
     steps:
       - uses: actions/checkout@v3
         with:
           repository: dont-code/plugins
           path: plugins
           fetch-depth: 0
-          ref: Development
+          ref: 'Development'
           token: ${{secrets.DONTCODE_ACTIONS_TOKEN}}
       - name: Setup build environment
         uses: actions/setup-node@v3
@@ -47,6 +43,8 @@ jobs:
         run: |
           npm install --force
           npm install @dontcode/core@next --no-optional
+      - name: Build
+        run: |
           nx run common:build:production
           nx run common:test
           nx run sandbox:build:production

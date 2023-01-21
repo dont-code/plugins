@@ -19,11 +19,10 @@ import {PluginCommonModule} from "@dontcode/plugin-common";
     BrowserAnimationsModule,
     HttpClientModule,
     RouterModule.forRoot([], {
-      enableTracing: false,   // <-- debugging purposes only
-      useHash: true,
-      relativeLinkResolution: 'corrected',
-      initialNavigation: 'enabledBlocking'
-    }),
+    enableTracing: false,
+    useHash: true,
+    initialNavigation: 'enabledBlocking'
+}),
     PluginCommonModule.forRoot(),
     SandboxModule.forRoot({
       webSocketUrl: environment.webSocketUrl,

@@ -42,7 +42,7 @@ export class DevTemplateManagerService {
     templateName=templateName.toLowerCase();
     return this.getTemplates().pipe(
      map(value => {
-       let ret = value.filter(tmpl => {
+       const ret = value.filter(tmpl => {
          if (tmpl.name.toLowerCase().startsWith(templateName)) {
            return true;
          } else return false;
@@ -60,26 +60,35 @@ export class DevTemplate {
     this.sequence=tmpl.sequence;
     // Support loading simple templates
     if (tmpl.position !== undefined) {
-      this.sequence=new Array({
-        position:tmpl.position,
-        type:tmpl.type,
-        value: tmpl.value
-      });
+      this.sequence=new Array(new DevStep(
+        tmpl.position,
+        tmpl.type,
+        tmpl.value
+      ));
     }
   }
 
   name:string;
-  sequence?: Array<{
-    position:string,
-    type:string,
-    value:any
-  }>;
+  sequence: Array<DevStep>;
 
   isSequence():boolean {
     if( this.sequence)
       return (this.sequence.length>1);
     else
       return false;
+  }
+}
+
+export class DevStep {
+  /**
+   * Value can be a string or a json value
+   */
+
+  constructor(public position:string, public type:string, public value:string|any|null ) {
+  }
+
+  isValid() {
+    return ((this.position!=null)&&(this.type!=null));
   }
 }
 

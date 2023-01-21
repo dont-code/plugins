@@ -140,9 +140,7 @@ export class RemotePluginLoaderService {
       } catch (error) {
         console.error(
           'Error loading plugin ' +
-            moduleDef.moduleId +
-            ' from ' +
-            moduleDef.remoteEntry,
+            moduleDef.moduleId,
           error
         );
       }

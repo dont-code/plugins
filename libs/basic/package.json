@@ -1,14 +1,21 @@
 {
   "name": "@dontcode/plugin-basic",
-  "version": "0.5.41",
+  "version": "0.6.1",
   "peerDependencies": {
-    "@angular/common": "^13.3.2",
-    "@angular/core": "^13.3.2",
-    "@dontcode/core": "^0.5.41",
-    "@dontcode/plugin-common": "^0.5.41",
-    "rxjs": "^7.5.5"
+    "@angular/common": "^15.1.1",
+    "@angular/core": "^15.1.1",
+    "@dontcode/core": "^0.6.1",
+    "@dontcode/plugin-common": "^0.6.1",
+    "rxjs": "^7.8.0",
+    "all-country-data": "^0.2.3",
+    "async-mutex": "^0.4.0",
+    "broadcast-channel": "^4.20.2",
+    "core-js": "^3.27.2",
+    "dexie": "^3.2.2",
+    "flag-icon-css": "^4.1.7",
+    "i18n-iso-countries": "^7.5.0"
   },
   "dependencies": {
-    "tslib": "^2.3.1"
+    "tslib": "^2.4.1"
   }
 }

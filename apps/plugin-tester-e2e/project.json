@@ -1,5 +1,6 @@
 {
-  "root": "apps/plugin-tester-e2e",
+  "name": "plugin-tester-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/plugin-tester-e2e/src",
   "projectType": "application",
   "targets": {

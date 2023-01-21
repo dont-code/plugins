@@ -1,12 +1,13 @@
 {
+  "name": "common",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
-  "root": "libs/common",
   "sourceRoot": "libs/common/src",
   "prefix": "dontcode",
   "targets": {
     "build": {
       "executor": "@nrwl/angular:package",
-      "outputs": ["dist/libs/common"],
+      "outputs": ["{workspaceRoot}/dist/libs/common"],
       "options": {
         "project": "libs/common/ng-package.json"
       },
@@ -22,7 +23,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/basic"],
+      "outputs": ["{workspaceRoot}/coverage/libs/common"],
       "options": {
         "jestConfig": "libs/common/jest.config.ts",
         "passWithNoTests": true
@@ -32,8 +33,8 @@
       "executor": "@nrwl/linter:eslint",
       "options": {
         "lintFilePatterns": [
-          "libs/basic/src/**/*.ts",
-          "libs/basic/src/**/*.html"
+          "libs/common/src/**/*.ts",
+          "libs/common/src/**/*.html"
         ]
       }
     }

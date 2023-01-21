@@ -1,12 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-  Change,
-  CommandProviderInterface,
-  DontCodeModelPointer,
-  PreviewHandler,
-} from '@dontcode/core';
-import { Subject, Subscription } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import {Component, OnDestroy} from '@angular/core';
+import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler,} from '@dontcode/core';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'plugins-screen',

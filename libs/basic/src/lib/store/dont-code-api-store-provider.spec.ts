@@ -1,10 +1,10 @@
 import {TestBed} from '@angular/core/testing';
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
-import {DONT_CODE_STORE_API_URL, DONT_CODE_DOC_API_URL, DontCodeApiStoreProvider} from "./dont-code-api-store-provider";
+import {DontCodeApiStoreProvider} from "./dont-code-api-store-provider";
 import {HttpClient} from "@angular/common/http";
 import { dtcde, UploadedDocumentInfo } from '@dontcode/core';
 import {toArray} from "rxjs/operators";
-import {PluginCommonModule} from "@dontcode/plugin-common";
+import {DONT_CODE_STORE_API_URL, DONT_CODE_DOC_API_URL, PluginCommonModule} from "@dontcode/plugin-common";
 
 
 describe('DontCode Api Store Manager', () => {
@@ -16,7 +16,7 @@ describe('DontCode Api Store Manager', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, PluginCommonModule.forRoot()],
-      providers: [ {provide: DONTCODE_STORE_API_URL, useValue: '/testData'},{provide: DONTCODE_DOC_API_URL, useValue: '/testDocs'}]
+      providers: [ {provide: DONT_CODE_STORE_API_URL, useValue: '/testData'},{provide: DONT_CODE_DOC_API_URL, useValue: '/testDocs'}]
     }).compileComponents();
 
     // Inject the http service and test controller for each test
