@@ -67,7 +67,7 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
             const typeControl = this.templateForm.get('type');
             if( (stepControl==null)||(typeControl==null))
               throw new Error("Cannot find value and type field");
-            if (templ instanceof DevTemplate && templ.sequence) {
+            if (templ!=null) {
               this.filteredSteps = templ.sequence;
               stepControl.setValue(templ.sequence[0]);
               stepControl.enable({ emitEvent: false });
@@ -171,8 +171,9 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
     const tmpl = this.getSelectedTemplate();
     if (tmpl!=null) {
       for (const step of tmpl.sequence) {
-        if (step.isValid())
-        await this.pushChange(step.type, step.position, step.value);
+        if (step.isValid()) {
+          await this.pushChange(step.type, step.position, step.value);
+        }
       }
     }
   }

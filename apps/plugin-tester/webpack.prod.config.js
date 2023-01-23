@@ -1,5 +1,5 @@
 const { withModuleFederation } = require('@nrwl/angular/module-federation');
-const config = require('./module-federation.config');
+const config = require('./module-federation.prod.config');
 module.exports = withModuleFederation({
   ...config
   /*

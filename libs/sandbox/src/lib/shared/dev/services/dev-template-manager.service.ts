@@ -57,14 +57,19 @@ export class DevTemplateManagerService {
 export class DevTemplate {
   constructor(tmpl: any) {
     this.name=tmpl.name;
-    this.sequence=tmpl.sequence;
+    this.sequence = [];
     // Support loading simple templates
     if (tmpl.position !== undefined) {
-      this.sequence=new Array(new DevStep(
+      this.sequence.push(new DevStep(
         tmpl.position,
         tmpl.type,
         tmpl.value
       ));
+    } else {
+      for (const seq of tmpl.sequence) {
+        this.sequence.push(new DevStep(seq.position, seq.type, seq.value));
+      }
+
     }
   }
 

@@ -113,15 +113,8 @@ export class RemotePluginLoaderService {
   async loadModule(
     moduleDef: RemotePluginModuleOptions
   ): Promise<PluginModuleInterface> {
-    const module = await loadRemoteModule(moduleDef);
-    //console.log('Loaded Module:', module);
-/*    const mainModuleClass = module[moduleDef.moduleId];
-    if (mainModuleClass==null)  // The main module class is not defined
-    {
-      throw new Error("ModuleClass "+moduleDef.moduleId+" not exported in "+moduleDef.remoteEntry);
-    }*/
+    await loadRemoteModule(moduleDef);
     const mainModule = await this.compLoader.getOrCreatePluginModuleRef(moduleDef.moduleId.toLowerCase());
-    //createNgModuleRef<PluginModuleInterface>(mainModuleClass, this.injector).instance;
     return mainModule.instance;
   }
 
