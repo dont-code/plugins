@@ -7,14 +7,9 @@ import {SandboxModule} from "@dontcode/sandbox";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {environment} from "../environments/environment";
 import {HttpClientModule} from "@angular/common/http";
-import {BasicModule, DONTCODE_STORE_API_URL, DONTCODE_DOC_API_URL} from "@dontcode/plugin-basic";
+import {BasicModule} from "@dontcode/plugin-basic";
 import {FieldsModule} from "@dontcode/plugin-fields";
 import {ScreenModule} from "@dontcode/plugin-screen";
-import {
-  basicDocumentApiUrlConfig,
-  basicStoreApiUrlConfig,
-  SANDBOX_CONFIG
-} from "@dontcode/sandbox";
 import {PluginCommonModule} from "@dontcode/plugin-common";
 
 @NgModule({
@@ -24,11 +19,10 @@ import {PluginCommonModule} from "@dontcode/plugin-common";
     BrowserAnimationsModule,
     HttpClientModule,
     RouterModule.forRoot([], {
-      enableTracing: false,   // <-- debugging purposes only
-      useHash: true,
-      relativeLinkResolution: 'corrected',
-      initialNavigation: 'enabledBlocking'
-    }),
+    enableTracing: false,
+    useHash: true,
+    initialNavigation: 'enabledBlocking'
+}),
     PluginCommonModule.forRoot(),
     SandboxModule.forRoot({
       webSocketUrl: environment.webSocketUrl,
@@ -42,17 +36,6 @@ import {PluginCommonModule} from "@dontcode/plugin-common";
     BasicModule,
     FieldsModule,
     ScreenModule
-  ],
-  providers: [
-    {
-      provide: DONTCODE_STORE_API_URL,
-      useFactory:basicStoreApiUrlConfig,
-      deps:[SANDBOX_CONFIG]
-    },{
-      provide: DONTCODE_DOC_API_URL,
-      useFactory:basicDocumentApiUrlConfig,
-      deps:[SANDBOX_CONFIG]
-    }
   ],
   bootstrap: [AppComponent]
 })

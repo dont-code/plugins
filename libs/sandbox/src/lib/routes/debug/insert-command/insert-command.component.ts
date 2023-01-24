@@ -1,13 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Change, ChangeType } from '@dontcode/core';
-import { DevChangePushService } from '../../../shared/dev/services/dev-change-push.service';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Change, ChangeType} from '@dontcode/core';
+import {DevChangePushService} from '../../../shared/dev/services/dev-change-push.service';
 import {
+  DevStep,
   DevTemplate,
   DevTemplateManagerService,
 } from '../../../shared/dev/services/dev-template-manager.service';
-import { AbstractControl, FormBuilder } from '@angular/forms';
-import { map } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import {FormBuilder} from '@angular/forms';
+import {map} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'dontcode-sandbox-insert-command',
@@ -23,13 +24,13 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
   listTemplates: DevTemplate[] = [];
   filteredTemplates: DevTemplate[] = [];
   templateForm = this.fb.group({
-    template: [null],
-    step: [null],
-    type: [null],
-    position: [''],
-    value: [null],
+    template: null as DevTemplate|null,
+    step: null as DevStep|string|null,
+    type: null as string|null,
+    value: null as never|string|null
   });
-  filteredSteps: Array<{ position: string; value: any }> = [];
+  filteredSteps: Array<DevStep> = [];
+  private selectedStep: DevStep | null = null;
   valueFieldLabel = 'Value';
   changeTypes = [
     { label: ChangeType.ADD },
@@ -67,7 +68,7 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
             const typeControl = this.templateForm.get('type');
             if( (stepControl==null)||(typeControl==null))
               throw new Error("Cannot find value and type field");
-            if (templ instanceof DevTemplate && templ.sequence) {
+            if (templ!=null) {
               this.filteredSteps = templ.sequence;
               stepControl.setValue(templ.sequence[0]);
               stepControl.enable({ emitEvent: false });
@@ -101,19 +102,22 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
               typeControl.enable({ emitEvent: false });
             }
 
-            if (typeof step === 'string' || step instanceof String) {
-              //          valueControl.setValue(null);
+            if (typeof step === 'string' ) {
+              // The user just changed the step name: We deselect the template
               this.templateForm
                 .get('template')?.setValue(null, { emitEvent: false });
+                // And we update the step
+              if (this.selectedStep!=null) this.selectedStep.position=step;
             } else {
-              typeControl.setValue(step.type);
-              if (
-                typeof step.value === 'string' ||
-                step.value instanceof String
-              ) {
-                valueControl.setValue(step.value);
-              } else {
-                valueControl.setValue(JSON.stringify(step.value, null, 2));
+              this.selectedStep=step;
+                // Another step has been selected
+              if( step!=null) {
+                typeControl.setValue(step.type);
+                if (typeof step.value === 'string') {
+                  valueControl.setValue(step.value);
+                } else {
+                  valueControl.setValue(JSON.stringify(step.value, null, 2));
+                }
               }
             }
           })
@@ -126,15 +130,16 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
         ?.valueChanges.pipe(
           map((value) => {
             const step = this.getSelectedStep();
-            if (step) {
-              if (typeof step === 'string' || step instanceof String) {
-                return;
-              }
-              try {
-                step.value = JSON.parse(value);
-              } catch (e: any) {
-                // Not json, so set a string
-                step.value = value;
+            if (step!=null) {
+              if( value==null) {
+                step.value=value;
+              } else {
+               try {
+                  step.value = JSON.parse(value);
+                } catch (e: any) {
+                  // Not json, so set a string
+                  step.value = value;
+                }
               }
             }
           })
@@ -147,11 +152,8 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
         ?.valueChanges.pipe(
           map((value) => {
             const step = this.getSelectedStep();
-            if (step) {
-              if (typeof step === 'string' || step instanceof String) {
-                return;
-              }
-              step.type = value;
+            if (step!=null) {
+              step.type = value??'';
             }
             if (value === ChangeType.MOVE) {
               this.valueFieldLabel = 'Before';
@@ -170,25 +172,17 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
 
   async sendCommand() {
     const tmpl = this.getSelectedTemplate();
-    if (tmpl?.sequence) {
+    if (tmpl!=null) {
       for (const step of tmpl.sequence) {
-        await this.pushChange(step.type, step.position, step.value);
+        if (step.isValid()) {
+          await this.pushChange(step.type, step.position, step.value);
+        }
       }
     } else {
-      // It's just a step, not from any template
-      const step = this.getSelectedStep();
-      // Is the value Json or not ?
-      let jsonVal = this.templateForm.get('value')?.value;
-      try {
-        jsonVal = JSON.parse(jsonVal);
-      } catch (error) {
-        console.log('Value is not json ', jsonVal, error);
+      const step=this.getSelectedStep();
+      if ((step!=null) && (step.isValid())) {
+        await this.pushChange(step.type, step.position, step.value);
       }
-      await this.pushChange(
-        this.templateForm.get('type')?.value,
-        step as string,
-        jsonVal
-      );
     }
   }
 
@@ -202,12 +196,12 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
     );
   }
 
-  protected getSelectedTemplate(): DevTemplate {
-    return this.templateForm.get('template')?.value;
+  protected getSelectedTemplate(): DevTemplate|null {
+    return this.templateForm.get('template')?.value??null;
   }
 
-  protected getSelectedStep(): { position: string; type: string; value: any } | string {
-    return this.templateForm.get('step')?.value;
+  protected getSelectedStep(): DevStep|null{
+    return this.selectedStep;
   }
 
   searchStep($event: any) {

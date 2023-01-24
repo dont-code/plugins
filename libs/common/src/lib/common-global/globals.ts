@@ -7,3 +7,13 @@ export let COMMAND_PROVIDER = new InjectionToken<CommandProviderInterface>('Inje
  * Enable the Dont-code Core interface to be injected
  */
 export const DONT_CODE_CORE=new InjectionToken<Core>("Dont-code core object");
+
+/**
+ * Enable the application to provide the url of the API for managing the data (used by basic plugin)
+ */
+export const DONT_CODE_STORE_API_URL = new InjectionToken<string>('DontCodeStoreApiUrl');
+/**
+ * Enable the application to provide the url of the API for managing documents (used by image plugin)
+ */
+export const DONT_CODE_DOC_API_URL = new InjectionToken<string>('DontCodeStoreDocUrl');
+

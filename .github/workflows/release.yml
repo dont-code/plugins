@@ -1,65 +1,58 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Release
+name: Patch Release
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        browser: [chromium, chrome]
-
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
+          repository: dont-code/plugins
+          path: plugins
           fetch-depth: 0
-          ref: main
-      - name: Use Node.js 16
-        uses: actions/setup-node@v2
+          ref: 'main'
+          token: ${{secrets.DONTCODE_ACTIONS_TOKEN}}
+      - name: Setup build environment
+        uses: actions/setup-node@v3
         with:
-          node-version: '16'
-          cache: 'npm'
+          node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+      - run: npm install -g nx
+      - run: npm version patch
+        working-directory: 'plugins/libs/common'
+      - run: npm version patch
+        working-directory: 'plugins/libs/sandbox'
+      - run: npm version patch
+        working-directory: 'plugins/libs/basic'
+      - run: npm version patch
+        working-directory: 'plugins/libs/fields'
+      - run: npm version patch
+        working-directory: 'plugins/libs/screen'
       - name: Install
         run: |
-          npm install -g nx
-          npm install @dontcode/core@latest
-          npm ci
-      - name: Version
-        if: ${{ matrix.browser == 'chromium' }}
-        run: npm version patch
-        working-directory: libs/common
-      - name: Version
-        if: ${{ matrix.browser == 'chromium' }}
-        run: npm version patch
-        working-directory: libs/sandbox
-      - name: Version
-        if: ${{ matrix.browser == 'chromium' }}
-        run: npm version patch
-        working-directory: libs/screen
-      - name: Version
-        if: ${{ matrix.browser == 'chromium' }}
-        run: npm version patch
-        working-directory: libs/basic
-      - name: Version
-        if: ${{ matrix.browser == 'chromium' }}
-        run: npm version patch
-        working-directory: libs/fields
+          npm install --force
+          npm install @dontcode/core@latest --no-optional
       - name: Build
         run: |
           nx run common:build:production
+          nx run common:test
           nx run sandbox:build:production
+          nx run sandbox:test
           nx run basic:build:production
+          nx run basic:test
           nx run fields:build:production
+          nx run fields:test
           nx run screen:build:production
+          nx run screen:test
+        working-directory: 'plugins'
       - name: Unit tests
         run: |
           nx run common:test
@@ -67,66 +60,42 @@ jobs:
           nx run screen:test
           nx run basic:test
           nx run fields:test
-      - name: E2E Tests on ${{matrix.browser}}
-        run: |
-          nx run plugin-tester-e2e:e2e --browser ${{matrix.browser}}
-      - uses: actions/upload-artifact@v2
+          nx run plugin-tester:test
+      - run: |
+          nx run plugin-tester-e2e:e2e --browser chromium
+          nx run plugin-tester-e2e:e2e --browser chrome
+        working-directory: 'plugins'
+      - uses: actions/upload-artifact@v3
         # Test run screenshots only on failure
         if: failure()
         with:
           name: cypress-screenshots
-          path: dist/cypress/apps/plugin-tester-e2e/screenshots
-        # Test run video was always captured, so this action uses "always()" condition
-      - uses: actions/upload-artifact@v2
-        if: always()
+          path: plugins/dist/cypress/apps/plugin-tester-e2e/screenshots
+          # Test run video was always captured, so this action uses "always()" condition
+      - uses: actions/upload-artifact@v3
+        if: failure()
         with:
           name: cypress-videos
-          path: dist/cypress/apps/plugin-tester-e2e/videos
-      - name: get-npm-version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@master
+          path: plugins/dist/cypress/apps/plugin-tester-e2e/videos
+      - name: Deploy all plugins
+        run: nx run plugin-tester:build:production --base-href "https://dont-code.net/plugins/"
+        working-directory: 'plugins'
+      - if: ${{ success() }}
+        uses: crazy-max/ghaction-github-pages@v3.0.0
         with:
-          path: libs/basic
-#      - name: Push
-#        if: ${{ success() && ( matrix.browser == 'chromium' )}}
-#        run: |
-#          git config user.name "GitHub Actions"
-#          git config user.email noreply@github.com
-#          git commit -a -m "New release ${{steps.package-version.outputs.current-version}}" --allow-empty
-#          git push
-#      - name: Publish Common
-#        if: ${{ success() && ( matrix.browser == 'chromium' )}}
-#        run: |
-#         npm publish dist/libs/common --access public
-#        env:
-#          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-#      - name: Publish Sandbox
-#        if: ${{ success() && ( matrix.browser == 'chromium' )}}
-#        run: npm publish dist/libs/sandbox --access public
-#        env:
-#          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-#      - name: Publish Screen
-#        if: ${{ success() && ( matrix.browser == 'chromium' )}}
-#        run: npm publish dist/libs/screen --access public
-#        env:
-#          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-#      - name: Publish Basic
-#        if: ${{ success() && ( matrix.browser == 'chromium' )}}
-#        run: npm publish dist/libs/basic --access public
-#        env:
-#          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-#      - name: Publish Fields
-#        if: ${{ success() && ( matrix.browser == 'chromium' )}}
-#        run: npm publish dist/libs/fields --access public
-#        env:
-#          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-#     - name: Rebuild for deploy
-#        if: ${{ success() && matrix.browser == 'chromium'}}
-#        run: nx run plugin-tester:build:production --base-href "https://dont-code.net/plugins/"
-#      - name: Deploy PluginTester
-#        if: ${{ success() && ( matrix.browser == 'chromium' )}}
-#        uses: JamesIves/github-pages-deploy-action@releases/v3
-#        with:
-#          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-#          BRANCH: gh-pages # The branch the action should deploy to.
-#          FOLDER: dist/apps/plugin-tester
+          repo: dont-code/plugins
+          target_branch: gh-pages # The branch the action should deploy to.
+          build_dir: plugins/dist/apps/plugin-tester
+          jekyll: false
+        env:
+          GITHUB_TOKEN: ${{secrets.DONTCODE_ACTIONS_TOKEN }}
+      - name: Publish all libraries
+        if: ${{ success() }}
+        run: |
+          npm publish plugins/dist/libs/common --access public
+          npm publish plugins/dist/libs/sandbox --access public
+          npm publish plugins/dist/libs/basic --access public
+          npm publish plugins/dist/libs/fields --access public
+          npm publish plugins/dist/libs/screen --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

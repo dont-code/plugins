@@ -6,6 +6,12 @@ module.exports = {
   },
   shared: (name, config) => {
     return {
+      "@dontcode/core": {...config,singleton: true, strictVersion: false},
+      "@dontcode/plugin-common": {...config,singleton: true, strictVersion: false},
+      "@dontcode/sandbox": {...config,singleton: true, strictVersion: false},
+      "broadcast-channel": {...config, requiredVersion:"0"}
+    }[name];
+/*    return {
       "@angular/core": {...config,singleton: true, strictVersion: true},
       "@angular/common": {...config,singleton: true, strictVersion: true},
       "@angular/common/http": {...config,singleton: true, strictVersion: true},
@@ -14,6 +20,6 @@ module.exports = {
       "@dontcode/core": {...config,singleton: true, strictVersion: false},
       "@dontcode/plugin-common": {...config,singleton: true, strictVersion: false},
       "@dontcode/sandbox": {...config,singleton: true, strictVersion: false}
-    }[name];
+    }[name];*/
   }
 };

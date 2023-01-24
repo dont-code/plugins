@@ -1,12 +1,13 @@
 {
-  "root": "apps/plugin-tester-e2e",
+  "name": "plugin-tester-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/plugin-tester-e2e/src",
   "projectType": "application",
   "targets": {
     "e2e": {
       "executor": "@nrwl/cypress:cypress",
       "options": {
-        "cypressConfig": "apps/plugin-tester-e2e/cypress.json",
+        "cypressConfig": "apps/plugin-tester-e2e/cypress.config.js",
         "devServerTarget": "plugin-tester:serve:development"
       },
       "configurations": {

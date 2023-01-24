@@ -1,12 +1,13 @@
 {
+  "name": "fields",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
-  "root": "libs/fields",
   "sourceRoot": "libs/fields/src",
   "prefix": "dontcode",
   "targets": {
     "build": {
       "executor": "@nrwl/angular:package",
-      "outputs": ["dist/libs/fields"],
+      "outputs": ["{workspaceRoot}/dist/libs/fields"],
       "options": {
         "project": "libs/fields/ng-package.json"
       },
@@ -22,7 +23,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/fields"],
+      "outputs": ["{workspaceRoot}/coverage/libs/fields"],
       "options": {
         "jestConfig": "libs/fields/jest.config.ts",
         "passWithNoTests": true

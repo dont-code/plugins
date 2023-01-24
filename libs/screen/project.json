@@ -1,12 +1,13 @@
 {
+  "name": "screen",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
-  "root": "libs/screen",
   "sourceRoot": "libs/screen/src",
   "prefix": "plugins",
   "targets": {
     "build": {
       "executor": "@nrwl/angular:package",
-      "outputs": ["dist/libs/screen"],
+      "outputs": ["{workspaceRoot}/dist/libs/screen"],
       "options": {
         "project": "libs/screen/ng-package.json"
       },
@@ -22,7 +23,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/screen"],
+      "outputs": ["{workspaceRoot}/coverage/libs/screen"],
       "options": {
         "jestConfig": "libs/screen/jest.config.ts",
         "passWithNoTests": true

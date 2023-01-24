@@ -5,6 +5,7 @@ import {dtcde, PluginModuleInterface, RepositoryPluginEntry, RepositoryPluginInf
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
 import {Injectable} from "@angular/core";
 import {PluginCommonModule} from "@dontcode/plugin-common";
+import {LoadRemoteModuleEsmOptions} from "@angular-architects/module-federation-runtime/lib/loader/dynamic-federation";
 
 describe('RemotePluginLoaderService', () => {
   let service: RemotePluginLoaderService;
@@ -171,7 +172,7 @@ class TestRemotePluginLoaderService extends RemotePluginLoaderService {
   override async loadModule(moduleDef: RemotePluginModuleOptions): Promise<PluginModuleInterface> {
     const toCheck = TestRemotePluginLoaderService.listOfInfoToTest.shift();
     if (toCheck!=null) {
-      expect (moduleDef.remoteEntry).toEqual(toCheck["remote-entry"]);
+      expect ((moduleDef as LoadRemoteModuleEsmOptions).remoteEntry).toEqual(toCheck["remote-entry"]);
       if (toCheck["exposed-module"]!=null)
         expect(moduleDef.exposedModule).toEqual(toCheck["exposed-module"]);
       else

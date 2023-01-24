@@ -1,12 +1,13 @@
 {
+  "name": "basic",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
-  "root": "libs/basic",
   "sourceRoot": "libs/basic/src",
   "prefix": "dontcode",
   "targets": {
     "build": {
       "executor": "@nrwl/angular:package",
-      "outputs": ["dist/libs/basic"],
+      "outputs": ["{workspaceRoot}/dist/libs/basic"],
       "options": {
         "project": "libs/basic/ng-package.json"
       },
@@ -22,7 +23,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/basic"],
+      "outputs": ["{workspaceRoot}/coverage/libs/basic"],
       "options": {
         "jestConfig": "libs/basic/jest.config.ts",
         "passWithNoTests": true

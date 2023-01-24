@@ -1,4 +1,5 @@
 import {
+  createNgModule,
   createNgModuleRef,
   getNgModuleById,
   Inject,
@@ -55,7 +56,7 @@ export class ComponentLoaderService {
       try {
         let moduleRef = this.moduleMap.get(moduleSource);
         if (!moduleRef) {
-          moduleRef = createNgModuleRef(
+          moduleRef = createNgModule(
             getNgModuleById ('dontcode-plugin/' + moduleSource),
             this.injector);
           if (moduleRef) {
