@@ -4,6 +4,12 @@
 name: Build Development
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: The version of the pre-release, if needed (x.y.z-pr)
+        required: false
+        type: string
   push:
     branches: [ Development ]
   pull_request:
@@ -13,6 +19,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        browser: [chromium, chrome, firefox]
 
     steps:
       - uses: actions/checkout@v3
@@ -25,24 +35,52 @@ jobs:
       - name: Setup build environment
         uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
+          node-version: '18.x'
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
-      - run: npm install -g nx
-      - run: npm version prerelease
-        working-directory: 'plugins/libs/common'
-      - run: npm version prerelease
-        working-directory: 'plugins/libs/sandbox'
-      - run: npm version prerelease
-        working-directory: 'plugins/libs/basic'
-      - run: npm version prerelease
-        working-directory: 'plugins/libs/fields'
-      - run: npm version prerelease
-        working-directory: 'plugins/libs/screen'
+      - name: Version
+        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( github.event.inputs.version == '') }}
+        run: |
+          PACKAGE_VERSION=$(npm dist-tag ls @dontcode/plugin-common | grep -Po '(?<=next: ).*')
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+          cd libs/common
+          npm version $PACKAGE_VERSION
+          npm version prerelease
+          cd ../../libs/sandbox
+          npm version $PACKAGE_VERSION
+          npm version prerelease
+          cd ../../libs/basic
+          npm version $PACKAGE_VERSION
+          npm version prerelease
+          cd ../../libs/fields
+          npm version $PACKAGE_VERSION
+          npm version prerelease
+          cd ../../libs/screen
+          npm version $PACKAGE_VERSION
+          npm version prerelease
+        working-directory: 'plugins'
+      - name: Version
+        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( github.event.inputs.version != '') }}
+        run: |
+          PACKAGE_VERSION=${{inputs.version}}
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+          cd libs/common
+          npm version $PACKAGE_VERSION
+          cd ../../libs/sandbox
+          npm version $PACKAGE_VERSION
+          cd ../../libs/basic
+          npm version $PACKAGE_VERSION
+          cd ../../libs/fields
+          npm version $PACKAGE_VERSION
+          cd ../../libs/screen
+          npm version $PACKAGE_VERSION
+        working-directory: 'plugins'
       - name: Install
         run: |
+          npm install -g nx
           npm install --force
           npm install @dontcode/core@next --no-optional
+        working-directory: 'plugins'
       - name: Build
         run: |
           nx run common:build:production
@@ -65,8 +103,7 @@ jobs:
           nx run fields:test
           nx run plugin-tester:test
       - run: |
-          nx run plugin-tester-e2e:e2e --browser chromium
-          nx run plugin-tester-e2e:e2e --browser chrome
+          nx run plugin-tester-e2e:e2e --browser ${{matrix.browser}}
         working-directory: 'plugins'
       - uses: actions/upload-artifact@v3
         # Test run screenshots only on failure
@@ -81,7 +118,7 @@ jobs:
           name: cypress-videos
           path: plugins/dist/cypress/apps/plugin-tester-e2e/videos
       - name: Publish all libraries
-        if: ${{ success() }}
+        if: ${{ success() && ( matrix.browser == 'chromium' ) }}
         run: |
           npm publish plugins/dist/libs/common --access public --tag next
           npm publish plugins/dist/libs/sandbox --access public --tag next
