@@ -24,14 +24,14 @@ describe('New fields', () => {
 
       getButtonWithName ('new').click();
       getInputWithName('Name').type('Test Recipe');
-      getInputWithName('Image').type ('https://test.dont-code.net/poweredby.png');
+      getInputWithName('Image').type ('https://www.dont-code.net/assets/images/favicons/logo.png');
       getInputWithName('Link').type ('https://test.dont-code.net');
       getRatingWithName ('Stars', 4).click();
       getButtonWithName ('save').click();
 
       getTabWithName ('List').click();
       getListRowWithText ( "Test Recipe");
-      getImageWithClass ('inline-image').should ('have.attr', 'src', 'https://test.dont-code.net/poweredby.png');
+      getImageWithClass ('inline-image').should ('have.attr', 'src', 'https://www.dont-code.net/assets/images/favicons/logo.png');
       getLinkWithUrl ('https://test.dont-code.net');
       getRating ( 3).should('have.class', 'pi-star-fill');
       getRating ( 4).should('have.class', 'pi-star');

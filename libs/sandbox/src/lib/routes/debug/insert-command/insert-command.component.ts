@@ -25,11 +25,12 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
   filteredTemplates: DevTemplate[] = [];
   templateForm = this.fb.group({
     template: null as DevTemplate|null,
-    step: null as DevStep|null,
+    step: null as DevStep|string|null,
     type: null as string|null,
     value: null as never|string|null
   });
   filteredSteps: Array<DevStep> = [];
+  private selectedStep: DevStep | null = null;
   valueFieldLabel = 'Value';
   changeTypes = [
     { label: ChangeType.ADD },
@@ -102,15 +103,17 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
             }
 
             if (typeof step === 'string' ) {
-              //          valueControl.setValue(null);
+              // The user just changed the step name: We deselect the template
               this.templateForm
                 .get('template')?.setValue(null, { emitEvent: false });
+                // And we update the step
+              if (this.selectedStep!=null) this.selectedStep.position=step;
             } else {
+              this.selectedStep=step;
+                // Another step has been selected
               if( step!=null) {
                 typeControl.setValue(step.type);
-                if (
-                  typeof step.value === 'string'
-                ) {
+                if (typeof step.value === 'string') {
                   valueControl.setValue(step.value);
                 } else {
                   valueControl.setValue(JSON.stringify(step.value, null, 2));
@@ -175,6 +178,11 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
           await this.pushChange(step.type, step.position, step.value);
         }
       }
+    } else {
+      const step=this.getSelectedStep();
+      if ((step!=null) && (step.isValid())) {
+        await this.pushChange(step.type, step.position, step.value);
+      }
     }
   }
 
@@ -193,7 +201,7 @@ export class InsertCommandComponent implements OnInit, OnDestroy {
   }
 
   protected getSelectedStep(): DevStep|null{
-    return this.templateForm.get('step')?.value??null;
+    return this.selectedStep;
   }
 
   searchStep($event: any) {
