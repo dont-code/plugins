@@ -5,11 +5,7 @@ name: Common Publish Release
 
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: The version of the release, if needed (x.y.z)
-        required: false
-        type: string
+
   push:
     branches: [ main ]
     paths:
@@ -41,23 +37,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
           cache-dependency-path: plugins/package-lock.json
-      - name: Version
-        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( github.event.inputs.version == '') }}
-        run: |
-          PACKAGE_VERSION=$(npm dist-tag ls @dontcode/plugin-common | grep -Po '(?<=next: ).*')
-          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
-          cd libs/common
-          npm version $PACKAGE_VERSION
-          npm version patch
-        working-directory: 'plugins'
-      - name: Version
-        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( github.event.inputs.version != '') }}
-        run: |
-          PACKAGE_VERSION=${{inputs.version}}
-          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
-          cd libs/common
-          npm version $PACKAGE_VERSION
-        working-directory: 'plugins'
       - name: Install
         run: |
           npm install -g nx
@@ -76,23 +55,23 @@ jobs:
           nx run fields:test
           nx run screen:test
         working-directory: 'plugins'
-      - name: Publish
-        if: ${{ success() && ( matrix.browser == 'chromium' ) }}
+      - name: End 2 End Tests
         run: |
-          npm publish plugins/dist/libs/common --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: ReVersion
-        run: |
-          npm version prerelease
-        working-directory: 'plugins/libs/common'
-      - name: ReBuild
-        run: |
-          nx run common:build:development
+          nx run plugin-tester-e2e:e2e --browser ${{matrix.browser}}
         working-directory: 'plugins'
-      - name: RePublish
-        if: ${{ success() && ( matrix.browser == 'chromium' ) }}
+      - name: Build
         run: |
-          npm publish plugins/dist/libs/common --access public --tag next
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          nx run common:build:production
+        working-directory: 'plugins'
+      - uses: actions/upload-artifact@v3
+        # Test run screenshots only on failure
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: plugins/dist/cypress/apps/plugin-tester-e2e/screenshots
+          # Test run video was always captured, so this action uses "always()" condition
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-videos
+          path: plugins/dist/cypress/apps/plugin-tester-e2e/videos
