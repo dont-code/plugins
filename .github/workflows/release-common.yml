@@ -68,7 +68,7 @@ jobs:
         run: |
           npm install -g nx
           npm install --force
-          npm install @dontcode/core@stable --no-optional
+          npm install @dontcode/core@latest --no-optional
         working-directory: 'plugins'
       - name: Build
         run: |
