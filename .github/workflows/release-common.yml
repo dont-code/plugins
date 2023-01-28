@@ -1,19 +1,27 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Build Development
+name: Common Publish Release
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: The version of the pre-release, if needed (x.y.z-pr)
+        description: The version of the release, if needed (x.y.z)
         required: false
         type: string
   push:
-    branches: [ Development ]
+    branches: [ main ]
+    paths:
+      - '*'
+      - 'libs/common/**'
+      - '.github/workflows/dev-common.yml'
   pull_request:
     branches: [ Development ]
+    paths:
+      - '*'
+      - 'libs/common/**'
+      - '.github/workflows/dev-common.yml'
 
 jobs:
   build:
@@ -30,7 +38,7 @@ jobs:
           repository: dont-code/plugins
           path: plugins
           fetch-depth: 0
-          ref: 'Development'
+          ref: 'main'
           token: ${{secrets.DONTCODE_ACTIONS_TOKEN}}
       - name: Setup build environment
         uses: actions/setup-node@v3
@@ -46,19 +54,7 @@ jobs:
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           cd libs/common
           npm version $PACKAGE_VERSION
-          npm version prerelease
-          cd ../../libs/sandbox
-          npm version $PACKAGE_VERSION
-          npm version prerelease
-          cd ../../libs/basic
-          npm version $PACKAGE_VERSION
-          npm version prerelease
-          cd ../../libs/fields
-          npm version $PACKAGE_VERSION
-          npm version prerelease
-          cd ../../libs/screen
-          npm version $PACKAGE_VERSION
-          npm version prerelease
+          npm version patch
         working-directory: 'plugins'
       - name: Version
         if: ${{ success() && ( matrix.browser == 'chromium' ) && ( github.event.inputs.version != '') }}
@@ -67,43 +63,20 @@ jobs:
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           cd libs/common
           npm version $PACKAGE_VERSION
-          cd ../../libs/sandbox
-          npm version $PACKAGE_VERSION
-          cd ../../libs/basic
-          npm version $PACKAGE_VERSION
-          cd ../../libs/fields
-          npm version $PACKAGE_VERSION
-          cd ../../libs/screen
-          npm version $PACKAGE_VERSION
         working-directory: 'plugins'
       - name: Install
         run: |
           npm install -g nx
           npm install --force
-          npm install @dontcode/core@next --no-optional
+          npm install @dontcode/core@stable --no-optional
         working-directory: 'plugins'
       - name: Build
         run: |
           nx run common:build:production
-          nx run common:test
-          nx run sandbox:build:production
-          nx run sandbox:test
-          nx run basic:build:production
-          nx run basic:test
-          nx run fields:build:production
-          nx run fields:test
-          nx run screen:build:production
-          nx run screen:test
         working-directory: 'plugins'
-      - name: Unit tests
+      - name: Tests
         run: |
           nx run common:test
-          nx run sandbox:test
-          nx run screen:test
-          nx run basic:test
-          nx run fields:test
-          nx run plugin-tester:test
-      - run: |
           nx run plugin-tester-e2e:e2e --browser ${{matrix.browser}}
         working-directory: 'plugins'
       - uses: actions/upload-artifact@v3
@@ -118,13 +91,9 @@ jobs:
         with:
           name: cypress-videos
           path: plugins/dist/cypress/apps/plugin-tester-e2e/videos
-      - name: Publish all libraries
+      - name: Publish
         if: ${{ success() && ( matrix.browser == 'chromium' ) }}
         run: |
-          npm publish plugins/dist/libs/common --access public --tag next
-          npm publish plugins/dist/libs/sandbox --access public --tag next
-          npm publish plugins/dist/libs/basic --access public --tag next
-          npm publish plugins/dist/libs/fields --access public --tag next
-          npm publish plugins/dist/libs/screen --access public --tag next
+          npm publish plugins/dist/libs/common --access public --tag stable
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
