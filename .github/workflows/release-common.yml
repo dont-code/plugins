@@ -15,13 +15,13 @@ on:
     paths:
       - '*'
       - 'libs/common/**'
-      - '.github/workflows/dev-common.yml'
+      - '.github/workflows/release-common.yml'
   pull_request:
     branches: [ Development ]
     paths:
       - '*'
       - 'libs/common/**'
-      - '.github/workflows/dev-common.yml'
+      - '.github/workflows/release-common.yml'
 
 jobs:
   build:
