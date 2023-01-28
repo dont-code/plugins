@@ -16,12 +16,6 @@ on:
       - '*'
       - 'libs/sandbox/**'
       - '.github/workflows/dev-sandbox.yml'
-  pull_request:
-    branches: [ Development ]
-    paths:
-      - '*'
-      - 'libs/sandbox/**'
-      - '.github/workflows/dev-sandbox.yml'
 
 jobs:
   build:

@@ -100,7 +100,7 @@ jobs:
       - name: ReVersion
         run: |
           npm version prerelease
-        working-directory: 'plugins/lib/sandbox'
+        working-directory: 'plugins/libs/sandbox'
       - name: ReBuild
         run: |
           nx run sandbox:build:development

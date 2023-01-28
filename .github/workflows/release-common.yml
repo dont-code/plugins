@@ -16,12 +16,6 @@ on:
       - '*'
       - 'libs/common/**'
       - '.github/workflows/release-common.yml'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - '*'
-      - 'libs/common/**'
-      - '.github/workflows/release-common.yml'
 
 jobs:
   build:
