@@ -1,24 +1,17 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Basic Release
+name: Fields Development
 
 on:
   workflow_dispatch:
 
   push:
-    branches: [ main ]
+    branches: [ Development ]
     paths:
       - '*'
-      - 'libs/basic/**'
-      - '.github/workflows/release-basic.yml'
-
-  pull_request:
-    branches: [ main ]
-    paths:
-      - '*'
-      - 'libs/basic/**'
-      - '.github/workflows/release-basic.yml'
+      - 'libs/fields/**'
+      - '.github/workflows/dev-fields.yml'
 
 jobs:
   build:
@@ -35,7 +28,7 @@ jobs:
           repository: dont-code/plugins
           path: plugins
           fetch-depth: 0
-          ref: 'main'
+          ref: 'Development'
           token: ${{secrets.DONTCODE_ACTIONS_TOKEN}}
       - name: Setup build environment
         uses: actions/setup-node@v3
@@ -48,15 +41,15 @@ jobs:
         run: |
           npm install -g nx
           npm install --force
-          npm install @dontcode/core@latest --no-optional
+          npm install @dontcode/core@next --no-optional
         working-directory: 'plugins'
       - name: Build
         run: |
-          nx run basic:build:production
+          nx run fields:build:production
         working-directory: 'plugins'
       - name: Tests
         run: |
-          nx run basic:test
+          nx run fields:test
           nx run plugin-tester-e2e:e2e --browser ${{matrix.browser}}
         working-directory: 'plugins'
       - uses: actions/upload-artifact@v3
