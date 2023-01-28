@@ -91,7 +91,7 @@ jobs:
       - name: ReVersion
         run: |
           npm version prerelease
-        working-directory: 'plugins/lib/common'
+        working-directory: 'plugins/libs/common'
       - name: ReBuild
         run: |
           nx run common:build:development
