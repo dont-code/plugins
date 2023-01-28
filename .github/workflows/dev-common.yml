@@ -77,20 +77,11 @@ jobs:
       - name: Tests
         run: |
           nx run common:test
-          nx run plugin-tester-e2e:e2e --browser ${{matrix.browser}}
+          nx run sandbox:test
+          nx run basic:test
+          nx run fields:test
+          nx run screen:test
         working-directory: 'plugins'
-      - uses: actions/upload-artifact@v3
-        # Test run screenshots only on failure
-        if: failure()
-        with:
-          name: cypress-screenshots
-          path: plugins/dist/cypress/apps/plugin-tester-e2e/screenshots
-          # Test run video was always captured, so this action uses "always()" condition
-      - uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: cypress-videos
-          path: plugins/dist/cypress/apps/plugin-tester-e2e/videos
       - name: Publish
         if: ${{ success() && ( matrix.browser == 'chromium' ) }}
         run: |
