@@ -88,3 +88,17 @@ jobs:
           npm publish plugins/dist/libs/common --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: ReVersion
+        run: |
+          npm version prerelease
+        working-directory: 'plugins/lib/common'
+      - name: ReBuild
+        run: |
+          nx run core:build:development
+        working-directory: 'plugins'
+      - name: RePublish
+        if: ${{ success() && ( matrix.browser == 'chromium' ) }}
+        run: |
+          npm publish plugins/dist/libs/common --access public --tag next
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
