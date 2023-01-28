@@ -66,7 +66,7 @@ jobs:
         working-directory: 'plugins'
       - name: Build
         run: |
-          nx run basicn:build:production
+          nx run basic:build:production
         working-directory: 'plugins'
       - name: Tests
         run: |
