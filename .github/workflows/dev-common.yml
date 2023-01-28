@@ -16,12 +16,6 @@ on:
       - '*'
       - 'libs/common/**'
       - '.github/workflows/dev-common.yml'
-  pull_request:
-    branches: [ Development ]
-    paths:
-      - '*'
-      - 'libs/common/**'
-      - '.github/workflows/dev-common.yml'
 
 jobs:
   build:
