@@ -47,13 +47,13 @@ jobs:
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           cd libs/common
           npm version $PACKAGE_VERSION
-          cd libs/sandbox
+          cd ../sandbox
           npm version $PACKAGE_VERSION
-          cd libs/basic
+          cd ../basic
           npm version $PACKAGE_VERSION
-          cd libs/fields
+          cd ../fields
           npm version $PACKAGE_VERSION
-          cd libs/screen
+          cd ../screen
           npm version $PACKAGE_VERSION
         working-directory: 'plugins'
       - name: Version Next
@@ -61,13 +61,13 @@ jobs:
         run: |
           cd libs/common
           npm version prerelease
-          cd libs/sandbox
+          cd ../sandbox
           npm version prerelease
-          cd libs/basic
+          cd ../basic
           npm version prerelease
-          cd libs/fields
+          cd ../fields
           npm version prerelease
-          cd libs/screen
+          cd ../screen
           npm version prerelease
         working-directory: 'plugins'
       - name: Version Patch
@@ -75,13 +75,13 @@ jobs:
         run: |
           cd libs/common
           npm version patch
-          cd libs/sandbox
+          cd ../sandbox
           npm version patch
-          cd libs/basic
+          cd ../basic
           npm version patch
-          cd libs/fields
+          cd ../fields
           npm version patch
-          cd libs/screen
+          cd ../screen
           npm version patch
         working-directory: 'plugins'
       - name: Version
@@ -91,13 +91,13 @@ jobs:
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           cd libs/common
           npm version $PACKAGE_VERSION
-          cd libs/sandbox
+          cd ../sandbox
           npm version $PACKAGE_VERSION
-          cd libs/basic
+          cd ../basic
           npm version $PACKAGE_VERSION
-          cd libs/fields
+          cd ../fields
           npm version $PACKAGE_VERSION
-          cd libs/screen
+          cd ../screen
           npm version $PACKAGE_VERSION
         working-directory: 'plugins'
       - name: Install
