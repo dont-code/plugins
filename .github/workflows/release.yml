@@ -104,6 +104,7 @@ jobs:
         run: |
           npm install --force
           npm install @dontcode/core@latest --no-optional
+        working-directory: 'plugins'
       - name: Build
         run: |
           nx run common:build:production
@@ -120,6 +121,7 @@ jobs:
           nx run basic:test
           nx run fields:test
           nx run plugin-tester:test
+        working-directory: 'plugins'
       - run: |
           nx run plugin-tester-e2e:e2e --browser ${{matrix.browser}}
         working-directory: 'plugins'
