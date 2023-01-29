@@ -7,9 +7,13 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: The version of the release, if needed (x.y.z)
+        description: The version of the release, if needed (x.y.z-p)
         required: false
         type: string
+      next:
+        description: Is it a next release ?
+        required: true
+        type: boolean
 
 jobs:
   build:
@@ -36,28 +40,51 @@ jobs:
           cache: 'npm'
       - run: npm install -g nx
       - name: Version
-        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( github.event.inputs.version == '') }}
+        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version == '') }}
         run: |
-          PACKAGE_VERSION=$(npm dist-tag ls @dontcode/plugin-common | grep -Po '(?<=latest: ).*')
+          PACKAGE_VERSION=$(npm view @dontcode/common versions --json | jq -r '.[-1]')
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           cd libs/common
           npm version $PACKAGE_VERSION
-          npm version patch
           cd libs/sandbox
           npm version $PACKAGE_VERSION
-          npm version patch
           cd libs/basic
           npm version $PACKAGE_VERSION
-          npm version patch
           cd libs/fields
           npm version $PACKAGE_VERSION
-          npm version patch
           cd libs/screen
           npm version $PACKAGE_VERSION
+        working-directory: 'plugins'
+      - name: Version Next
+        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version == '') && ( inputs.next == true) }}
+        run: |
+          cd libs/common
+          npm version prerelease
+          cd libs/sandbox
+          npm version prerelease
+          cd libs/basic
+          npm version prerelease
+          cd libs/fields
+          npm version prerelease
+          cd libs/screen
+          npm version prerelease
+        working-directory: 'plugins'
+      - name: Version Patch
+        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version == '') && ( inputs.next == false) }}
+        run: |
+          cd libs/common
+          npm version patch
+          cd libs/sandbox
+          npm version patch
+          cd libs/basic
+          npm version patch
+          cd libs/fields
+          npm version patch
+          cd libs/screen
           npm version patch
         working-directory: 'plugins'
       - name: Version
-        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( github.event.inputs.version != '') }}
+        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version != '') }}
         run: |
           PACKAGE_VERSION=${{inputs.version}}
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
@@ -110,7 +137,7 @@ jobs:
       - name: Deploy all plugins
         run: nx run plugin-tester:build:production --base-href "https://dont-code.net/plugins/"
         working-directory: 'plugins'
-      - if: ${{ success() }}
+      - if: ${{ success()  && ( matrix.browser == 'chromium' ) && ( inputs.next == false) }}
         uses: crazy-max/ghaction-github-pages@v3.0.0
         with:
           repo: dont-code/plugins
@@ -120,7 +147,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.DONTCODE_ACTIONS_TOKEN }}
       - name: Publish all libraries
-        if: ${{ success() && ( matrix.browser == 'chromium' ) }}
+        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.next == true)}}
+        run: |
+          npm publish plugins/dist/libs/common --access public --tag next
+          npm publish plugins/dist/libs/sandbox --access public --tag next
+          npm publish plugins/dist/libs/basic --access public --tag next
+          npm publish plugins/dist/libs/fields --access public --tag next
+          npm publish plugins/dist/libs/screen --access public --tag next
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish all libraries
+        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.next == false) }}
         run: |
           npm publish plugins/dist/libs/common --access public
           npm publish plugins/dist/libs/sandbox --access public
