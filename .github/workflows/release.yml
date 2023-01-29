@@ -47,13 +47,13 @@ jobs:
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           cd libs/common
           npm version $PACKAGE_VERSION
-          cd libs/sandbox
+          cd ../sandbox
           npm version $PACKAGE_VERSION
-          cd libs/basic
+          cd ../basic
           npm version $PACKAGE_VERSION
-          cd libs/fields
+          cd ../fields
           npm version $PACKAGE_VERSION
-          cd libs/screen
+          cd ../screen
           npm version $PACKAGE_VERSION
         working-directory: 'plugins'
       - name: Version Next
@@ -61,13 +61,13 @@ jobs:
         run: |
           cd libs/common
           npm version prerelease
-          cd libs/sandbox
+          cd ../sandbox
           npm version prerelease
-          cd libs/basic
+          cd ../basic
           npm version prerelease
-          cd libs/fields
+          cd ../fields
           npm version prerelease
-          cd libs/screen
+          cd ../screen
           npm version prerelease
         working-directory: 'plugins'
       - name: Version Patch
@@ -75,13 +75,13 @@ jobs:
         run: |
           cd libs/common
           npm version patch
-          cd libs/sandbox
+          cd ../sandbox
           npm version patch
-          cd libs/basic
+          cd ../basic
           npm version patch
-          cd libs/fields
+          cd ../fields
           npm version patch
-          cd libs/screen
+          cd ../screen
           npm version patch
         working-directory: 'plugins'
       - name: Version
@@ -91,19 +91,20 @@ jobs:
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           cd libs/common
           npm version $PACKAGE_VERSION
-          cd libs/sandbox
+          cd ../sandbox
           npm version $PACKAGE_VERSION
-          cd libs/basic
+          cd ../basic
           npm version $PACKAGE_VERSION
-          cd libs/fields
+          cd ../fields
           npm version $PACKAGE_VERSION
-          cd libs/screen
+          cd ../screen
           npm version $PACKAGE_VERSION
         working-directory: 'plugins'
       - name: Install
         run: |
           npm install --force
           npm install @dontcode/core@latest --no-optional
+        working-directory: 'plugins'
       - name: Build
         run: |
           nx run common:build:production
@@ -120,6 +121,7 @@ jobs:
           nx run basic:test
           nx run fields:test
           nx run plugin-tester:test
+        working-directory: 'plugins'
       - run: |
           nx run plugin-tester-e2e:e2e --browser ${{matrix.browser}}
         working-directory: 'plugins'
