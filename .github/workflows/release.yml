@@ -38,6 +38,7 @@ jobs:
           node-version: '18.x'
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
+          cache-dependency-path: plugins/package-lock.json
       - run: npm install -g nx
       - name: Version
         if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version == '') }}
