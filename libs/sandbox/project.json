@@ -9,7 +9,8 @@
       "executor": "@nrwl/angular:package",
       "outputs": ["{workspaceRoot}/dist/libs/sandbox"],
       "options": {
-        "project": "libs/sandbox/ng-package.json"
+        "project": "libs/sandbox/ng-package.json",
+        "updateBuildableProjectDepsInPackageJson": false
       },
       "configurations": {
         "production": {

@@ -1,12 +1,19 @@
 {
   "name": "@dontcode/plugin-screen",
-  "version": "0.5.14",
+  "version": "0.6.2-10",
   "peerDependencies": {
-    "@angular/common": "^15.1.1",
-    "@angular/core": "^15.1.1",
+    "@angular/common": "^15.1.2",
+    "@angular/core": "^15.1.2",
+    "@angular/forms": "^15.1.2",
+    "@angular/platform-browser": "^15.1.2",
+    "@angular/platform-browser-dynamic": "^15.1.2",
+    "primeflex": "^3.3.0",
+    "primeicons": "^6.0.1",
+    "primeng": "^15.1.1",
+    "rxjs": "^7.8.0",
+    "core-js": "^3.27.2",
     "@dontcode/core": "^0.6.1",
-    "@dontcode/plugin-common": "^0.6.1",
-    "rxjs": "^7.8.0"
+    "@dontcode/plugin-common": "^0.6.1"
   },
   "dependencies": {
     "tslib": "^2.4.1"
