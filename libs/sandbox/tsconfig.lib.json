@@ -15,5 +15,8 @@
     "**/*.test.ts",
     "jest.config.ts"
   ],
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts"],
+  "angularCompilerOptions": {
+    "compilationMode": "partial"
+  }
 }
