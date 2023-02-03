@@ -11,15 +11,7 @@ on:
     paths:
       - '*'
       - 'libs/screen/**'
-      - '.github/workflows/release-screen.yml'
-
-  pull_request:
-    branches: [ main ]
-    paths:
-      - '*'
-      - 'libs/fields/**'
-      - '.github/workflows/release-screen.yml'
-
+      - '.github/workflows/main-screen.yml'
 
 jobs:
   build:
