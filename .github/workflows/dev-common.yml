@@ -45,6 +45,7 @@ jobs:
         working-directory: 'plugins'
       - name: Build
         run: |
+          npm whoami
           nx run common:build:production
         working-directory: 'plugins'
       - name: Unit Tests
