@@ -54,17 +54,17 @@ jobs:
         if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version == '') && ( inputs.next == true) }}
         run: |
           cd libs/common
-          npm version prerelease
+          npm version patch
           cd ../sandbox
-          npm version prerelease
+          npm version patch
         working-directory: 'plugins'
-      - name: Version Patch
+      - name: Version Minor
         if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version == '') && ( inputs.next == false) }}
         run: |
           cd libs/common
-          npm version patch
+          npm version minor
           cd ../sandbox
-          npm version patch
+          npm version minor
         working-directory: 'plugins'
       - name: Version
         if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version != '') }}
