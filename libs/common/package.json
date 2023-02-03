@@ -1,6 +1,6 @@
 {
   "name": "@dontcode/plugin-common",
-  "version": "0.6.2-3",
+  "version": "0.6.2-10",
   "peerDependencies": {
     "@angular/common": "^15.1.2",
     "@angular/core": "^15.1.2",
@@ -13,7 +13,7 @@
     "async-mutex": "^0.4.0",
     "core-js": "^3.27.2",
     "rxjs": "^7.8.0",
-    "@dontcode/core": "^0.6.2"
+    "@dontcode/core": "^1.0.0"
   },
   "dependencies": {
     "tslib": "^2.4.1"

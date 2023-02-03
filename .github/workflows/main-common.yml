@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Fields Main
+name: Common Main
 
 on:
   workflow_dispatch:
@@ -10,15 +10,8 @@ on:
     branches: [ main ]
     paths:
       - '*'
-      - 'libs/fields/**'
-      - '.github/workflows/release-fields.yml'
-
-  pull_request:
-    branches: [ main ]
-    paths:
-      - '*'
-      - 'libs/fields/**'
-      - '.github/workflows/release-fields.yml'
+      - 'libs/common/**'
+      - '.github/workflows/main-common.yml'
 
 jobs:
   build:
@@ -52,12 +45,23 @@ jobs:
         working-directory: 'plugins'
       - name: Build
         run: |
-          nx run fields:build:production
+          nx run common:build:production
         working-directory: 'plugins'
       - name: Tests
         run: |
+          nx run common:test
+          nx run sandbox:test
+          nx run basic:test
           nx run fields:test
+          nx run screen:test
+        working-directory: 'plugins'
+      - name: End 2 End Tests
+        run: |
           nx run plugin-tester-e2e:e2e --browser ${{matrix.browser}}
+        working-directory: 'plugins'
+      - name: Build
+        run: |
+          nx run common:build:production
         working-directory: 'plugins'
       - uses: actions/upload-artifact@v3
         # Test run screenshots only on failure
