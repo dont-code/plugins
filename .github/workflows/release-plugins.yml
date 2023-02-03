@@ -47,11 +47,11 @@ jobs:
           PACKAGE_VERSION=$(npm view @dontcode/plugin-common versions --json | jq -r '.[-1]')
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           cd libs/basic
-          npm version $PACKAGE_VERSION
+          npm version $PACKAGE_VERSION --allow-same-version
           cd ../fields
-          npm version $PACKAGE_VERSION
+          npm version $PACKAGE_VERSION --allow-same-version
           cd ../screen
-          npm version $PACKAGE_VERSION
+          npm version $PACKAGE_VERSION --allow-same-version
         working-directory: 'plugins'
       - name: Version Next
         if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version == '') && ( inputs.next == true) }}
