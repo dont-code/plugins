@@ -44,7 +44,7 @@ jobs:
       - name: Version
         if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version == '') }}
         run: |
-          PACKAGE_VERSION=$(npm view @dontcode/common versions --json | jq -r '.[-1]')
+          PACKAGE_VERSION=$(npm view @dontcode/plugin-common versions --json | jq -r '.[-1]')
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           cd libs/basic
           npm version $PACKAGE_VERSION
