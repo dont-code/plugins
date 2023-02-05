@@ -14,6 +14,10 @@ on:
         description: Is it a next release ?
         required: true
         type: boolean
+      deploy:
+        description: Deploy to public website?
+        required: true
+        type: boolean
 
 jobs:
   build:
@@ -121,7 +125,7 @@ jobs:
       - name: Deploy all plugins
         run: nx run plugin-tester:build:production --base-href "https://dont-code.net/plugins/"
         working-directory: 'plugins'
-      - if: ${{ success()  && ( matrix.browser == 'chromium' ) && ( inputs.next == false) }}
+      - if: ${{ success()  && ( matrix.browser == 'chromium' ) && ( inputs.deploy == true) }}
         uses: crazy-max/ghaction-github-pages@v3.0.0
         with:
           repo: dont-code/plugins
