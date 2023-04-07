@@ -14,6 +14,10 @@ on:
         description: Is it a next release ?
         required: true
         type: boolean
+      deploy:
+        description: Deploy to public website?
+        required: true
+        type: boolean
 
 jobs:
   build:
@@ -47,11 +51,11 @@ jobs:
           PACKAGE_VERSION=$(npm view @dontcode/plugin-common versions --json | jq -r '.[-1]')
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           cd libs/basic
-          npm version $PACKAGE_VERSION
+          npm version $PACKAGE_VERSION --allow-same-version
           cd ../fields
-          npm version $PACKAGE_VERSION
+          npm version $PACKAGE_VERSION --allow-same-version
           cd ../screen
-          npm version $PACKAGE_VERSION
+          npm version $PACKAGE_VERSION --allow-same-version
         working-directory: 'plugins'
       - name: Version Next
         if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version == '') && ( inputs.next == true) }}
@@ -121,7 +125,7 @@ jobs:
       - name: Deploy all plugins
         run: nx run plugin-tester:build:production --base-href "https://dont-code.net/plugins/"
         working-directory: 'plugins'
-      - if: ${{ success()  && ( matrix.browser == 'chromium' ) && ( inputs.next == false) }}
+      - if: ${{ success()  && ( matrix.browser == 'chromium' ) && ( inputs.deploy == true) }}
         uses: crazy-max/ghaction-github-pages@v3.0.0
         with:
           repo: dont-code/plugins
