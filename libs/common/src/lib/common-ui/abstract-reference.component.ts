@@ -79,7 +79,7 @@ export class AbstractReferenceComponent extends AbstractDynamicComponent {
           this.options=value;
           },
         error: (err) => {
-          this.options=['Shop 1', 'Shop 2'];
+          this.options=['Error', err.toString()];
         }
       }));
       return true;
@@ -89,6 +89,7 @@ export class AbstractReferenceComponent extends AbstractDynamicComponent {
   possibleValues (): Observable<Array<string>> {
     if (this.targetEntitiesPos==null)  throw new Error ('Missing query of target entity for class '+this.constructor.name);
     const models=this.storeMgr.searchEntities(this.targetEntitiesPos);
+
     if (this.targetEntitiesProperty!=null){
       const property=this.targetEntitiesProperty;
       return models.pipe(
@@ -108,6 +109,33 @@ export class AbstractReferenceComponent extends AbstractDynamicComponent {
 
   valueChanged($event: any):void {
     this.valueChange.emit(new BaseDynamicEvent("Value", DynamicEventType.VALUE_CHANGE, $event.value));
+  }
+
+  override setValue(val: any) {
+   if ((val!=null) && (this.options!=null) && (this.options.findIndex((value) => {
+     if( (value!=='Shop EP')  && (value!=='Shop GW') && (value!=null) && (value!=='')) {
+       //throw new Error ("Error of the death");
+     }
+     if( value==val) return true;
+     return false;
+   })==-1)) {
+     if( this.options[0]!=='Error') {
+      // throw new Error ("erferf");
+     }
+     if ( this.options[1] != null) {
+       val=this.options[1].toString();
+     } else {
+       //throw new Error ("ERerferf");
+     }
+/*     if( (typeof val ==='string')&&(val!=='Shop EP')&&(val!=='Shop GW')) {
+       throw new Error ("Error of the death");
+     } else if (typeof val !== 'string') {
+       throw new Error ("Error of the death");
+     }*/
+     /*if( this.counter>=1) {
+     }*/
+    }
+    super.setValue(val);
   }
 
 }
