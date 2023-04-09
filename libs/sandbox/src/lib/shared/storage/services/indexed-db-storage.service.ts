@@ -105,14 +105,14 @@ export class IndexedDbStorageService extends AbstractDontCodeStoreProvider {
 
   protected changeSchema(db:Dexie, schemaChanges:any): Promise<Dexie> {
     db.close();
-    const newDb = new Dexie(db.name);
+/*    const newDb = new Dexie(db.name,{allowEmptyDB:true, autoOpen:false});
 
     newDb.on('blocked', ()=>false); // Silence console warning of blocked event.
 
     // Workaround: If DB is empty from tables, it needs to be recreated
     if (db.tables.length === 0) {
       return db.delete().then (value => {
-        newDb.version(1).stores(schemaChanges);
+        newDb.version(1.5).stores(schemaChanges);
         return newDb.open();
       })
     }
@@ -125,16 +125,16 @@ export class IndexedDbStorageService extends AbstractDontCodeStoreProvider {
       ].join(',');
       return result;
     }, {});
-
+*/
     //console.log("Version: " + db.verno);
     //console.log("Current Schema: ", currentSchema);
 
     // Tell Dexie about current schema:
-    newDb.version(db.verno).stores(currentSchema);
+   // newDb.version(db.verno).stores(currentSchema);
     // Tell Dexie about next schema:
-    newDb.version(db.verno + 1).stores(schemaChanges);
+    db.version(db.verno + 1).stores(schemaChanges);
     // Upgrade it:
-    return newDb.open();
+    return db.open();
   }
 
   createDatabase () {
@@ -142,8 +142,9 @@ export class IndexedDbStorageService extends AbstractDontCodeStoreProvider {
     if( (this.config)&&(this.config.indexedDbName)&&(this.config.indexedDbName.length>0))
       dbName=this.config.indexedDbName;
     if(!IndexedDbStorageService.globalDb)
-      IndexedDbStorageService.globalDb = new Dexie(dbName, {allowEmptyDB:true});
+      IndexedDbStorageService.globalDb = new Dexie(dbName, {allowEmptyDB:true, autoOpen:false});
     this.db=IndexedDbStorageService.globalDb;
+    this.db.open();
   }
 
 
