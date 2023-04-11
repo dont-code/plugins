@@ -68,8 +68,12 @@ export class AbstractReferenceComponent extends AbstractDynamicComponent {
 
   protected setTargetEntitiesWithName (entityName:string, propertyName?:string): boolean {
     // We must find the list of possible shops
-    const query="$.creation.entities[?(@.name=='"+entityName+"')]";
-    this.targetEntitiesPos = this.modelMgr.queryModelToSingle(query).pointer;
+    const queryResult=this.modelMgr.queryModelToSingle("$.creation.entities[?(@.name=='"+entityName+"')]");
+    if( queryResult==null) {
+      console.error("Cannot find an entity with name "+entityName+" in the model.");
+      throw new Error ("Cannot find an entity with name "+entityName+" in the model.");
+    }
+    this.targetEntitiesPos = queryResult.pointer;
 
     if (this.targetEntitiesPos==null)  return false;
     else {
