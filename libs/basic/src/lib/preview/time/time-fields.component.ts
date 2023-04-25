@@ -95,7 +95,12 @@ export class TimeFieldsComponent extends AbstractDynamicComponent {
     // One have to trigger onBlur event as it's the only one listened to by the form...
     console.log('Selection:', event);
     const value: { [key: string]: any } = {};
-    value[this.name] = event;
-    form.patchValue(value);
+    const control = form.get(this.name);
+    if (control!=null) {
+      control.setValue(event);
+      control.markAsDirty();
+    } else {
+      console.error("Cannot set date of unknown form control with name "+this.name);
+    }
   }
 }
