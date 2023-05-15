@@ -1,7 +1,12 @@
 /**
  * Allow storing of entities in the browser local database
  */
-import {AbstractDontCodeStoreProvider, DontCodeStoreCriteria, UploadedDocumentInfo} from "@dontcode/core";
+import {
+  AbstractDontCodeStoreProvider,
+  DontCodeStoreCriteria,
+  StoreProviderHelper,
+  UploadedDocumentInfo
+} from "@dontcode/core";
 import {from, Observable} from "rxjs";
 import Dexie, {Table} from "dexie";
 import {Inject, Injectable, Optional} from "@angular/core";
@@ -11,7 +16,7 @@ import {SANDBOX_CONFIG, SandboxLibConfig} from "../../config/sandbox-lib-config"
 @Injectable({
   providedIn: 'root'
 })
-export class IndexedDbStorageService extends AbstractDontCodeStoreProvider {
+export class IndexedDbStorageService<T=never> extends AbstractDontCodeStoreProvider<T> {
 
   protected static globalDb: Dexie;
 
@@ -33,17 +38,17 @@ export class IndexedDbStorageService extends AbstractDontCodeStoreProvider {
 
   }
 
-  loadEntity(position: string, key: any): Promise<any> {
+  loadEntity(position: string, key: any): Promise<T|undefined> {
     return this.ensurePositionCanBeStored(position, false).then (table => {
       return table.get(key);
     })
   }
 
-  searchEntities(position: string, ...criteria: DontCodeStoreCriteria[]): Observable<Array<any>> {
+  override searchEntities(position: string, ...criteria: DontCodeStoreCriteria[]): Observable<Array<T>> {
     return from (
       this.ensurePositionCanBeStored(position, true).then(table => {
       return table.toArray().then(list => {
-        return this.applyFilters(list, ...criteria);
+        return StoreProviderHelper.applyFilters(list, ...criteria);
       });
     })
     );
@@ -56,7 +61,7 @@ export class IndexedDbStorageService extends AbstractDontCodeStoreProvider {
     throw new Error("Impossible to store documents in IndexedDB.");
   }
 
-  storeEntity(position: string, entity: any): Promise<any> {
+  storeEntity(position: string, entity: any): Promise<T> {
     return this.ensurePositionCanBeStored(position, true).then(table => {
       return table.put(entity).then(key => {
         if ((entity._id) && (entity._id!==key)) {
@@ -69,7 +74,7 @@ export class IndexedDbStorageService extends AbstractDontCodeStoreProvider {
     });
   }
 
-  ensurePositionCanBeStored (position: string, create?:boolean):Promise<Table> {
+  ensurePositionCanBeStored (position: string, create?:boolean):Promise<Table<T>> {
     const description=this.values.findAtPosition(position);
     if (description)
       return this.ensureEntityCanBeStored(description, create);
@@ -78,7 +83,7 @@ export class IndexedDbStorageService extends AbstractDontCodeStoreProvider {
     }
   }
 
-  ensureEntityCanBeStored (description: any, create?:boolean):Promise<Table> {
+  ensureEntityCanBeStored (description: any, create?:boolean):Promise<Table<T>> {
       // We have to make sure the database is open before we can get the list of tables
     return this.db.open().then (db => {
       let table;

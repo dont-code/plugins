@@ -3,9 +3,10 @@ import {
   DontCodeModelManager,
   DontCodeStoreCriteria,
   dtcde,
+  StoreProviderHelper,
   UploadedDocumentInfo
 } from "@dontcode/core";
-import {Observable, throwError} from "rxjs";
+import {lastValueFrom, Observable, throwError} from "rxjs";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Inject, Injectable, Optional} from "@angular/core";
 import {map, mergeAll} from "rxjs/operators";
@@ -17,7 +18,7 @@ import {DONT_CODE_DOC_API_URL, DONT_CODE_STORE_API_URL} from "@dontcode/plugin-c
 @Injectable({
   providedIn: 'root'
 })
-export class DontCodeApiStoreProvider extends AbstractDontCodeStoreProvider {
+export class DontCodeApiStoreProvider<T=never> extends AbstractDontCodeStoreProvider<T> {
 
   apiUrl: string;
   docUrl: string;
@@ -43,27 +44,28 @@ export class DontCodeApiStoreProvider extends AbstractDontCodeStoreProvider {
     }
   }
 
-  storeEntity(position: string, data: any): Promise<any> {
+  storeEntity(position: string, data: T): Promise<T> {
     const entity = this.modelMgr.findAtPosition(position, false);
     if (entity === null)  {
       return Promise.reject("No entity found at position "+position);
     }
 
-    if( data._id) {
-      return this.http.put(this.apiUrl+'/'+entity.name+'/'+data._id, data, {observe:"body", responseType:"json"}).toPromise();
+    const id=(data as any)._id;
+    if( id != undefined) {
+      return lastValueFrom(this.http.put<T>(this.apiUrl+'/'+entity.name+'/'+id, data, {observe:"body", responseType:"json"}));
     } else {
-      return this.http.post(this.apiUrl+'/'+entity.name, data, {observe:"body", responseType:"json"}).toPromise();
+      return lastValueFrom(this.http.post<T>(this.apiUrl+'/'+entity.name, data, {observe:"body", responseType:"json"}));
     }
   }
 
-  loadEntity(position: string, key: any): Promise<any> {
+  loadEntity(position: string, key: any): Promise<T|undefined> {
     const entity = this.modelMgr.findAtPosition(position, false);
     if (entity === null)  {
       return Promise.reject("No entity found at position "+position);
     }
 
-    const obs = this.http.get(this.apiUrl+'/'+entity.name+'/'+key, {observe:"body", responseType:"json"});
-    return obs.toPromise();
+    const obs = this.http.get<T>(this.apiUrl+'/'+entity.name+'/'+key, {observe:"body", responseType:"json"});
+    return lastValueFrom(obs);
   }
 
   deleteEntity(position: string, key: any): Promise<boolean> {
@@ -77,14 +79,14 @@ export class DontCodeApiStoreProvider extends AbstractDontCodeStoreProvider {
     });
     }
 
-  searchEntities(position: string, ...criteria: DontCodeStoreCriteria[]): Observable<any[]> {
+  override searchEntities(position: string, ...criteria: DontCodeStoreCriteria[]): Observable<T[]> {
     const entity = this.modelMgr.findAtPosition(position, false);
     if (entity === null)  {
-      return throwError("No entity found at position "+position);
+      return throwError(()=> new Error ("No entity found at position "+position));
     }
 
     return this.http.get(this.apiUrl+'/'+entity.name, {observe:"body", responseType:"json"}).pipe(map(value => {
-            return this.applyFilters( value as Array<any>, ...criteria);
+            return StoreProviderHelper.applyFilters( value as Array<any>, ...criteria);
           }
         ));
     }

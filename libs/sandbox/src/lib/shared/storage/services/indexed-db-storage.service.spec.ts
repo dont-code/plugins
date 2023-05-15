@@ -6,14 +6,14 @@ import {lastValueFrom} from "rxjs";
 import {PluginCommonModule} from "@dontcode/plugin-common";
 
 describe('DevTemplateManagerService', () => {
-  let service: IndexedDbStorageService;
+  let service: IndexedDbStorageService<{_id:number,code:string}>;
   let valueService: ValueService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ PluginCommonModule.forRoot()]
     });
-    service = TestBed.inject(IndexedDbStorageService);
+    service = TestBed.inject<IndexedDbStorageService<{_id:number,code:string}>>(IndexedDbStorageService<{_id:number,code:string}>);
     valueService = TestBed.inject(ValueService);
   });
 
@@ -31,7 +31,7 @@ describe('DevTemplateManagerService', () => {
       }).then (value => {
         return service.loadEntity('creation/entities/a', value._id);
       }).then(value => {
-        expect (value.code).toEqual('testA');
+        expect (value?.code).toEqual('testA');
         done();
       }).catch((reason:Error) => {
         done(reason.name+':'+reason.message);

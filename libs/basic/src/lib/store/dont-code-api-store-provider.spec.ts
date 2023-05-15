@@ -11,7 +11,7 @@ describe('DontCode Api Store Manager', () => {
 
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let storeProvider: DontCodeApiStoreProvider;
+  let storeProvider: DontCodeApiStoreProvider<any>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

@@ -1,7 +1,13 @@
 import {Injectable} from '@angular/core';
-import {DontCodeStoreManager} from "@dontcode/core";
+import {
+  DontCodeStoreCriteria,
+  DontCodeStoreGroupby,
+  DontCodeStoreManager,
+  DontCodeStorePreparedEntities,
+  DontCodeStoreSort, StoreProviderHelper
+} from "@dontcode/core";
 import {map} from "rxjs/operators";
-import {lastValueFrom} from "rxjs";
+import {firstValueFrom, lastValueFrom} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +37,7 @@ export class EntityListManager {
    * The array of entities to use
    */
   entities = new Array<any>();
+  prepared : DontCodeStorePreparedEntities<any>|null = null;
 
   constructor(position:string, description: any, protected storeMgr:DontCodeStoreManager) {
     this.position = position;
@@ -75,12 +82,15 @@ export class EntityListManager {
     {
       return new Promise (resolve => {
         this.entities = this.entities.filter(val => (val!==element));
+        this.prepared=null;
         resolve( true);
       });
     }else {
     return this.storeMgr.deleteEntity(this.position, element._id).then(deleted => {
-      if( deleted)
+      if( deleted) {
         this.entities = this.entities.filter(val => (val!==element));
+        this.prepared=null;
+      }
       return deleted;
     }).catch((reason:Error) => {
       console.error(reason.message);
@@ -91,20 +101,55 @@ export class EntityListManager {
 
   reset (): void {
     this.entities.length=0;
+    this.prepared=null;
   }
 
   store (element:any): Promise<any> {
+    this.prepared=null;
     return this.storeMgr.storeEntity(this.position, element);
   }
 
   loadAll (): Promise<void> {
-    return lastValueFrom(this.storeMgr.searchEntities(this.position).pipe(
+    return firstValueFrom(this.storeMgr.searchEntities(this.position).pipe(
       map (values => {
+        this.prepared=null;
         this.entities = [...values];
       return;
     })
     ), {defaultValue:undefined});
   }
+
+  searchAndPrepareEntities(
+    sort?:DontCodeStoreSort,
+    groupBy?:DontCodeStoreGroupby,
+    ...criteria: DontCodeStoreCriteria[]
+  ): Promise<void> {
+    if (this.entities!=null) {
+      this.prepared=null;
+      // Already loaded, just sort & group
+      let sortedValues= this.entities;
+      let groupedValues=undefined;
+      if( criteria!=null)
+        sortedValues=StoreProviderHelper.applyFilters(sortedValues, ...criteria);
+      if (sort!=null)
+        sortedValues=StoreProviderHelper.multiSortArray(sortedValues, sort);
+      if (groupBy!=null)
+        groupedValues=StoreProviderHelper.calculateGroupedByValues(sortedValues, groupBy);
+      if ((criteria!=null) || (sort!=null) || (groupBy!=null)) {
+        this.prepared=new DontCodeStorePreparedEntities<any>(sortedValues, sort, groupedValues);
+      }
+      return Promise.resolve();
+    } else {
+      // Not loaded already, just ask the store to do it
+      return firstValueFrom(this.storeMgr.searchAndPrepareEntities(this.position, sort, groupBy, ...criteria).pipe(
+        map (value => {
+          this.prepared=value;
+          this.entities=this.prepared.sortedData;
+        }))
+      )
+    }
+  }
+
 
   /**
    * Loads the detail of an already loaded item. Makes sure it only add any additional fields without changing any values of the item in memory
