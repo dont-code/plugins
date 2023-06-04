@@ -42,7 +42,7 @@ export class ListEntityComponent
   colsMap = new Map<string, number>();
 
   @Input()
-  store: EntityListManager | null = null;
+  store: EntityListManager<any> | null = null;
 
   constructor(
     ref: ChangeDetectorRef,

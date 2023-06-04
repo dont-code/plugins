@@ -218,7 +218,7 @@ export abstract class AbstractDynamicLoaderComponent
   }
 
   /**
-   * Retrieve the fulledittemplate for a subfield
+   * Retrieve the fullviewtemplate for a subfield
    * * @param formName
    */
   subFieldFullViewTemplate (subField:string|SubFieldInfo): TemplateRef<any> | null {

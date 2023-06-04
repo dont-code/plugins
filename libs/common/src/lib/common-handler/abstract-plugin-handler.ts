@@ -53,15 +53,18 @@ export abstract class AbstractPluginHandler implements PreviewHandler {
 
   /**
    * Updates the array of T elements by applying the changes received and calling the transform method
-   * @param cols
-   * @param colsMap
+   * @param target
+   * @param targetMap
    * @param change
    * @param property
    * @param transform
+   * @param parentPosition
+   * @param applyProperty
    * @private
    */
-  applyUpdatesToArrayAsync<T>(target: T[], targetMap: Map<string, number>, change: Change, property: string|null, transform: (position: DontCodeModelPointer, item: any) => Promise<T>, applyProperty?: (target: T, key: string|null, value: any) => boolean): Promise<T[]> {
-    return this.pluginHelper.applyUpdatesToArrayAsync(target, targetMap, change, property, transform, applyProperty);
+  applyUpdatesToArrayAsync<T>(target: T[], targetMap: Map<string, number>, change: Change, property: string|null, transform: (position: DontCodeModelPointer, item: any) => Promise<T>,
+                              parentPosition?: string, applyProperty?: (target: T, key: string|null, value: any) => boolean): Promise<T[]> {
+    return this.pluginHelper.applyUpdatesToArrayAsync(target, targetMap, change, property, transform, parentPosition, applyProperty);
   }
 
   /**

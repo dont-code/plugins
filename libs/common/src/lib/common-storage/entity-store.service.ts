@@ -1,26 +1,28 @@
 import {Injectable} from '@angular/core';
 import {
+  DontCodeReportGroupType,
+  DontCodeReportSortType,
   DontCodeStoreCriteria,
   DontCodeStoreGroupby,
   DontCodeStoreManager,
   DontCodeStorePreparedEntities,
-  DontCodeStoreSort, StoreProviderHelper
+  StoreProviderHelper
 } from "@dontcode/core";
 import {map} from "rxjs/operators";
-import {firstValueFrom, lastValueFrom} from "rxjs";
+import {firstValueFrom} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class EntityStoreService {
 
-  protected listsByPosition = new Map<string, EntityListManager> ();
+  protected listsByPosition = new Map<string, EntityListManager<any>> ();
   constructor(protected storeMgr:DontCodeStoreManager) { }
 
-  retrieveListManager (position:string, description:any): EntityListManager {
-    let newOne = this.listsByPosition.get(position);
+  retrieveListManager<T=never> (position:string, description:any): EntityListManager<T> {
+    let newOne:EntityListManager<any>|undefined = this.listsByPosition.get(position);
     if (newOne == null){
-      newOne = new EntityListManager(position, description, this.storeMgr);
+      newOne = new EntityListManager<T>(position, description, this.storeMgr);
       this.listsByPosition.set(position, newOne);
     }
     return newOne;
@@ -30,28 +32,30 @@ export class EntityStoreService {
 /**
  * Manages a list of any object stored by the Dont-Code StoreManager in a way that Angular detects the changes
  */
-export class EntityListManager {
+export class EntityListManager<T=never> {
   protected position: string;
   protected description:any;
   /**
    * The array of entities to use
    */
-  entities = new Array<any>();
-  prepared : DontCodeStorePreparedEntities<any>|null = null;
+  entities = new Array<T>();
+  prepared : DontCodeStorePreparedEntities<T>|null = null;
 
   constructor(position:string, description: any, protected storeMgr:DontCodeStoreManager) {
     this.position = position;
     this.description = description;
   }
 
-  push (element:any):void {
+  push (element:T):void {
     this.entities = [...this.entities, element];
   }
 
-  updateWithDetailedEntity (element:any):any {
-    const updated = new Array();
+  updateWithDetailedEntity (element:T):T {
+    const elementId=(element as any)._id;
+    const updated = new Array<T>();
     this.entities.forEach(value => {
-      if( value._id==element._id) {
+      const valueId=(value as any)._id;
+      if( valueId==elementId) {
         element={...element, ...value};
         updated.push(element);
       }else {
@@ -62,11 +66,13 @@ export class EntityListManager {
     return element;
   }
 
-  replace (element:any):boolean {
+  replace (element:T):boolean {
+    const elementId=(element as any)._id;
     let ret=false;
-    const updated = new Array();
+    const updated = new Array<T>();
     this.entities.forEach(value => {
-      if( value._id==element._id) {
+      const valueId=(value as any)._id;
+      if( valueId==elementId) {
         updated.push(element);
         ret = true;
       }else {
@@ -77,8 +83,9 @@ export class EntityListManager {
     return ret;
   }
 
-  remove (element:any): Promise<boolean> {
-    if (element._id==null)  // Not saved yet, so just remove it from the list
+  remove (element:T): Promise<boolean> {
+    const elementId=(element as any)._id;
+    if (elementId==null)  // Not saved yet, so just remove it from the list
     {
       return new Promise (resolve => {
         this.entities = this.entities.filter(val => (val!==element));
@@ -86,7 +93,7 @@ export class EntityListManager {
         resolve( true);
       });
     }else {
-    return this.storeMgr.deleteEntity(this.position, element._id).then(deleted => {
+    return this.storeMgr.deleteEntity(this.position, elementId).then(deleted => {
       if( deleted) {
         this.entities = this.entities.filter(val => (val!==element));
         this.prepared=null;
@@ -120,28 +127,33 @@ export class EntityListManager {
   }
 
   searchAndPrepareEntities(
-    sort?:DontCodeStoreSort,
-    groupBy?:DontCodeStoreGroupby,
+    sort?:DontCodeReportSortType[]|undefined,
+    groupBy?:DontCodeReportGroupType[]|undefined,
     ...criteria: DontCodeStoreCriteria[]
   ): Promise<void> {
+    const sortStore = ((sort!=null) && (sort.length>0))?sort[0]:undefined;
+    const groupByStore= ((groupBy!=null) && (groupBy.length>0))?new DontCodeStoreGroupby(groupBy[0].of,groupBy[0].display):undefined;
     if (this.entities!=null) {
       this.prepared=null;
       // Already loaded, just sort & group
       let sortedValues= this.entities;
       let groupedValues=undefined;
+
       if( criteria!=null)
         sortedValues=StoreProviderHelper.applyFilters(sortedValues, ...criteria);
-      if (sort!=null)
-        sortedValues=StoreProviderHelper.multiSortArray(sortedValues, sort);
-      if (groupBy!=null)
-        groupedValues=StoreProviderHelper.calculateGroupedByValues(sortedValues, groupBy);
+      if (sortStore!=null){
+        sortedValues=StoreProviderHelper.multiSortArray(sortedValues,sortStore);
+      }
+      if (groupByStore!=null){
+        groupedValues=StoreProviderHelper.calculateGroupedByValues(sortedValues, groupByStore);
+      }
       if ((criteria!=null) || (sort!=null) || (groupBy!=null)) {
-        this.prepared=new DontCodeStorePreparedEntities<any>(sortedValues, sort, groupedValues);
+        this.prepared=new DontCodeStorePreparedEntities<any>(sortedValues, sortStore, groupedValues);
       }
       return Promise.resolve();
     } else {
       // Not loaded already, just ask the store to do it
-      return firstValueFrom(this.storeMgr.searchAndPrepareEntities(this.position, sort, groupBy, ...criteria).pipe(
+      return firstValueFrom(this.storeMgr.searchAndPrepareEntities(this.position, sortStore, groupByStore, ...criteria).pipe(
         map (value => {
           this.prepared=value;
           this.entities=this.prepared.sortedData;

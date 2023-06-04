@@ -76,9 +76,17 @@ export class PluginHandlerHelper {
    * Calls handleChange each time a change event for any element below this (as per the model's position) is received
    * @protected
    */
-  initChangeListening(subElement?: boolean) {
-    if (this.provider && this.entityPointer) {
-      let filter = this.entityPointer.position;
+  initChangeListening(subElement?: boolean):void {
+    this.initOtherChangeListening(subElement, this.entityPointer);
+  }
+
+  /**
+   * Calls handleChange each time a change event for any element of the model given in parameter
+   * @protected
+   */
+  initOtherChangeListening(subElement?: boolean, pointer?:DontCodeModelPointer|null):void {
+    if (this.provider && pointer) {
+      let filter = pointer.position;
       if (subElement !== true) filter += '/?';
       this.subscriptions.add(
         this.provider
@@ -129,11 +137,13 @@ export class PluginHandlerHelper {
 
   /**
    * Updates the array of T elements by applying the changes received and calling the transform method
-   * @param cols
-   * @param colsMap
+   * @param target
+   * @param targetMap
    * @param change
    * @param property
    * @param transform
+   * @param parentPosition
+   * @param applyProperty
    * @private
    */
   applyUpdatesToArrayAsync<T>(
@@ -142,6 +152,7 @@ export class PluginHandlerHelper {
     change: Change,
     property: string | null,
     transform: (position: DontCodeModelPointer, item: any) => Promise<T>,
+    parentPosition?: string,
     applyProperty?: (target: T, key: string | null, value: any) => boolean
   ): Promise<T[]> {
     // We have the mutex to avoid multiple changes checking the map and target array at the same time...
@@ -155,7 +166,7 @@ export class PluginHandlerHelper {
           change.pointer = this.provider.calculatePointerFor(change.position);
         }
         // If the change concerns the array, then calculates it's element (itemId)
-        let parentPosition = this.entityPointer?.position;
+        parentPosition = parentPosition??this.entityPointer?.position;
         if (property != null) parentPosition = parentPosition + '/' + property;
         const subItem = change.pointer.containerPosition === parentPosition;
         let itemId = subItem

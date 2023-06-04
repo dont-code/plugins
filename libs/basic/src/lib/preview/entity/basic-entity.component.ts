@@ -24,7 +24,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   entityName:string='';
   selectedItem: any;
 
-  store:EntityListManager|null=null;
+  store:EntityListManager<any>|null=null;
 
   tabIndex = 0;
 
