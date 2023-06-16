@@ -177,4 +177,16 @@ export class ComponentLoaderService {
     }
     return component;
   }
+
+  /**
+   * For some reasons, during a Jest test, modules are not registered in Angular getNgModuleById(), so we let the possibility to do it by hand
+   * @param module
+   * @param source
+   */
+  registerModuleForTest (module:NgModuleRef<PluginModuleInterface>|Type<PluginModuleInterface>, source:string) {
+    if( (module as any).instance == null )  // It's not a NgModuleRef
+      this.moduleMap.set(source, createNgModule(module as Type<PluginModuleInterface>, this.injector));
+    else
+      this.moduleMap.set(source, module as NgModuleRef<PluginModuleInterface>);
+  }
 }
