@@ -127,12 +127,15 @@ export class EntityListManager<T=never> {
   }
 
   searchAndPrepareEntities(
-    sort?:DontCodeReportSortType[]|undefined,
-    groupBy?:DontCodeReportGroupType[]|undefined,
+    sort?:{[key:string]:DontCodeReportSortType}|undefined,
+    groupBy?:{[key:string]:DontCodeReportGroupType}|undefined,
     ...criteria: DontCodeStoreCriteria[]
   ): Promise<void> {
-    const sortStore = ((sort!=null) && (sort.length>0))?sort[0]:undefined;
-    const groupByStore= ((groupBy!=null) && (groupBy.length>0))?new DontCodeStoreGroupby(groupBy[0].of,groupBy[0].display):undefined;
+      // It only supports one groupby and one sortby for now, so just find one if any
+    let listOfValues:any[] = (sort!=null)?Object.values(sort):[];
+    const sortStore = (listOfValues.length>0)?listOfValues[0]:undefined;
+    listOfValues=(groupBy!=null)?Object.values(groupBy):[];
+    const groupByStore= (listOfValues.length>0)?new DontCodeStoreGroupby(listOfValues[0].of,listOfValues[0].display):undefined;
     if (this.entities!=null) {
       this.prepared=null;
       // Already loaded, just sort & group
