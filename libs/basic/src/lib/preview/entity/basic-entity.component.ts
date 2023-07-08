@@ -45,7 +45,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
     super.initCommandFlow(provider, pointer);
     if( this.entityPointer) {
       const json=provider.getJsonAt(this.entityPointer.position);
-      this.store = this.entityService.retrieveListManager(this.entityPointer.position, json);
+      this.store = this.entityService.retrieveListManager(this.entityPointer, json);
       this.decomposeJsonToMultipleChanges (this.entityPointer, json);
     }
     this.initChangeListening (); // Listen to name changes of this Entity
