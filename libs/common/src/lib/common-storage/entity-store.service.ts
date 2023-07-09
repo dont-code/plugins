@@ -1,21 +1,30 @@
 import {Injectable} from '@angular/core';
-import {DontCodeStoreManager} from "@dontcode/core";
+import {
+  DontCodeModelManager, DontCodeModelPointer,
+  DontCodeReportGroupType,
+  DontCodeReportSortType,
+  DontCodeStoreCriteria,
+  DontCodeStoreGroupby,
+  DontCodeStoreManager,
+  DontCodeStorePreparedEntities,
+  StoreProviderHelper
+} from "@dontcode/core";
 import {map} from "rxjs/operators";
-import {lastValueFrom} from "rxjs";
+import {firstValueFrom} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class EntityStoreService {
 
-  protected listsByPosition = new Map<string, EntityListManager> ();
-  constructor(protected storeMgr:DontCodeStoreManager) { }
+  protected listsByPosition = new Map<string, EntityListManager<any>> ();
+  constructor(protected storeMgr:DontCodeStoreManager, protected modelMgr:DontCodeModelManager) { }
 
-  retrieveListManager (position:string, description:any): EntityListManager {
-    let newOne = this.listsByPosition.get(position);
+  retrieveListManager<T=never> (pointer:DontCodeModelPointer, description:any): EntityListManager<T> {
+    let newOne:EntityListManager<any>|undefined = this.listsByPosition.get(pointer.position);
     if (newOne == null){
-      newOne = new EntityListManager(position, description, this.storeMgr);
-      this.listsByPosition.set(position, newOne);
+      newOne = new EntityListManager<T>(pointer, description, this.storeMgr, this.modelMgr);
+      this.listsByPosition.set(pointer.position, newOne);
     }
     return newOne;
   }
@@ -24,27 +33,30 @@ export class EntityStoreService {
 /**
  * Manages a list of any object stored by the Dont-Code StoreManager in a way that Angular detects the changes
  */
-export class EntityListManager {
-  protected position: string;
+export class EntityListManager<T=never> {
+  protected pointer: DontCodeModelPointer;
   protected description:any;
   /**
    * The array of entities to use
    */
-  entities = new Array<any>();
+  entities = new Array<T>();
+  prepared : DontCodeStorePreparedEntities<T>|null = null;
 
-  constructor(position:string, description: any, protected storeMgr:DontCodeStoreManager) {
-    this.position = position;
+  constructor(pointer:DontCodeModelPointer, description: any, protected storeMgr:DontCodeStoreManager, protected modelMgr:DontCodeModelManager) {
+    this.pointer = pointer;
     this.description = description;
   }
 
-  push (element:any):void {
+  push (element:T):void {
     this.entities = [...this.entities, element];
   }
 
-  updateWithDetailedEntity (element:any):any {
-    const updated = new Array();
+  updateWithDetailedEntity (element:T):T {
+    const elementId=(element as any)._id;
+    const updated = new Array<T>();
     this.entities.forEach(value => {
-      if( value._id==element._id) {
+      const valueId=(value as any)._id;
+      if( valueId==elementId) {
         element={...element, ...value};
         updated.push(element);
       }else {
@@ -55,11 +67,13 @@ export class EntityListManager {
     return element;
   }
 
-  replace (element:any):boolean {
+  replace (element:T):boolean {
+    const elementId=(element as any)._id;
     let ret=false;
-    const updated = new Array();
+    const updated = new Array<T>();
     this.entities.forEach(value => {
-      if( value._id==element._id) {
+      const valueId=(value as any)._id;
+      if( valueId==elementId) {
         updated.push(element);
         ret = true;
       }else {
@@ -70,17 +84,21 @@ export class EntityListManager {
     return ret;
   }
 
-  remove (element:any): Promise<boolean> {
-    if (element._id==null)  // Not saved yet, so just remove it from the list
+  remove (element:T): Promise<boolean> {
+    const elementId=(element as any)._id;
+    if (elementId==null)  // Not saved yet, so just remove it from the list
     {
       return new Promise (resolve => {
         this.entities = this.entities.filter(val => (val!==element));
+        this.prepared=null;
         resolve( true);
       });
     }else {
-    return this.storeMgr.deleteEntity(this.position, element._id).then(deleted => {
-      if( deleted)
+    return this.storeMgr.deleteEntity(this.pointer.position, elementId).then(deleted => {
+      if( deleted) {
         this.entities = this.entities.filter(val => (val!==element));
+        this.prepared=null;
+      }
       return deleted;
     }).catch((reason:Error) => {
       console.error(reason.message);
@@ -91,20 +109,63 @@ export class EntityListManager {
 
   reset (): void {
     this.entities.length=0;
+    this.prepared=null;
   }
 
   store (element:any): Promise<any> {
-    return this.storeMgr.storeEntity(this.position, element);
+    this.prepared=null;
+    return this.storeMgr.storeEntity(this.pointer.position, element);
   }
 
   loadAll (): Promise<void> {
-    return lastValueFrom(this.storeMgr.searchEntities(this.position).pipe(
+    return firstValueFrom(this.storeMgr.searchEntities(this.pointer.position).pipe(
       map (values => {
+        this.prepared=null;
         this.entities = [...values];
       return;
     })
     ), {defaultValue:undefined});
   }
+
+  searchAndPrepareEntities(
+    sort?:{[key:string]:DontCodeReportSortType}|undefined,
+    groupBy?:{[key:string]:DontCodeReportGroupType}|undefined,
+    ...criteria: DontCodeStoreCriteria[]
+  ): Promise<void> {
+      // It only supports one groupby and one sortby for now, so just find one if any
+    let listOfValues:any[] = (sort!=null)?Object.values(sort):[];
+    const sortStore = (listOfValues.length>0)?listOfValues[0]:undefined;
+    listOfValues=(groupBy!=null)?Object.values(groupBy):[];
+    const groupByStore= (listOfValues.length>0)?new DontCodeStoreGroupby(listOfValues[0].of,listOfValues[0].display):undefined;
+    if (this.entities!=null) {
+      this.prepared=null;
+      // Already loaded, just sort & group
+      let sortedValues= this.entities;
+      let groupedValues=undefined;
+
+      if( criteria!=null)
+        sortedValues=StoreProviderHelper.applyFilters(sortedValues, ...criteria);
+      if (sortStore!=null){
+        sortedValues=StoreProviderHelper.multiSortArray(sortedValues,sortStore);
+      }
+      if (groupByStore!=null){
+        groupedValues=StoreProviderHelper.calculateGroupedByValues(sortedValues, groupByStore, this.modelMgr, this.pointer);
+      }
+      if ((criteria!=null) || (sort!=null) || (groupBy!=null)) {
+        this.prepared=new DontCodeStorePreparedEntities<any>(sortedValues, sortStore, groupedValues);
+      }
+      return Promise.resolve();
+    } else {
+      // Not loaded already, just ask the store to do it
+      return firstValueFrom(this.storeMgr.searchAndPrepareEntities(this.pointer.position, sortStore, groupByStore, ...criteria).pipe(
+        map (value => {
+          this.prepared=value;
+          this.entities=this.prepared.sortedData;
+        }))
+      )
+    }
+  }
+
 
   /**
    * Loads the detail of an already loaded item. Makes sure it only add any additional fields without changing any values of the item in memory
@@ -113,7 +174,7 @@ export class EntityListManager {
   loadDetailFromKey (key:any): Promise<any> {
     if( key==null)
       return Promise.reject("Cannot load entity with null key");
-    return this.storeMgr.loadEntity(this.position, key).then(loaded => {
+    return this.storeMgr.loadEntity(this.pointer.position, key).then(loaded => {
       if (loaded!=null) {
         return this.updateWithDetailedEntity(loaded);
       }

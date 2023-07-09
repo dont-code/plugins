@@ -218,7 +218,7 @@ export abstract class AbstractDynamicLoaderComponent
   }
 
   /**
-   * Retrieve the fulledittemplate for a subfield
+   * Retrieve the fullviewtemplate for a subfield
    * * @param formName
    */
   subFieldFullViewTemplate (subField:string|SubFieldInfo): TemplateRef<any> | null {
@@ -331,7 +331,7 @@ export abstract class AbstractDynamicLoaderComponent
           reject(err);
         }
       })).then( () => {
-        console.debug("LoadSubComponent:"+position.position+' with type '+type, this.dynamicInsertPoint);
+        console.debug("LoadSubComponent:"+position.position+' with type '+type+', dynamicInsertPoint is ', (this.dynamicInsertPoint!=null));
         if (this.dynamicInsertPoint==null) {
           return null;
         }

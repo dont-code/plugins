@@ -90,11 +90,13 @@ export abstract class PluginBaseComponent
 
   /**
    * Updates the array of T elements by applying the changes received and calling the transform method
-   * @param cols
-   * @param colsMap
+   * @param target
+   * @param targetMap
    * @param change
    * @param property
    * @param transform
+   * @param parentPosition
+   * @param applyProperty
    * @private
    */
   applyUpdatesToArray<T>(
@@ -103,6 +105,7 @@ export abstract class PluginBaseComponent
     change: Change,
     property: string,
     transform: (position: DontCodeModelPointer, item: any) => T,
+    parentPosition?: string,
     applyProperty?: (target: T, key: string, value: any) => boolean
   ): Promise<T[]> {
     return this.applyUpdatesToArrayAsync(
@@ -112,17 +115,20 @@ export abstract class PluginBaseComponent
       property,
       (key, item) => {
         return Promise.resolve(transform(key, item));
-      }
+      },
+      parentPosition
     );
   }
 
   /**
    * Updates the array of T elements by applying the changes received and calling the transform method
-   * @param cols
-   * @param colsMap
+   * @param target
+   * @param targetMap
    * @param change
    * @param property
    * @param transform
+   * @param parentPosition
+   * @param applyProperty
    * @private
    */
   applyUpdatesToArrayAsync<T>(
@@ -131,6 +137,7 @@ export abstract class PluginBaseComponent
     change: Change,
     property: string | null,
     transform: (position: DontCodeModelPointer, item: any) => Promise<T>,
+    parentPosition?: string,
     applyProperty?: (target: T, key: string | null, value: any) => boolean
   ): Promise<T[]> {
     return this.pluginHelper.applyUpdatesToArrayAsync(
@@ -139,6 +146,7 @@ export abstract class PluginBaseComponent
       change,
       property,
       transform,
+      parentPosition,
       applyProperty
     );
   }
@@ -150,7 +158,7 @@ export abstract class PluginBaseComponent
    * @param change
    * @protected
    */
-  protected updateSubFieldsWithChange(change: Change, subProperty:string|null): Promise<SubFieldInfo[]|null> {
+  protected updateSubFieldsWithChange(change: Change, subProperty:string|null, parentPosition?: string): Promise<SubFieldInfo[]|null> {
       return this.applyUpdatesToArrayAsync(
         this.fields,
         this.fieldsMap,
@@ -161,6 +169,7 @@ export abstract class PluginBaseComponent
             return new SubFieldInfo(value.name, value.type, component??undefined);
           });
         },
+        parentPosition,
         (elt, key, newVal) => {
           switch (key) {
             case DontCodeModel.APP_FIELDS_NAME_NODE:
