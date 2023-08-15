@@ -11,6 +11,7 @@ import {
 } from "@dontcode/core";
 import {map} from "rxjs/operators";
 import {firstValueFrom} from "rxjs";
+import {DontCodeDataTransformer} from "@dontcode/core/src/lib/store/dont-code-data-transformer";
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,7 @@ export class EntityStoreService {
   protected listsByPosition = new Map<string, EntityListManager<any>> ();
   constructor(protected storeMgr:DontCodeStoreManager, protected modelMgr:DontCodeModelManager) { }
 
-  retrieveListManager<T=never> (pointer:DontCodeModelPointer, description:any): EntityListManager<T> {
+  retrieveListManager<T=never> (pointer:DontCodeModelPointer, description:any, ): EntityListManager<T> {
     let newOne:EntityListManager<any>|undefined = this.listsByPosition.get(pointer.position);
     if (newOne == null){
       newOne = new EntityListManager<T>(pointer, description, this.storeMgr, this.modelMgr);
@@ -130,6 +131,7 @@ export class EntityListManager<T=never> {
   searchAndPrepareEntities(
     sort?:{[key:string]:DontCodeReportSortType}|undefined,
     groupBy?:{[key:string]:DontCodeReportGroupType}|undefined,
+    dataTransformer?:DontCodeDataTransformer,
     ...criteria: DontCodeStoreCriteria[]
   ): Promise<void> {
       // It only supports one groupby and one sortby for now, so just find one if any
@@ -157,7 +159,7 @@ export class EntityListManager<T=never> {
       return Promise.resolve();
     } else {
       // Not loaded already, just ask the store to do it
-      return firstValueFrom(this.storeMgr.searchAndPrepareEntities(this.pointer.position, sortStore, groupByStore, ...criteria).pipe(
+      return firstValueFrom(this.storeMgr.searchAndPrepareEntities(this.pointer.position, sortStore, groupByStore, dataTransformer, ...criteria).pipe(
         map (value => {
           this.prepared=value;
           this.entities=this.prepared.sortedData;
