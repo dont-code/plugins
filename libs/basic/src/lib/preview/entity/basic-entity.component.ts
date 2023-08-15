@@ -70,6 +70,8 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
           this.ref.detectChanges();
         }, reason => {
           this.dataLoading=false;
+          this.ref.markForCheck();
+          this.ref.detectChanges();
         });
       }
     } else {
