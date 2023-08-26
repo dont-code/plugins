@@ -331,7 +331,7 @@ export abstract class AbstractDynamicLoaderComponent
           reject(err);
         }
       })).then( () => {
-        console.debug("LoadSubComponent:"+position.position+' with type '+type+', dynamicInsertPoint is ', (this.dynamicInsertPoint!=null));
+        //console.debug("LoadSubComponent:"+position.position+' with type '+type+', dynamicInsertPoint is ', (this.dynamicInsertPoint!=null));
         if (this.dynamicInsertPoint==null) {
           return null;
         }

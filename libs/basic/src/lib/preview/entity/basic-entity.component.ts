@@ -57,7 +57,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
       this.list.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
       this.edit.initCommandFlow(this.provider, this.entityPointer.subPropertyPointer(DontCodeModel.APP_FIELDS_NODE));
       if( this.store!=null) {
-        this.dataLoading=true;
+        //this.dataLoading=true;
         this.store.loadAll().then (() => {
           console.debug ("Loaded entities");
           try {
@@ -65,11 +65,11 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
           } catch (e) {
             console.debug("Just ignore errors when calling dataIsloaded")
           }
-          this.dataLoading=false;
+          //this.dataLoading=false;
           this.ref.markForCheck();
           this.ref.detectChanges();
         }, reason => {
-          this.dataLoading=false;
+          //this.dataLoading=false;
           this.ref.markForCheck();
           this.ref.detectChanges();
         });
@@ -87,7 +87,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
         map(change => {
           if (this.store) {
           console.debug("Reloading data due to change of StoreManager");
-          this.dataLoading=true;
+//          this.dataLoading=true;
           this.store.reset();
           this.store.loadAll().then (() => {
             try {
@@ -95,11 +95,11 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
               } catch (e) {
                   console.debug("Just ignore errors when calling dataIsloaded")
               }
-            this.dataLoading=false;
+            //this.dataLoading=false;
             this.ref.markForCheck();
             this.ref.detectChanges();
           }, reason => {
-            this.dataLoading=false;
+            //           this.dataLoading=false;
             this.ref.markForCheck();
             this.ref.detectChanges();
           })
@@ -189,7 +189,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
       //this.edit.form.updateValueAndValidity({onlySelf:true, emitEvent:false});
       this.edit.getValue();
       this.store?.store (this.selectedItem).then(value => {
-        console.debug("Entity with Id ", value, " stored");
+        console.debug("Entity named ", this.entityName+" with value "+value, " stored at position "+this.entityPointer?.position);
         this.selectedItem = value;
         this.tabIndex=0;
         this.ref.markForCheck();

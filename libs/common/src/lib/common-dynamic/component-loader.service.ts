@@ -115,7 +115,7 @@ export class ComponentLoaderService {
     );
 
     if (handlerConfig) {
-      console.debug('Importing from ', handlerConfig.class.source);
+      //console.debug('Importing from ', handlerConfig.class.source);
       // First lets try if the plugin is imported during the compilation
 
       return this.loadPluginModule(handlerConfig)
