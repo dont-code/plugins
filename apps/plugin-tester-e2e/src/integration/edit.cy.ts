@@ -11,9 +11,10 @@ describe('Edit', () => {
   beforeEach(() => {
     cy.visit('/');
   });
+  afterEach(() => cy.window().then (win =>cy.forceDeleteIndexedDbStorage(TEST_DB_NAME, win)));
 
+  const TEST_DB_NAME="Dont-code Plugin Tester";
   it ('should display list', () => {
-    cy.clearPreviewUIDbCollection('A Name').then (() => {
       cy.intercept('GET','/assets/dev/templates.json').as('LoadTemplate');
       getSubMenuWithText('Dev').click();// Move to dev page
 
@@ -58,13 +59,9 @@ describe('Edit', () => {
       getButtonWithName('delete').click();
       // It should have automatically switched back to the list, however I can't test that ID2 is gone.
       getListRowWithText( "NEWID1");
-    },(reason) => {
-      console.log ("Erreur", reason);
-    });
   });
 
   it ('should manage currency & money', () => {
-    cy.clearPreviewUIDbCollection('Book').then (() => {
       cy.intercept('GET','/assets/dev/templates.json').as('LoadTemplate');
       getSubMenuWithText('Dev').click();// Move to dev page
 
@@ -131,9 +128,6 @@ describe('Edit', () => {
       getColumn (getListRowWithText(FormatUtils.generateMoney(1234, "USD")), 3).should ("be.empty");
 
 
-    },(reason) => {
-      console.log ("Erreur", reason);
-    });
   });
 });
 
