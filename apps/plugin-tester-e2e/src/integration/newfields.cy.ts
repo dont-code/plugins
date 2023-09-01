@@ -8,67 +8,66 @@ import {
   getTabWithName, getRatingWithName, getRating
 } from "../support/edit.po";
 
+const TEST_DB_NAME="Dont-code Plugin Tester";
 describe('New fields', () => {
   beforeEach(() => cy.visit('/'));
+  afterEach(() => cy.window().then (win =>cy.forceDeleteIndexedDbStorage(TEST_DB_NAME, win)));
 
   it('should display images and url',  () => {
-    cy.clearPreviewUIDbCollection("Recipe").then (() => {
-      cy.intercept('GET','/assets/dev/templates.json').as('LoadTemplate');
-      // First load the Task Manager app
-      getSubMenuWithText('Dev').click();// Move to dev page
-      cy.wait('@LoadTemplate');
-      clickAutoComplete("template");
-      selectPopupChoiceWithText("Recipe Collection");
-      getSendButton().click();
-      getSubMenuWithText( 'Recipe').click();
+    cy.intercept('GET','/assets/dev/templates.json').as('LoadTemplate');
+    // First load the Task Manager app
+    getSubMenuWithText('Dev').click();// Move to dev page
+    cy.wait('@LoadTemplate');
+    clickAutoComplete("template");
+    selectPopupChoiceWithText("Recipe Collection");
+    getSendButton().click();
+    getSubMenuWithText( 'Recipe').click();
 
-      getButtonWithName ('new').click();
-      getInputWithName('Name').type('Test Recipe');
-      getInputWithName('Image').type ('https://www.dont-code.net/assets/images/favicons/logo.png');
-      getInputWithName('Link').type ('https://test.dont-code.net');
-      getRatingWithName ('Stars', 4).click();
-      getButtonWithName ('save').click();
+    getButtonWithName ('new').click();
+    getInputWithName('Name').type('Test Recipe');
+    getInputWithName('Image').type ('https://www.dont-code.net/assets/images/favicons/logo.png');
+    getInputWithName('Link').type ('https://test.dont-code.net');
+    getRatingWithName ('Stars', 4).click();
+    getButtonWithName ('save').click();
 
-      getTabWithName ('List').click();
-      getListRowWithText ( "Test Recipe");
-      getImageWithClass ('inline-image').should ('have.attr', 'src', 'https://www.dont-code.net/assets/images/favicons/logo.png');
-      getLinkWithUrl ('https://test.dont-code.net');
-      getRating ( 3).should('have.class', 'pi-star-fill');
-      getRating ( 4).should('have.class', 'pi-star');
+    getTabWithName ('List').click();
+    getListRowWithText ( "Test Recipe");
+    getImageWithClass ('inline-image').should ('have.attr', 'src', 'https://www.dont-code.net/assets/images/favicons/logo.png');
+    getLinkWithUrl ('https://test.dont-code.net');
+    getRating ( 3).should('have.class', 'pi-star-fill');
+    getRating ( 4).should('have.class', 'pi-star');
 
-    });
 
   });
 
   it('should support date and time', () => {
-    cy.clearPreviewUIDbCollection("Test Task").then (() => {
-      cy.intercept('GET','/assets/dev/templates.json').as('LoadTemplate');
-        // First load the Task Manager app
-      getSubMenuWithText('Dev').click();// Move to dev page
-      cy.wait('@LoadTemplate');
-      clickAutoComplete("template");
-      selectPopupChoiceWithText("Task Manager Application"); // Create Entity name
-      getSendButton().click();
-      getSubMenuWithText( 'Test Task').click();
 
-      getButtonWithName ('new').click();
-      getInputWithName('Name').type('First Task');
-      getInputWithName('Due Date').type('05/05/2004');
-      getCheckWithName('Done').click({force:true});
-      getButtonWithName ('save').click();
+    cy.intercept('GET','/assets/dev/templates.json').as('LoadTemplate');
+      // First load the Task Manager app
+    getSubMenuWithText('Dev').click();// Move to dev page
+    cy.wait('@LoadTemplate');
+    clickAutoComplete("template");
+    selectPopupChoiceWithText("Task Manager Application"); // Create Entity name
+    getSendButton().click();
+    getSubMenuWithText( 'Test Task').click();
 
-      getTabWithName ('List').click();
-      getButtonWithName ('new').click();
-      getInputWithName('Name').type('Second Task');
-      getInputWithName('Due Date').click();
-      getDatePicker ("16").click();
-      getButtonWithName ('save').click();
+    getButtonWithName ('new').click();
+    getInputWithName('Name').type('First Task');
+    getInputWithName('Due Date').type('05/05/2004');
+    getCheckWithName('Done').click({force:true});
+    getButtonWithName ('save').click();
 
-      getTabWithName ('List').click();
+    getTabWithName ('List').click();
+    getButtonWithName ('new').click();
+    getInputWithName('Name').type('Second Task');
+    getInputWithName('Due Date').click();
+    getDatePicker ("16").click();
+    getButtonWithName ('save').click();
 
-      getListRowWithText(DateUtils.generateShortDate(new Date (2004, 4, 5)));
+    getTabWithName ('List').click();
 
-    });
+    getListRowWithText(DateUtils.generateShortDate(new Date (2004, 4, 5)));
+
   });
 
 
