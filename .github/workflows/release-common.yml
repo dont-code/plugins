@@ -17,6 +17,10 @@ on:
 
 jobs:
   build:
+    env:
+      branch: ${{ inputs.next == true && 'Development' || 'main' }}
+      stage: ${{ inputs.next == true && 'next' || 'latest' }}
+      version: ${{ inputs.next == true && 'patch' || 'minor' }}
 
     runs-on: ubuntu-latest
 
@@ -30,7 +34,7 @@ jobs:
           repository: dont-code/plugins
           path: plugins
           fetch-depth: 0
-          ref: ${{ inputs.next == true && 'Development' || 'main' }}
+          ref: ${{ env.branch }}
           token: ${{secrets.DONTCODE_ACTIONS_TOKEN}}
       - name: Setup build environment
         uses: actions/setup-node@v3
@@ -41,7 +45,7 @@ jobs:
           cache-dependency-path: plugins/package-lock.json
       - run: npm install -g nx
       - name: Version
-        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version == '') }}
+        if: ${{ ( matrix.browser == 'chromium' ) && ( inputs.version == '') }}
         run: |
           PACKAGE_VERSION=$(npm view @dontcode/plugin-common versions --json | jq -r '.[-1]')
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
@@ -50,21 +54,13 @@ jobs:
           cd ../sandbox
           npm version $PACKAGE_VERSION --allow-same-version
         working-directory: 'plugins'
-      - name: Version Next
-        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version == '') && ( inputs.next == true) }}
+      - name: Version ${{env.version}}
+        if: ${{ ( matrix.browser == 'chromium' ) && ( inputs.version == '') }}
         run: |
           cd libs/common
-          npm version patch
+          npm version ${{env.version}}
           cd ../sandbox
-          npm version patch
-        working-directory: 'plugins'
-      - name: Version Minor
-        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version == '') && ( inputs.next == false) }}
-        run: |
-          cd libs/common
-          npm version minor
-          cd ../sandbox
-          npm version minor
+          npm version ${{env.version}}
         working-directory: 'plugins'
       - name: Version
         if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version != '') }}
@@ -79,7 +75,7 @@ jobs:
       - name: Install
         run: |
           npm install --force
-          npm install @dontcode/core@latest --no-optional
+          npm install @dontcode/core@${{env.stage}} --no-optional
         working-directory: 'plugins'
       - name: Build
         run: |
@@ -110,20 +106,13 @@ jobs:
         with:
           name: cypress-videos
           path: plugins/dist/cypress/apps/plugin-tester-e2e/videos
-      - name: Deploy all plugins
+      - name: Building all plugins
         run: nx run plugin-tester:build:production --base-href "https://dont-code.net/plugins/"
         working-directory: 'plugins'
-      - name: Publish libraries
-        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.next == true)}}
+      - name: Publish libraries ${{env.stage}}
+        if: ${{ success() && ( matrix.browser == 'chromium' ) }}
         run: |
-          npm publish plugins/dist/libs/common --access public --tag next
-          npm publish plugins/dist/libs/sandbox --access public --tag next
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Publish libraries
-        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.next == false) }}
-        run: |
-          npm publish plugins/dist/libs/common --access public
-          npm publish plugins/dist/libs/sandbox --access public
+          npm publish plugins/dist/libs/common --access public --tag ${{env.stage}}
+          npm publish plugins/dist/libs/sandbox --access public --tag ${{env.stage}}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
