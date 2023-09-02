@@ -21,6 +21,10 @@ on:
 
 jobs:
   build:
+    env:
+      branch: ${{ inputs.next == true && 'Development' || 'main' }}
+      stage: ${{ inputs.next == true && 'next' || 'latest' }}
+      version: ${{ inputs.next == true && 'patch' || 'minor' }}
 
     runs-on: ubuntu-latest
 
@@ -34,7 +38,7 @@ jobs:
           repository: dont-code/plugins
           path: plugins
           fetch-depth: 0
-          ref: ${{ inputs.next == true && 'Development' || 'main' }}
+          ref: ${{ env.branch }}
           token: ${{secrets.DONTCODE_ACTIONS_TOKEN}}
       - name: Setup build environment
         uses: actions/setup-node@v3
@@ -46,7 +50,7 @@ jobs:
       - name: Install Nx.dev
         run: npm install -g nx
       - name: Version
-        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version == '') }}
+        if: ${{ ( matrix.browser == 'chromium' ) && ( inputs.version == '') }}
         run: |
           PACKAGE_VERSION=$(npm view @dontcode/plugin-common versions --json | jq -r '.[-1]')
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
@@ -57,28 +61,18 @@ jobs:
           cd ../screen
           npm version $PACKAGE_VERSION --allow-same-version
         working-directory: 'plugins'
-      - name: Version Next
-        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version == '') && ( inputs.next == true) }}
+      - name: Version ${{env.version}}
+        if: ${{ ( matrix.browser == 'chromium' ) && ( inputs.version == '') }}
         run: |
           cd libs/basic
-          npm version patch
+          npm version ${{env.version}}
           cd ../fields
-          npm version patch
+          npm version ${{env.version}}
           cd ../screen
-          npm version patch
-        working-directory: 'plugins'
-      - name: Version Patch
-        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version == '') && ( inputs.next == false) }}
-        run: |
-          cd libs/basic
-          npm version minor
-          cd ../fields
-          npm version minor
-          cd ../screen
-          npm version minor
+          npm version ${{env.version}}
         working-directory: 'plugins'
       - name: Version
-        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.version != '') }}
+        if: ${{ ( matrix.browser == 'chromium' ) && ( inputs.version != '') }}
         run: |
           PACKAGE_VERSION=${{inputs.version}}
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
@@ -92,7 +86,7 @@ jobs:
       - name: Install
         run: |
           npm install --force
-          npm install @dontcode/core@latest --no-optional
+          npm install @dontcode/core@${{env.release}} --no-optional
         working-directory: 'plugins'
       - name: Build
         run: |
@@ -134,19 +128,11 @@ jobs:
           jekyll: false
         env:
           GITHUB_TOKEN: ${{secrets.DONTCODE_ACTIONS_TOKEN }}
-      - name: Publish all libraries
-        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.next == true)}}
+      - name: Publish all libraries $${{env.stage}}
+        if: ${{ success() && ( matrix.browser == 'chromium' ) }}
         run: |
-          npm publish plugins/dist/libs/basic --access public --tag next
-          npm publish plugins/dist/libs/fields --access public --tag next
-          npm publish plugins/dist/libs/screen --access public --tag next
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Publish all libraries
-        if: ${{ success() && ( matrix.browser == 'chromium' ) && ( inputs.next == false) }}
-        run: |
-          npm publish plugins/dist/libs/basic --access public
-          npm publish plugins/dist/libs/fields --access public
-          npm publish plugins/dist/libs/screen --access public
+          npm publish plugins/dist/libs/basic --access public --tag ${{env.stage}}
+          npm publish plugins/dist/libs/fields --access public --tag ${{env.stage}}
+          npm publish plugins/dist/libs/screen --access public --tag ${{env.stage}}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
