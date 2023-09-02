@@ -3,13 +3,7 @@ import {ActivatedRoute, Params} from "@angular/router";
 import {map} from "rxjs/operators";
 import {EMPTY, Observable, Subscription} from "rxjs";
 import {ChangeProviderService} from "../../../shared/command/services/change-provider.service";
-import {
-  ComponentLoaderService,
-  DynamicInsertPoint,
-  PluginBaseComponent,
-  PossibleTemplateList,
-  TemplateList
-} from "@dontcode/plugin-common";
+import {ComponentLoaderService, DynamicInsertPoint, PossibleTemplateList, TemplateList} from "@dontcode/plugin-common";
 import {DefaultViewerComponent} from "../../../shared/dynamic/components/default-viewer.component";
 import {DontCodeModelPointer} from "@dontcode/core";
 
@@ -53,13 +47,12 @@ export class ScreenComponent implements OnInit, OnDestroy, AfterViewInit {
           else
             position = position + '/' + value.path;
         });
-        console.log("Searching for component handling route", position);
+        //console.log("Searching for component handling route", position);
 
         if(position==null) throw new Error ("No position in route to screen");
         if (this.provider == null) {
           throw new Error ("No provider");
         }
-        let component = null;
         try {
         const pointer = this.provider.calculatePointerFor(position);
 

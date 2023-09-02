@@ -42,7 +42,7 @@ export abstract class PluginBaseComponent
   protected updateValueOnFormChanges():void {
     this.subscriptions.add(this.form.valueChanges.pipe(
       map (value => {
-        console.debug("Value changed", value);
+        //console.debug("Value changed", value);
         // Force the recalculation of the data from the form
         this.getValue();
         return value;
