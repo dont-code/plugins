@@ -83,10 +83,10 @@ jobs:
           cd ../screen
           npm version $PACKAGE_VERSION
         working-directory: 'plugins'
-      - name: Install
+      - name: Install ${{env.stage}}
         run: |
           npm install --force
-          npm install @dontcode/core@${{env.release}} --no-optional
+          npm install @dontcode/core@${{env.stage}} --no-optional
         working-directory: 'plugins'
       - name: Build
         run: |

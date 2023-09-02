@@ -72,7 +72,7 @@ jobs:
           cd ../sandbox
           npm version $PACKAGE_VERSION
         working-directory: 'plugins'
-      - name: Install
+      - name: Install ${{env.stage}}
         run: |
           npm install --force
           npm install @dontcode/core@${{env.stage}} --no-optional
