@@ -40,7 +40,7 @@ jobs:
       - name: Install
         run: |
           npm install -g nx
-          npm install --force
+          npm ci
           npm install @dontcode/core@next --no-optional
         working-directory: 'plugins'
       - name: Build

@@ -74,7 +74,7 @@ jobs:
         working-directory: 'plugins'
       - name: Install ${{env.stage}}
         run: |
-          npm install --force
+          npm ci
           npm install @dontcode/core@${{env.stage}} --no-optional
         working-directory: 'plugins'
       - name: Build
