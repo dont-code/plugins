@@ -1,8 +1,13 @@
 import {clickAutoComplete, getSendButton, getSubMenuWithText, selectPopupChoiceWithText} from "../support/app.po";
 import {
   getButtonWithName,
-  getCheckWithName, getColumn, getDropdownFilter, getDropdownListItemWithName, getDropdownWithName,
-  getInputWithName, getListRow, getListRowWithText,
+  getCheckWithName,
+  getColumn,
+  getDropdownFilter,
+  getDropdownListItemWithName,
+  getDropdownWithName,
+  getInputWithName,
+  getListRowWithText,
   getTableHeader,
   getTabWithName
 } from "../support/edit.po";
@@ -11,7 +16,7 @@ describe('Edit', () => {
   beforeEach(() => {
     cy.visit('/');
   });
-  afterEach(() => cy.window().then (win =>cy.forceDeleteIndexedDbStorage(TEST_DB_NAME, win)));
+  beforeEach(() => cy.forceDeleteIndexedDbStorage(TEST_DB_NAME));
 
   const TEST_DB_NAME="Dont-code Plugin Tester";
   it ('should display list', () => {
