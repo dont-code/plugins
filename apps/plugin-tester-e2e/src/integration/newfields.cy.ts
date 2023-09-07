@@ -33,7 +33,7 @@ describe('New fields', () => {
     getRatingWithName ('Stars', 4).click();
     getButtonWithName ('save').click();
 
-    cy.get('th[id="header-Name"]');
+    cy.get('th[id="header-Name"]').should('be.visible');
 //    getTabWithName ('List').click();
     getListRowWithText ( "Test Recipe");
     getImageWithClass ('inline-image').should ('have.attr', 'src', 'https://www.dont-code.net/assets/images/favicons/logo.png');
@@ -57,11 +57,11 @@ describe('New fields', () => {
 
     getButtonWithName ('new').click();
     getInputWithName('Name').type('First Task');
-    getInputWithName('Due Date').type('05/05/2004');
-    getCheckWithName('Done').click({force:true});
+    getInputWithName('Due Date').type('05/05/2004{enter}');
+    getCheckWithName('Done').click();
     getButtonWithName ('save').click();
 
-    cy.get('th[id="header-Name"]');
+    cy.get('th[id="header-Name"]').should('be.visible');
     //getTabWithName ('List').click();
     getButtonWithName ('new').click();
     getInputWithName('Name').type('Second Task');
@@ -69,7 +69,7 @@ describe('New fields', () => {
     getDatePicker ("16").click();
     getButtonWithName ('save').click();
 
-    cy.get('th[id="header-Name"]');
+    cy.get('th[id="header-Name"]').should('be.visible');
 //    getTabWithName ('List').click();
     getListRowWithText(DateUtils.generateShortDate(new Date (2004, 4, 5)));
 
