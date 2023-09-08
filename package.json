@@ -9,7 +9,7 @@
     "build": "nx build",
     "test": "nx test",
     "build-all": "nx run common:build:development && nx run sandbox:build:development && nx run basic:build:development && nx run fields:build:development",
-    "align-version": "PACKAGE_VERSION=$(npm view @dontcode/plugin-common versions --json | jq -r '.[-1]') && cd libs/common && npm version $PACKAGE_VERSION && cd ../sandbox && npm version $PACKAGE_VERSION && cd ../basic && npm version $PACKAGE_VERSION && cd ../fields && npm version $PACKAGE_VERSION && cd ../screen && npm version $PACKAGE_VERSION",
+    "align-version": "PACKAGE_VERSION=$(npm view @dontcode/plugin-common versions --json | jq -r '.[-1]') && cd libs/common && npm version $PACKAGE_VERSION --allow-same-version && cd ../sandbox && npm version $PACKAGE_VERSION --allow-same-version && PACKAGE_VERSION=$(npm view @dontcode/plugin-basic versions --json | jq -r '.[-1]')  && cd ../basic && npm version $PACKAGE_VERSION --allow-same-version && cd ../fields && npm version $PACKAGE_VERSION --allow-same-version && cd ../screen && npm version $PACKAGE_VERSION --allow-same-version",
     "push-all": "cd libs/common && npm version prerelease && cd ../sandbox && npm version prerelease && cd ../basic && npm version prerelease && cd ../fields && npm version prerelease && cd ../.. && nx run common:build:development && nx run sandbox:build:development && nx run basic:build:development && nx run fields:build:development && cd dist/libs/common && yalc push && cd ../sandbox && yalc push && cd ../basic && yalc push && cd ../fields && yalc push",
     "push": "cd libs/${npm_config_dir} && npm version prerelease && cd ../.. && nx run ${npm_config_dir}:build:development && cd dist/libs/${npm_config_dir} && yalc push"
   },
