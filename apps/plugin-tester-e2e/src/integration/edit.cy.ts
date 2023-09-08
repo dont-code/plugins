@@ -38,7 +38,7 @@ describe('Edit', () => {
       getCheckWithName('check').click();
       getButtonWithName ('save').click();
 
-      getTabWithName ('List').click();
+      cy.get('th[id="header-id"]').should('be.visible');
       getListRowWithText ( "ID1");
 
       getButtonWithName ('new').click();
@@ -46,13 +46,14 @@ describe('Edit', () => {
       getInputWithName('count').type('2');
       getButtonWithName ('save').click();
 
-      getTabWithName ('List').click();
+      cy.get('th[id="header-id"]').should('be.visible');
       getListRowWithText ("ID2");
 
       getListRowWithText ("ID1").click();
       getInputWithName('id').clear().type('NEWID1');
 
       getButtonWithName ('save').click();
+      cy.get('th[id="header-id"]').should('be.visible');
       getListRowWithText ( "NEWID1");
 
       getSubMenuWithText('Dev').click();// Move to dev page
@@ -89,7 +90,7 @@ describe('Edit', () => {
       getDropdownListItemWithName('Cuban Peso - CUP').click();
       getButtonWithName ('save').click();
 
-      getTabWithName ('List').click();
+      cy.get('th[id="header-Name"]').should('be.visible');
       getListRowWithText ( "Book 1");
       getListRowWithText ( FormatUtils.generateMoney(1234,"USD"));
       getListRowWithText (FormatUtils.generateMoney(2121,"CAD"));
@@ -103,6 +104,7 @@ describe('Edit', () => {
       getDropdownWithName('currencyCode').click('right');
       getDropdownFilter().clear().type ('canadi');
       getDropdownListItemWithName('Canadian Dollar - CAD').click();
+        // Check the list is updated without saving
       //getButtonWithName ('save').click();
 
       getTabWithName ('List').click();
@@ -118,6 +120,7 @@ describe('Edit', () => {
       getDropdownListItemWithName('Algerian Dinar - DZD').click();
 
       getButtonWithName ('save').click();
+      cy.get('th[id="header-Name"]').should('be.visible');
       getListRowWithText (FormatUtils.generateMoney(4321, "EUR"));
       getListRowWithText ( FormatUtils.generateMoney(9090, "DZD"));
 
@@ -130,6 +133,7 @@ describe('Edit', () => {
       getInputWithName('EUR').clear(); // Empty the amount
       getButtonWithName ('save').click();
 
+      cy.get('th[id="header-Name"]').should('be.visible');
       getColumn (getListRowWithText(FormatUtils.generateMoney(1234, "USD")), 3).should ("be.empty");
 
 
