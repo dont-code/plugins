@@ -128,7 +128,7 @@ export class ListEntityComponent
   }
 
   getStoreEntities(): any[] {
-    if (this.store) return this.store.entities;
+    if (this.store?.entities) return this.store.entities;
     else return [];
   }
 
