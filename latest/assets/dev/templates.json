@@ -1,0 +1,234 @@
+[{
+  "name": "Create Empty App",
+  "type": "ADD",
+  "position": "creation/name",
+  "value": "New Name"
+},
+  {
+    "name": "Create Empty Entity",
+    "type": "ADD",
+    "position": "creation/entities/a",
+    "value": {
+      "name":"A Name"
+    }
+  },
+  {
+    "name": "Create String Field",
+    "type": "ADD",
+    "position": "creation/entities/a/fields/a",
+    "value": {
+      "name": "fieldString",
+      "type": "Text"
+    }
+  },
+  {
+    "name": "Create Country Field",
+    "type": "ADD",
+    "position": "creation/entities/a/fields/c",
+    "value": {
+      "name": "Country",
+      "type": "Country"
+    }
+  },
+  {
+    "name": "Create Complete Entity A",
+    "sequence": [
+      {
+        "position": "creation/entities/a/name",
+        "type": "ADD",
+        "value": "A Name"
+      },
+      {
+        "position": "creation/entities/a/fields/a",
+        "type": "ADD",
+        "value": {
+          "name": "id",
+          "type": "Text"
+        }
+      },
+      {
+        "position": "creation/entities/a/fields/b",
+        "type": "ADD",
+        "value": {
+          "name": "check",
+          "type": "Boolean"
+        }
+      },
+      {
+        "position": "creation/entities/a/fields/c",
+        "type": "ADD",
+        "value": {
+          "name": "count",
+          "type": "Number"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Recipe Collection",
+    "type": "RESET",
+    "position": "/",
+    "value": {
+      "creation": {
+        "name": "My Recipes",
+        "entities": {
+          "a": {
+            "name": "Test Recipe",
+            "fields": {
+              "a": {
+                "name": "Name"
+              },
+              "b": {
+                "name": "Image",
+                "type": "Image"
+              },
+              "c": {
+                "name": "Link",
+                "type": "Website (url)"
+              },
+              "d": {
+                "name": "Stars",
+                "type": "Rating"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Note Editor Application",
+    "type": "RESET",
+    "position": "/",
+    "value": {
+      "creation": {
+        "name": "Note Editor",
+        "entities": {
+          "a": {
+            "name": "Note",
+            "fields": {
+              "a": {
+                "name": "Content",
+                "type": "Text"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "International Bookstore",
+    "type": "RESET",
+    "position": "/",
+    "value": {
+      "creation": {
+        "name": "Bookstore Test",
+        "entities": {
+          "a": {
+            "name": "Book",
+            "fields": {
+              "a": {
+                "name": "Name",
+                "type": "Text"
+              },
+              "b": {
+                "name": "USD",
+                "type": "Dollar"
+              },
+              "c": {
+                "name": "EUR",
+                "type": "Euro"
+              },
+              "d": {
+                "name": "Other",
+                "type": "Other currency"
+              },
+              "e": {
+                "name": "ConvertTo",
+                "type": "Currency"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "StoreManager Change",
+    "type": "UPDATE",
+    "position": "creation/sharing/with",
+    "value": "Dont-code users"
+
+  },
+  {
+    "name": "Reset",
+    "type": "RESET",
+    "position": "creation",
+    "value": null
+  },
+  {
+    "name": "Task Manager Application",
+    "type": "RESET",
+    "position": "/",
+    "value": {
+      "creation": {
+        "name": "Test Task Manager",
+        "entities": {
+          "a": {
+            "name": "Test Task",
+            "fields": {
+              "a": {
+                "name": "Name"
+              },
+              "b": {
+                "name": "Done",
+                "type": "Boolean"
+              },
+              "c": {
+                "name": "Due Date",
+                "type": "Date"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Set Field Name",
+    "type": "UPDATE",
+    "position": "creation/entities/a/fields/b/name",
+    "value": "fieldName"
+  },
+  {
+    "name": "Change Entity A Name",
+    "type": "UPDATE",
+    "position": "creation/entities/a/name",
+    "value": "An Updated Name"
+  },
+  {
+    "name": "Move Entity b",
+    "type": "MOVE",
+    "position": "creation/entities/b",
+    "value": "a"
+  },
+  {
+    "name": "Move Field b",
+    "type": "MOVE",
+    "position": "creation/entities/a/fields/b",
+    "value": "a"
+  },
+  {
+    "name": "Move Field a",
+    "type": "MOVE",
+    "position": "creation/entities/a/fields/a",
+    "value": "c"
+  },
+  {
+    "name": "Change Screen A Name",
+    "type": "UPDATE",
+    "position": "creation/screens/a/name",
+    "value": "SA Name"
+  }
+]
