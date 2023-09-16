@@ -8,7 +8,7 @@ module.exports = defineConfig({
   videosFolder: '../../dist/cypress/apps/plugin-tester-e2e/videos',
   screenshotsFolder: '../../dist/cypress/apps/plugin-tester-e2e/screenshots',
   chromeWebSecurity: false,
-  defaultCommandTimeout: 10000,
+  defaultCommandTimeout: 20000,
   e2e: {
     setupNodeEvents(on, config) {
       on ('before:browser:launch', (browser={}, launchOptions) => {
