@@ -1,17 +1,20 @@
 import {clickAutoComplete, getSendButton, getSubMenuWithText, selectPopupChoiceWithText} from "../support/app.po";
 import {
-  getButtonWithName, getCheckWithName, getDatePicker,
+  getButtonWithName,
+  getCheckWithName,
+  getDatePicker,
   getImageWithClass,
   getInputWithName,
   getLinkWithUrl,
   getListRowWithText,
-  getTabWithName, getRatingWithName, getRating
+  getRating,
+  getRatingWithName
 } from "../support/edit.po";
 
 const TEST_DB_NAME="Dont-code Plugin Tester";
 describe('New fields', () => {
   beforeEach(() => cy.visit('/'));
-  afterEach(() => cy.window().then (win =>cy.forceDeleteIndexedDbStorage(TEST_DB_NAME, win)));
+  beforeEach(() => cy.forceDeleteIndexedDbStorage(TEST_DB_NAME));
 
   it('should display images and url',  () => {
     cy.intercept('GET','/assets/dev/templates.json').as('LoadTemplate');
@@ -30,7 +33,8 @@ describe('New fields', () => {
     getRatingWithName ('Stars', 4).click();
     getButtonWithName ('save').click();
 
-    getTabWithName ('List').click();
+    cy.get('th[id="header-Name"]').should('be.visible');
+//    getTabWithName ('List').click();
     getListRowWithText ( "Test Recipe");
     getImageWithClass ('inline-image').should ('have.attr', 'src', 'https://www.dont-code.net/assets/images/favicons/logo.png');
     getLinkWithUrl ('https://test.dont-code.net');
@@ -53,19 +57,20 @@ describe('New fields', () => {
 
     getButtonWithName ('new').click();
     getInputWithName('Name').type('First Task');
-    getInputWithName('Due Date').type('05/05/2004');
-    getCheckWithName('Done').click({force:true});
+    getInputWithName('Due Date').type('05/05/2004{enter}');
+    getCheckWithName('Done').click();
     getButtonWithName ('save').click();
 
-    getTabWithName ('List').click();
+    cy.get('th[id="header-Name"]').should('be.visible');
+    //getTabWithName ('List').click();
     getButtonWithName ('new').click();
     getInputWithName('Name').type('Second Task');
     getInputWithName('Due Date').click();
     getDatePicker ("16").click();
     getButtonWithName ('save').click();
 
-    getTabWithName ('List').click();
-
+    cy.get('th[id="header-Name"]').should('be.visible');
+//    getTabWithName ('List').click();
     getListRowWithText(DateUtils.generateShortDate(new Date (2004, 4, 5)));
 
   });

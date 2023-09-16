@@ -15,8 +15,8 @@ declare namespace Cypress {
     findNgComponent (selector:string): Chainable<any>;
     applyChanges (component: any):void;
     getAngular (): Chainable<any>;
-    clearDbCollections (dbName:string,...collections:string[]): Promise<void>;
-    forceDeleteIndexedDbStorage (dbName:string, win:any): void;
+    clearDbCollections (dbName:string,...collections:string[]): Cypress.Chainable<any>;
+    forceDeleteIndexedDbStorage (dbName:string): Cypress.Chainable<any>;
   }
 }
 
@@ -77,26 +77,28 @@ Cypress.Commands.add('findNgComponent', (selector: string) => {
     });
 });
 
-Cypress.Commands.add('forceDeleteIndexedDbStorage', (dbName:string, win:any) => {
+Cypress.Commands.add('forceDeleteIndexedDbStorage', (dbName:string) => {
   console.log("Test: Deleting DB "+dbName);
-  return new Promise<void>((resolve, reject)=>  {
-    if ((win as any)._indexedDbStorageServiceForceDelete != null) {
-      console.log("Test: DB Delete Call");
-      (win as any)._indexedDbStorageServiceForceDelete(dbName).then(() => {
-        console.log("Test: DB Deleted");
-        resolve();
-      }).catch ( (reason:any) => {
-        reject(reason);
-      });
-    } else {
-      reject("Test: No Delete function in global window");
-    }
+  return cy.window().then ( (win) => {
+    return cy.wrap (new Promise<void>((resolve, reject)=>  {
+      if ((win as any)._indexedDbStorageServiceForceDelete != null) {
+        console.log("Test: DB Delete Call");
+        (win as any)._indexedDbStorageServiceForceDelete(dbName).then(() => {
+          console.log("Test: DB Deleted");
+          resolve();
+        }).catch ( (reason:any) => {
+          reject(reason);
+        });
+      } else {
+        reject("Test: No Delete function in global window");
+      }
+    }));
   });
 });
 
 Cypress.Commands.add('clearDbCollections', (dbName:string, ...collections:string[]) => {
 
-  return new Promise<void>((resolve, reject) => {
+  return cy.wrap (new Promise<void>((resolve, reject) => {
     console.log("Test: Cleaning DB");
     const checkversionrequest = window.indexedDB.open(dbName);
 
@@ -122,7 +124,7 @@ Cypress.Commands.add('clearDbCollections', (dbName:string, ...collections:string
       reject("Test: Cannot open Database " + dbName + " because of " + evt.target);
     }
     resolve();
-  });
+  }));
 });
 
 //

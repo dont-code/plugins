@@ -194,6 +194,8 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
         this.tabIndex=0;
         this.ref.markForCheck();
         this.ref.detectChanges();
+      }).catch(reason => {
+        console.error("Entity named ", this.entityName, " not saved because of ",reason);
       });
     }
   }

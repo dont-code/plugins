@@ -40,7 +40,7 @@ export class EntityListManager<T=never> {
   /**
    * The array of entities to use
    */
-  entities = new Array<T>();
+  entities: T[]|null = null;
   prepared : DontCodeStorePreparedEntities<T>|null = null;
 
   constructor(pointer:DontCodeModelPointer, description: any, protected storeMgr:DontCodeStoreManager, protected modelMgr:DontCodeModelManager) {
@@ -49,26 +49,35 @@ export class EntityListManager<T=never> {
   }
 
   push (element:T):void {
-    this.entities = [...this.entities, element];
+    if (this.entities==null)
+      this.entities=new Array<T>(element);
+    else
+      this.entities = [...this.entities, element];
   }
 
   updateWithDetailedEntity (element:T):T {
     const elementId=(element as any)._id;
     const updated = new Array<T>();
-    this.entities.forEach(value => {
-      const valueId=(value as any)._id;
-      if( valueId==elementId) {
-        element={...element, ...value};
-        updated.push(element);
-      }else {
-        updated.push(value);
-      }
-    })
-    this.entities = [...updated];
+    if (this.entities!=null) {
+      this.entities.forEach(value => {
+        const valueId=(value as any)._id;
+        if( valueId==elementId) {
+          element={...element, ...value};
+          updated.push(element);
+        }else {
+          updated.push(value);
+        }
+      })
+      this.entities = [...updated];
+    } else {
+      this.entities = [element];
+    }
     return element;
   }
 
   replace (element:T):boolean {
+    if (this.entities==null) return false;
+
     const elementId=(element as any)._id;
     let ret=false;
     const updated = new Array<T>();
@@ -86,19 +95,25 @@ export class EntityListManager<T=never> {
   }
 
   remove (element:T): Promise<boolean> {
+    if (this.entities==null) return Promise.resolve(false);
+
     const elementId=(element as any)._id;
     if (elementId==null)  // Not saved yet, so just remove it from the list
     {
       return new Promise (resolve => {
-        this.entities = this.entities.filter(val => (val!==element));
-        this.prepared=null;
-        resolve( true);
+        if (this.entities!=null) {
+          this.entities = this.entities.filter(val => (val!==element));
+          this.prepared=null;
+          resolve( true);
+        } else resolve (false);
       });
     }else {
     return this.storeMgr.deleteEntity(this.pointer.position, elementId).then(deleted => {
       if( deleted) {
-        this.entities = this.entities.filter(val => (val!==element));
-        this.prepared=null;
+        if (this.entities!=null) {
+          this.entities = this.entities.filter(val => (val!==element));
+          this.prepared=null;
+        }
       }
       return deleted;
     }).catch((reason:Error) => {
@@ -109,7 +124,8 @@ export class EntityListManager<T=never> {
   }
 
   reset (): void {
-    this.entities.length=0;
+    if( this.entities!=null)
+      this.entities.length=0;
     this.prepared=null;
   }
 
@@ -138,7 +154,7 @@ export class EntityListManager<T=never> {
     let listOfValues:any[] = (sort!=null)?Object.values(sort):[];
     const sortStore = (listOfValues.length>0)?listOfValues[0]:undefined;
     listOfValues=(groupBy!=null)?Object.values(groupBy):[];
-    const groupByStore= (listOfValues.length>0)?new DontCodeStoreGroupby(listOfValues[0].of,listOfValues[0].display):undefined;
+    const groupByStore= (listOfValues.length>0)?new DontCodeStoreGroupby(listOfValues[0].of,listOfValues[0].display, listOfValues[0].show):undefined;
     if (this.entities!=null) {
       this.prepared=null;
       // Already loaded, just sort & group
