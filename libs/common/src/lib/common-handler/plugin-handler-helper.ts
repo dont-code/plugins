@@ -1,4 +1,6 @@
 import {
+  Action,
+  ActionHandler,
   Change,
   ChangeType,
   CommandProviderInterface,
@@ -9,22 +11,34 @@ import {catchError, first, flatMap, last, map, takeLast} from 'rxjs/operators';
 import {firstValueFrom, from, Observable, of, Subscription} from 'rxjs';
 import { Mutex } from 'async-mutex';
 
+/**
+ * This class does all the hard work of managing changes and actions, so that your plugin only has to implement handleChange and performAction
+ * As there is no one to one mapping between the position of the change and the position the plugin is interested in, we need to generate subevent to ensure the plugin is receiving updates.
+ */
 export class PluginHandlerHelper {
   protected subscriptions = new Subscription();
 
   entityPointer: DontCodeModelPointer | null = null;
   provider: CommandProviderInterface | null = null;
-  changeHandler!: PreviewHandler;
+  changeHandler: PreviewHandler | null = null;
+  actionPerformer: ActionHandler | null = null;
   mutex = new Mutex();
 
   initCommandFlow(
     provider: CommandProviderInterface,
     pointer: DontCodeModelPointer,
-    changeHandler: PreviewHandler
+    changeHandler: PreviewHandler,
+    actionPerformer?: ActionHandler
   ): any {
     this.entityPointer = pointer;
     this.provider = provider;
     this.changeHandler = changeHandler;
+    if (actionPerformer!=null)
+      this.actionPerformer=actionPerformer;
+    else if ((changeHandler as any).performAction != null) {
+        // The changehandler is as well an action performer
+      this.actionPerformer= changeHandler as unknown as ActionHandler;
+    }
   }
 
   /**
@@ -65,7 +79,7 @@ export class PluginHandlerHelper {
               change.pointer.isProperty = false;
             }
 
-            if (this.changeHandler) this.changeHandler.handleChange(change);
+            if (this.changeHandler!=null) this.changeHandler.handleChange(change);
           }
         }
       }
@@ -93,7 +107,15 @@ export class PluginHandlerHelper {
           .receiveCommands(filter)
           .pipe(
             map((change) => {
-              if (this.changeHandler) {
+              if ((change as any).actionType!=null) // It's an action, not a change
+              {
+                if (this.actionPerformer) {
+                  const action = change as unknown as Action;
+
+                  action.running?.next(this.actionPerformer.performAction(action));
+                }
+              }
+              else if (this.changeHandler) {
                 this.changeHandler.handleChange(change);
               }
             })
@@ -314,5 +336,15 @@ export class PluginHandlerHelper {
 
   unsubscribe() {
     this.subscriptions.unsubscribe();
+  }
+
+  /**
+   * Sends the action to whatever component can perform it
+   * @param action
+   */
+  async performAction(action: Action): Promise<void> {
+    if( this.provider!=null)
+      return this.provider.sendCommand (action);
+    else return Promise.reject('No provider for the component at position '+this.entityPointer?.position );
   }
 }

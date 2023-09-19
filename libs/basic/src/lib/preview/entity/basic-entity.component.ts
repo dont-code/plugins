@@ -1,5 +1,14 @@
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, ViewChild} from "@angular/core";
-import {Change, CommandProviderInterface, DontCodeModel, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
+import {
+  Action,
+  ActionContextType,
+  ActionType,
+  Change,
+  CommandProviderInterface,
+  DontCodeModel,
+  DontCodeModelPointer,
+  PreviewHandler
+} from "@dontcode/core";
 import {
   ComponentLoaderService,
   EntityListManager,
@@ -209,7 +218,17 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   }
 
   refreshScreen():void {
-    this.ref.markForCheck();
-    this.ref.detectChanges();
+    if (this.entityPointer!=null) {
+      if (this.tabIndex==0) { // List
+        this.pluginHelper.performAction (
+          new Action (this.entityPointer?.position,null, ActionContextType.LIST, ActionType.UPDATE, this.entityPointer)
+        ).then(() => {
+          this.ref.markForCheck();
+          this.ref.detectChanges();
+        }).catch(reason => {
+          console.error ("Error performing refresh action on ",this.entityName, this.entityPointer);
+        })
+      }
+    }
   }
 }

@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { PluginBaseComponent } from './plugin-base.component';
 import {ChangeDetectorRef, Component, Injector} from '@angular/core';
 import {
+    Action,
   Change,
   CommandProviderInterface,
   DontCodeModelPointer,
@@ -10,8 +11,8 @@ import {
   DontCodeTestManager,
   dtcde,
 } from '@dontcode/core';
-import { Observable } from 'rxjs';
-import { PossibleTemplateList, TemplateList } from './template-list';
+import {Observable} from 'rxjs';
+import {PossibleTemplateList, TemplateList} from './template-list';
 import {ComponentLoaderService, PluginCommonModule} from '@dontcode/plugin-common';
 import DoneCallback = jest.DoneCallback;
 
@@ -21,7 +22,7 @@ describe('PluginBaseComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports:[PluginCommonModule.forRoot()],
+      imports: [PluginCommonModule.forRoot()],
       declarations: [TestBaseComponent],
     }).compileComponents();
   }));
@@ -696,7 +697,9 @@ class TestArrayTarget {
 }
 
 class TestProviderInterface implements CommandProviderInterface {
-  constructor(protected toRet: any) {}
+  constructor(protected toRet: any) {
+  }
+
 
   getJsonAt(position: string): any {
     return this.toRet;
@@ -712,6 +715,10 @@ class TestProviderInterface implements CommandProviderInterface {
 
   getSchemaManager(): DontCodeSchemaManager {
     return dtcde.getSchemaManager();
+  }
+
+  sendCommand(action: Action): Promise<void> {
+    throw new Error('Method not implemented.');
   }
 }
 

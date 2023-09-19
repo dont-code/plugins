@@ -6,7 +6,13 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {InputNumberModule} from "primeng/inputnumber";
 import {InputTextModule} from "primeng/inputtext";
 import {PluginCommonModule} from "@dontcode/plugin-common";
-import {Change, CommandProviderInterface, DontCodeModelPointer, DontCodeSchemaManager, dtcde} from '@dontcode/core';
+import {Action,
+  Change,
+  CommandProviderInterface,
+  DontCodeModelPointer,
+  DontCodeSchemaManager,
+  dtcde
+} from '@dontcode/core';
 import {Observable} from 'rxjs';
 
 describe('EditEntityComponent', () => {
@@ -28,12 +34,13 @@ describe('EditEntityComponent', () => {
   });
 
   it('should create', () => {
-    component.initCommandFlow(new FakeProvider(), new DontCodeModelPointer("creation/entities", "creation/entities" ));
+    component.initCommandFlow(new FakeProvider(), new DontCodeModelPointer("creation/entities", "creation/entities"));
     expect(component).toBeTruthy();
   });
 });
 
 class FakeProvider implements CommandProviderInterface {
+
     receiveCommands(position?: string, lastItem?: string): Observable<Change> {
         return new Observable<Change>();
     }
@@ -46,5 +53,7 @@ class FakeProvider implements CommandProviderInterface {
     calculatePointerFor(position: string): DontCodeModelPointer {
         return new DontCodeModelPointer(position, position);
     }
-
+    sendCommand(action: Action): Promise<void> {
+      throw new Error('Method not implemented.');
+    }
 }
