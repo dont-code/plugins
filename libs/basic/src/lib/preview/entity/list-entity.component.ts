@@ -9,7 +9,13 @@ import {
   Output,
   TemplateRef,
 } from '@angular/core';
-import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler,} from '@dontcode/core';
+import {Action,
+  ActionHandler,
+  Change,
+  CommandProviderInterface,
+  DontCodeModelPointer,
+  PreviewHandler,
+} from '@dontcode/core';
 import {
   ComponentLoaderService,
   DynamicComponent,
@@ -30,8 +36,7 @@ import {
 })
 export class ListEntityComponent
   extends PluginBaseComponent
-  implements PreviewHandler
-{
+  implements PreviewHandler, ActionHandler {
   @Input()
   selectedItem: any;
 
@@ -88,7 +93,7 @@ export class ListEntityComponent
         change,
         null,
         (position, value) => {
-          return this.loadSubComponent(position, value.type, value.name).then((component) => {
+          return this.loadSubComponent(position, value.type, value.name, this.provider?.getJsonAt(position.position)).then((component) => {
             const ret = new PrimeColumn(value.name, value.name, value.type);
             if (component) {
               // Keep the component only if it provides the view template
@@ -110,6 +115,36 @@ export class ListEntityComponent
     }
   }
 
+  /**
+   * Runs the action on the subcomponents
+   * @param action
+   */
+  async performAction(action: Action): Promise<void> {
+    if (action.pointer==null)
+      return Promise.reject("No pointer for Action with position "+action.position);
+      // It must point directly to the element
+    if (action.position == this.entityPointer?.position) {
+        // Update all columns
+      if (this.store?.entities!=null) {
+        for (const colInfo of this.cols)
+          if ((colInfo.component as unknown as ActionHandler)?.performAction != null) {
+            for (const entity of this.store?.entities) {
+              colInfo.component?.setValue(entity[colInfo.field]);
+              await (colInfo.component as unknown as ActionHandler).performAction (action);
+              }
+            }
+        }
+    }
+  }
+
+  retrieveColumnInfo (colName:string): PrimeColumn {
+    const index=this.colsMap.get(colName);
+    if( index!=null) {
+      return this.cols[index];
+    }else {
+      throw new Error ("Cannot find column with name "+colName);
+    }
+  }
   providesTemplates(): TemplateList {
     return new TemplateList(null, null, null);
   }
