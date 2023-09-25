@@ -221,7 +221,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
     if (this.entityPointer!=null) {
       if (this.tabIndex==0) { // List
         return this.pluginHelper.performAction (
-          new Action (this.entityPointer?.position,null, ActionContextType.LIST, ActionType.UPDATE, this.entityPointer)
+          new Action (this.entityPointer?.position,null, ActionContextType.LIST, ActionType.EXTRACT, this.entityPointer)
         ).then(() => {
           this.ref.markForCheck();
           this.ref.detectChanges();
