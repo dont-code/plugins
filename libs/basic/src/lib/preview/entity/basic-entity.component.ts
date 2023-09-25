@@ -217,19 +217,22 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
     return new PossibleTemplateList(false,false,false);
   }
 
-  refreshScreen():Promise<void> {
+  async refreshScreen():Promise<void> {
     if (this.entityPointer!=null) {
       if (this.tabIndex==0) { // List
-        return this.pluginHelper.performAction (
-          new Action (this.entityPointer?.position,null, ActionContextType.LIST, ActionType.EXTRACT, this.entityPointer)
-        ).then(() => {
+        try {
+          await this.pluginHelper.performAction (
+            new Action (this.entityPointer?.position,null, ActionContextType.LIST, ActionType.EXTRACT, this.entityPointer)
+          );
+
           this.ref.markForCheck();
           this.ref.detectChanges();
-        }).catch(reason => {
+
+          await this.store?.storeAllChanged ();
+        } catch(reason) {
           console.error ("Error ",reason," performing refresh action on ",this.entityName, this.entityPointer);
-        });
-      }
-    }
-    return Promise.reject('No entityPointer or not showing list');
+        }
+      } else return Promise.reject('Not displaying the list');
+    } else return Promise.reject('No entityPointer');
   }
 }

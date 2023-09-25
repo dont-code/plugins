@@ -134,6 +134,18 @@ export class EntityListManager<T=never> {
     return this.storeMgr.storeEntity(this.pointer.position, element);
   }
 
+  /**
+   * Saves permanently all elements that have been changed
+   */
+  async storeAllChanged (): Promise<any> {
+    if (this.entities==null) return;
+
+    this.prepared=null;
+    for (const entity of this.entities) {
+      await this.storeMgr.storeEntity(this.pointer.position, entity);
+    }
+  }
+
   loadAll (): Promise<void> {
     return firstValueFrom(this.storeMgr.searchEntities(this.pointer.position).pipe(
       map (values => {

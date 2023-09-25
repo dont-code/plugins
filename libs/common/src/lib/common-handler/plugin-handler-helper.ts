@@ -344,7 +344,7 @@ export class PluginHandlerHelper {
    */
   async performAction(action: Action): Promise<void> {
     if( this.provider!=null)
-      return this.provider.sendCommand (action);
+      await this.provider.sendCommand (action);
     else return Promise.reject('No provider for the component at position '+this.entityPointer?.position );
   }
 }
