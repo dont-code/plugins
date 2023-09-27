@@ -45,6 +45,9 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   @ViewChild(EditEntityComponent)
   edit!: EditEntityComponent;
 
+  static readonly baseRefreshIcons='pi pi-refresh';
+  refreshIcon = BasicEntityComponent.baseRefreshIcons;
+
   constructor(protected entityService:EntityStoreService, ref:ChangeDetectorRef, componentLoader: ComponentLoaderService, injector:Injector) {
     super(componentLoader, injector, ref);
   }
@@ -222,6 +225,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
     if (this.entityPointer!=null) {
       if (this.tabIndex==0) { // List
         try {
+          this.refreshIcon=BasicEntityComponent.baseRefreshIcons+' pi-spin';
           console.debug("Performing action");
           await this.pluginHelper.performAction (
             new Action (this.entityPointer?.position,null, ActionContextType.LIST, ActionType.EXTRACT, this.entityPointer)
@@ -236,8 +240,13 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
           console.debug("Stored values changed");
         } catch(reason) {
           console.error ("Error ",reason," performing refresh action on ",this.entityName, this.entityPointer);
+        } finally {
+          this.refreshIcon=BasicEntityComponent.baseRefreshIcons;
+          this.ref.markForCheck();
+          this.ref.detectChanges();
         }
       } else return Promise.reject('Not displaying the list');
     } else return Promise.reject('No entityPointer');
   }
+
 }
