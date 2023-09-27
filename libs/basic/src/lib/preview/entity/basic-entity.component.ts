@@ -218,17 +218,22 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
   }
 
   async refreshScreen():Promise<void> {
+    console.debug("Refresh called");
     if (this.entityPointer!=null) {
       if (this.tabIndex==0) { // List
         try {
+          console.debug("Performing action");
           await this.pluginHelper.performAction (
             new Action (this.entityPointer?.position,null, ActionContextType.LIST, ActionType.EXTRACT, this.entityPointer)
           );
 
+          console.debug("Marking for Check");
           this.ref.markForCheck();
           this.ref.detectChanges();
 
+          console.debug("Storing Changed values");
           await this.store?.storeAllChanged ();
+          console.debug("Stored values changed");
         } catch(reason) {
           console.error ("Error ",reason," performing refresh action on ",this.entityName, this.entityPointer);
         }
