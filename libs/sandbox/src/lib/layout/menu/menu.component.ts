@@ -1,22 +1,19 @@
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Component, Inject,
+  Component,
+  Inject,
   NgZone,
   OnDestroy,
-  OnInit, Optional,
+  OnInit,
+  Optional,
 } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
-import {
-  Change,
-  ChangeType,
-  DontCodeModel,
-  DontCodeModelPointer,
-} from '@dontcode/core';
-import { Router } from '@angular/router';
-import { MenuItem } from 'primeng/api';
-import { ChangeProviderService } from '../../shared/command/services/change-provider.service';
+import {Subscription} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {Change, ChangeType, DontCodeModel, DontCodeModelPointer,} from '@dontcode/core';
+import {Router} from '@angular/router';
+import {MenuItem} from 'primeng/api';
+import {ChangeProviderService} from '../../shared/command/services/change-provider.service';
 import {MenuUpdater, SANDBOX_MENUS} from "../../shared/config/sandbox-lib-config";
 
 @Component({
@@ -52,8 +49,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     const config = (window as any).dontCodeConfig;
     if (config?.runtime === true || config?.projectId != null)
       this.runtime = true;
-    if (menuUpdater!=null) {
-      this.templateMenus[0].items!.push(...menuUpdater.additionalMenus());
+    if ((menuUpdater!=null) && (this.templateMenus[0].items!=null)) {
+      this.templateMenus[0].items.push(...menuUpdater.additionalMenus());
     }
     this.menus = this.generateMenu();
   }
@@ -82,6 +79,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         .receiveCommands(itemPosition, nameKey)
         .pipe(
           map((command) => {
+            if (command.type==ChangeType.ACTION) return;
             // eslint-disable-next-line no-restricted-syntax
             // console.debug("Received menu change for ", command.position);
             this.updateMenuName(command, icon);
@@ -95,6 +93,8 @@ export class MenuComponent implements OnInit, OnDestroy {
         .receiveCommands(itemPosition + '/?')
         .pipe(
           map((command) => {
+            if (command.type==ChangeType.ACTION) return;
+
             // eslint-disable-next-line no-restricted-syntax
             // console.debug("Received menu change for ", command.position);
             if (command.position.length > itemPosition.length + 1) {
@@ -167,6 +167,12 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   private updateMenu(change: Change, nameKey:string, icon: string) {
+
+    // Actions are not changing anything in menus
+    if (change.type==ChangeType.ACTION) {
+      return;
+    }
+
     const key = change.position;
     const pos = this.findMenuPosOf(key);
     let menu;
@@ -211,11 +217,18 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   private updateMenuName(command: Change, icon: string) {
+
+    // Actions are not changing anything in menus
+    if (command.type==ChangeType.ACTION) {
+      return;
+    }
+
     const parentPos =DontCodeModelPointer.parentPosition(command.position);
     if (parentPos==null) {
       console.error("Cannot update menu name for "+command.position+" with no parent position");
       return;
     }
+
 
     const key = this.cleanPosition(
       parentPos
