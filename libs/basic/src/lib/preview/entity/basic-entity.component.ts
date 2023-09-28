@@ -32,6 +32,7 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
 
   entityName:string='';
   selectedItem: any;
+  canSave = false;
 
   store:EntityListManager<any>|null=null;
 
@@ -157,29 +158,33 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
     }
   }
 
-  selectChange($event: any) {
+  async selectChange($event: any) {
 //    console.log("Event:", $event);
     if ($event) {
       // Load the details of the selected element
       if( this.store!=null) {
-        this.store.loadDetailOf ($event).then(newValue => {
+        await this.store.loadDetailOf ($event).then(newValue => {
           if( newValue!=null) {
             this.selectedItem=newValue;
-            this.ref.markForCheck();
-            this.ref.detectChanges();
           }
         }).catch(reason => {
           console.error("Ignoring the failed loading of "+$event._id+" due to ", reason);
         })
       }
+      this.canSave=true;
       this.tabIndex = 1;  // Automatically move to edit when selection is made
+    } else {
+      this.canSave=false;
     }
+    this.ref.markForCheck();
+    this.ref.detectChanges();
   }
 
-  deleteEntity() {
+  async deleteEntity() {
     if( (this.selectedItem) && (this.store)) {
-      this.store.remove(this.selectedItem).then(deleted => {
+      await this.store.remove(this.selectedItem).then(deleted => {
         this.selectedItem = null;
+        this.canSave=false;
         this.tabIndex=0;
         this.ref.markForCheck();
         this.ref.detectChanges();
@@ -191,24 +196,30 @@ export class BasicEntityComponent extends PluginBaseComponent implements Preview
     const newEntity = {};
     this.store?.push(newEntity);
     this.selectedItem = newEntity;
+    this.canSave=true;
     this.tabIndex = 1;
   }
 
-  saveEntity() {
+  async saveEntity() {
 
     if( this.selectedItem) {
-        // Ensure all fields are ok
-      //this.edit.form.updateValueAndValidity({onlySelf:true, emitEvent:false});
-      this.edit.getValue();
-      this.store?.store (this.selectedItem).then(value => {
-        console.debug("Entity named ", this.entityName+" with value "+value, " stored at position "+this.entityPointer?.position);
-        this.selectedItem = value;
-        this.tabIndex=0;
+      this.canSave=false;
+      try {
+          // Ensure all fields are ok
+        //this.edit.form.updateValueAndValidity({onlySelf:true, emitEvent:false});
+        this.edit.getValue();
+        await this.store?.store (this.selectedItem).then(value => {
+          console.debug("Entity named ", this.entityName+" with value "+value, " stored at position "+this.entityPointer?.position);
+          this.selectedItem = value;
+          this.tabIndex=0;
+        }).catch(reason => {
+          console.error("Entity named ", this.entityName, " not saved because of ",reason);
+        });
+      } finally {
+        this.canSave=true;
         this.ref.markForCheck();
         this.ref.detectChanges();
-      }).catch(reason => {
-        console.error("Entity named ", this.entityName, " not saved because of ",reason);
-      });
+      }
     }
   }
 
