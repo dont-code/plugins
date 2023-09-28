@@ -32,6 +32,7 @@ describe('New fields', () => {
     getInputWithName('Link').type ('https://test.dont-code.net');
     getRatingWithName ('Stars', 4).click();
     getButtonWithName ('save').click();
+    getButtonWithName ('save').should('be.enabled');
 
     cy.get('th[id="header-Name"]').should('be.visible');
 //    getTabWithName ('List').click();
@@ -60,6 +61,7 @@ describe('New fields', () => {
     getInputWithName('Due Date').type('05/05/2004{enter}');
     getCheckWithName('Done').click();
     getButtonWithName ('save').click();
+    getButtonWithName ('save').should('be.enabled');
 
     cy.get('th[id="header-Name"]').should('be.visible');
     //getTabWithName ('List').click();
@@ -68,6 +70,7 @@ describe('New fields', () => {
     getInputWithName('Due Date').click();
     getDatePicker ("16").click();
     getButtonWithName ('save').click();
+    getButtonWithName ('save').should('be.enabled');
 
     cy.get('th[id="header-Name"]').should('be.visible');
 //    getTabWithName ('List').click();

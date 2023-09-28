@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
-import {Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
+import {mergeAll, Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {
+  Action,
   Change,
-  ChangeType,
-  CommandProviderInterface, DontCodeChangeManager,
+  CommandProviderInterface,
+  DontCodeChangeManager,
   DontCodeModelPointer,
   DontCodeSchemaManager,
 } from '@dontcode/core';
@@ -83,6 +84,37 @@ export class ChangeProviderService implements CommandProviderInterface {
   close() {
 //    this.changeManager.close();
     this.subscriptions.unsubscribe();
+  }
+
+  /**
+   * Send a command to whatever component listens to, and return a Promise when ALL components have made the action
+   * @param action
+   */
+  sendCommand(action: Action): Promise<void> {
+    let subscription:Subscription|null=null;
+
+    return new Promise<void> ((resolve, reject) => {
+      if( action.running!=null) {
+        subscription = action.running.pipe(
+          mergeAll(1)
+        ).subscribe({
+          complete: () => resolve (), // Resolve the promise only when the observer completed all promises
+          error: (reason) => reject(reason)
+        });
+        // Normally we are unsubscribing after the promise is done, but let's make sure we unsubscribe
+        this.subscriptions.add(subscription);
+        this.pushChange(action);
+          // Complete the action right after all other changes have passed through
+        action.running.next(new Promise<void>((resolve) => {
+          action.running?.complete();
+          resolve();
+        }));
+      } else reject("No running observer in action");
+    }).then( () => {
+      subscription?.unsubscribe();
+    }).catch( () => {
+      subscription?.unsubscribe();
+    });
   }
 
 }

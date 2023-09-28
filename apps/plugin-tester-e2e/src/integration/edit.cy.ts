@@ -37,6 +37,7 @@ describe('Edit', () => {
       getInputWithName('id').type('ID1');
       getCheckWithName('check').click();
       getButtonWithName ('save').click();
+      getButtonWithName ('save').should('be.enabled');
 
       cy.get('th[id="header-id"]').should('be.visible');
       getListRowWithText ( "ID1");
@@ -45,6 +46,7 @@ describe('Edit', () => {
       getInputWithName('id').type('ID2');
       getInputWithName('count').type('2');
       getButtonWithName ('save').click();
+      getButtonWithName ('save').should('be.enabled');
 
       cy.get('th[id="header-id"]').should('be.visible');
       getListRowWithText ("ID2");
@@ -53,6 +55,7 @@ describe('Edit', () => {
       getInputWithName('id').clear().type('NEWID1');
 
       getButtonWithName ('save').click();
+      getButtonWithName ('save').should('be.enabled');
       cy.get('th[id="header-id"]').should('be.visible');
       getListRowWithText ( "NEWID1");
 
@@ -89,6 +92,7 @@ describe('Edit', () => {
       getDropdownFilter().type ('peso');
       getDropdownListItemWithName('Cuban Peso - CUP').click();
       getButtonWithName ('save').click();
+      getButtonWithName ('save').should('be.enabled');
 
       cy.get('th[id="header-Name"]').should('be.visible');
       getListRowWithText ( "Book 1");
@@ -120,6 +124,8 @@ describe('Edit', () => {
       getDropdownListItemWithName('Algerian Dinar - DZD').click();
 
       getButtonWithName ('save').click();
+      getButtonWithName ('save').should('be.enabled');
+
       cy.get('th[id="header-Name"]').should('be.visible');
       getListRowWithText (FormatUtils.generateMoney(4321, "EUR"));
       getListRowWithText ( FormatUtils.generateMoney(9090, "DZD"));
@@ -132,6 +138,7 @@ describe('Edit', () => {
       getListRowWithText( FormatUtils.generateMoney(4321,"EUR")).click(); // Move to edit
       getInputWithName('EUR').clear(); // Empty the amount
       getButtonWithName ('save').click();
+      getButtonWithName ('save').should('be.enabled');
 
       cy.get('th[id="header-Name"]').should('be.visible');
       getColumn (getListRowWithText(FormatUtils.generateMoney(1234, "USD")), 3).should ("be.empty");

@@ -1,11 +1,18 @@
-import {Change, CommandProviderInterface, DontCodeModelPointer, PreviewHandler} from "@dontcode/core";
+import {
+  Action,
+  ActionHandler,
+  Change,
+  CommandProviderInterface,
+  DontCodeModelPointer,
+  PreviewHandler
+} from "@dontcode/core";
 import {Subscription} from "rxjs";
 import {PluginHandlerHelper} from "./plugin-handler-helper";
 
 /**
  * Helps develop a plugin handler that is not an Angular Component. For an Angular Component handling model changes, please use PluginBaseComponent
  */
-export abstract class AbstractPluginHandler implements PreviewHandler {
+export abstract class AbstractPluginHandler implements PreviewHandler, ActionHandler {
   protected subscriptions = new Subscription();
   protected pluginHelper = new PluginHandlerHelper();
   protected entityPointer: DontCodeModelPointer | null = null
@@ -73,5 +80,13 @@ export abstract class AbstractPluginHandler implements PreviewHandler {
    * @protected
    */
   abstract handleChange(change: Change): void;
+
+  /**
+   * Called whenever an action needs to be performed on the data
+   * @param action
+   */
+  performAction(action: Action): Promise<void> {
+    return Promise.resolve(undefined);
+  }
 
 }
