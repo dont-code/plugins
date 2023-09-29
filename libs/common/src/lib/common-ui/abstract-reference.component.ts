@@ -10,7 +10,7 @@ import {
 import {DontCodeModelManager, DontCodeStoreManager, dtcde} from "@dontcode/core";
 import {AbstractDynamicComponent} from "./abstract-dynamic-component";
 import {PossibleTemplateList, TemplateList} from "./template-list";
-import {Observable} from "rxjs";
+import {firstValueFrom, lastValueFrom, Observable} from "rxjs";
 import {map} from "rxjs/operators";
 import {
   BaseDynamicEvent,
@@ -66,7 +66,8 @@ export class AbstractReferenceComponent extends AbstractDynamicComponent {
     return new TemplateList (this.inlineView, null, this.fullEditView);
   }
 
-  protected setTargetEntitiesWithName (entityName:string, propertyName?:string): boolean {
+  protected setTargetEntitiesWithName (entityName:string, propertyName?:string): Promise<boolean> {
+
     // We must find the list of possible shops
     const queryResult=this.modelMgr.queryModelToSingle("$.creation.entities[?(@.name=='"+entityName+"')]");
     if( queryResult==null) {
@@ -75,18 +76,13 @@ export class AbstractReferenceComponent extends AbstractDynamicComponent {
     }
     this.targetEntitiesPos = queryResult.pointer;
 
-    if (this.targetEntitiesPos==null)  return false;
+    if (this.targetEntitiesPos==null)  return Promise.resolve(false);
     else {
       this.targetEntitiesProperty= propertyName??null;
-      this.subscriptions.add(this.possibleValues().subscribe ({
-        next: (value) => {
-          this.options=value;
-          },
-        error: (err) => {
-          this.options=['Error', err.toString()];
-        }
-      }));
-      return true;
+      return firstValueFrom(this.possibleValues()).then(value => {
+        this.options=value;
+        return true;
+      });
     }
   }
 
@@ -117,11 +113,7 @@ export class AbstractReferenceComponent extends AbstractDynamicComponent {
 
   override setValue(val: any) {
    if ((val!=null) && (this.options!=null) && (this.options.findIndex((value) => {
-     if( (value!=='Shop EP')  && (value!=='Shop GW') && (value!=null) && (value!=='')) {
-       //throw new Error ("Error of the death");
-     }
-     if( value==val) return true;
-     return false;
+     return value == val;
    })==-1)) {
      if( this.options[0]!=='Error') {
       // throw new Error ("erferf");
