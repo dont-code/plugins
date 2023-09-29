@@ -67,20 +67,24 @@ describe('AbstractReferenceComponent', () => {
       }
     }));
 
-    const result = component.setTargetEntitiesName("EntityToFind");
-    expect(result).toBeTruthy ();
-    expect (component.getTargetEntitiesPos()).toEqual('creation/entities/ab')
+    component.setTargetEntitiesName("EntityToFind").then (value => {
+      expect(value).toBeTruthy ();
+      expect (component.getTargetEntitiesPos()).toEqual('creation/entities/ab')
 
-    // And list the correct values:
-    component.possibleValues().subscribe({
-      next: (list)=> {
-        expect(list).toHaveLength(2);
-        done();
-      },
-      error: (error) => {
-        done (error);
-      }
+      // And list the correct values:
+      component.possibleValues().subscribe({
+        next: (list)=> {
+          expect(list).toHaveLength(2);
+          done();
+        },
+        error: (error) => {
+          done (error);
+        }
+      })
+    }).catch(reason => {
+      done (reason);
     })
+
   });
 
   @Component({
@@ -91,7 +95,7 @@ describe('AbstractReferenceComponent', () => {
       super(modelMgr, storeMgr);
     }
 
-    setTargetEntitiesName (entityName:string): boolean {
+    setTargetEntitiesName (entityName:string): Promise<boolean> {
       return this.setTargetEntitiesWithName(entityName);
     }
 
