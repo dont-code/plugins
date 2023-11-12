@@ -175,6 +175,9 @@ export class EntityListManager<T=never> {
 
       if( criteria!=null)
         sortedValues=StoreProviderHelper.applyFilters(sortedValues, ...criteria);
+      if( dataTransformer!=null) {
+        sortedValues= dataTransformer.postLoadingTransformation(sortedValues);
+      }
       if (sortStore!=null){
         sortedValues=StoreProviderHelper.multiSortArray(sortedValues,sortStore);
       }
@@ -184,6 +187,7 @@ export class EntityListManager<T=never> {
       if ((criteria!=null) || (sort!=null) || (groupBy!=null)) {
         this.prepared=new DontCodeStorePreparedEntities<any>(sortedValues, sortStore, groupedValues);
       }
+      this.entities=sortedValues; // Updates the list with sorted and modified values
       return Promise.resolve();
     } else {
       // Not loaded already, just ask the store to do it
