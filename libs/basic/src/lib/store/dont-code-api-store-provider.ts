@@ -23,7 +23,7 @@ export class DontCodeApiStoreProvider<T=never> extends AbstractDontCodeStoreProv
   apiUrl: string;
   docUrl: string;
 
-  constructor(protected http: HttpClient, @Optional() protected modelMgr: DontCodeModelManager, @Optional() @Inject(DONT_CODE_STORE_API_URL) apiUrl?: string, @Optional() @Inject(DONT_CODE_DOC_API_URL) docUrl?: string) {
+  constructor(protected http: HttpClient, @Optional() protected override modelMgr: DontCodeModelManager, @Optional() @Inject(DONT_CODE_STORE_API_URL) apiUrl?: string, @Optional() @Inject(DONT_CODE_DOC_API_URL) docUrl?: string) {
     super();
     if (apiUrl)
       this.apiUrl = apiUrl;
