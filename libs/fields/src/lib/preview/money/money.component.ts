@@ -25,7 +25,7 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
 
   override value: MoneyAmount = new MoneyAmount();
 
-  converter = Intl.NumberFormat(navigator.language, { style:'currency', currency:'EUR'});
+  converter: Intl.NumberFormat | null = null;
 
   constructor(loaderService: ComponentLoaderService, injector: Injector, ref: ChangeDetectorRef ) {
     super(loaderService, injector, ref);
@@ -65,13 +65,17 @@ export class MoneyComponent extends AbstractDynamicLoaderComponent {
   updateConverter (): void {
     if (this.value?.currencyCode!=null)
       this.converter =Intl.NumberFormat(navigator.language, { style:'currency', currency:this.value.currencyCode});
+    else
+      this.converter = null;
   }
 
   localizedAmount (amount:number|undefined): string {
     if( amount==null)
       return this.value?.currencyCode??"";
-    const ret = this.converter.format(amount);
-    return ret;
+    if (this.converter!=null)
+      return this.converter?.format(amount);
+    else
+      return amount.toString();
   }
 
   override subFieldFullEditTemplate(subField: string | SubFieldInfo): TemplateRef<any> | null {
