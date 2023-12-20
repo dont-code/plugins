@@ -43,7 +43,7 @@ export class EuroDollarComponent extends AbstractDynamicComponent{
       val = new MoneyAmount();
       val.currencyCode=this.value.currencyCode;
     } else {
-      if (val.currencyCode!=this.value.currencyCode) {
+      if ((val.currencyCode!=this.value.currencyCode) && (this.value.currencyCode!=null)) {
         console.warn ("Setting currencyCode to "+val.currencyCode+" that is different from the component one ("+this.value.currencyCode+")");
       }
     }
