@@ -29,7 +29,7 @@ export class ListCommandsComponent implements OnInit, OnDestroy {
       .pipe(
         map ((command) => {
         // console.log('Received...', command);
-          this.commands.push(command);
+          this.commands.push(structuredClone (command));
           this.ref.detectChanges();
 //        }
       })).subscribe());

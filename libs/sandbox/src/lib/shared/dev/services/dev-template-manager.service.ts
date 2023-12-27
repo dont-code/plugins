@@ -24,9 +24,9 @@ export class DevTemplateManagerService {
         map(value => {
           this.templates = new Array<DevTemplate>();
           const src = value as Array<any>;
-          src.forEach(tmpl => {
+          for (const tmpl of src){
             this.templates.push(new DevTemplate(tmpl));
-          });
+          };
           return this.templates;
         }),
         catchError(err => {
