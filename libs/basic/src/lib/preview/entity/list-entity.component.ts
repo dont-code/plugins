@@ -13,8 +13,10 @@ import {Action,
   ActionHandler,
   Change,
   CommandProviderInterface,
+  DontCodeModelManager,
   DontCodeModelPointer,
   PreviewHandler,
+  dtcde,
 } from '@dontcode/core';
 import {
   ComponentLoaderService,
@@ -24,6 +26,7 @@ import {
   PossibleTemplateList,
   TemplateList,
 } from '@dontcode/plugin-common';
+import { SortEvent } from 'primeng/api';
 
 /**
  * Displays a read-only list of entity in a table.
@@ -52,9 +55,11 @@ export class ListEntityComponent
   constructor(
     ref: ChangeDetectorRef,
     injector: Injector,
-    @Inject(ComponentLoaderService) componentLoader: ComponentLoaderService
+    @Inject(ComponentLoaderService) componentLoader: ComponentLoaderService,
+    protected modelMgr: DontCodeModelManager
   ) {
     super(componentLoader, injector, ref);
+    if( this.modelMgr==null) this.modelMgr=dtcde.getModelManager(); // In case the injext did not work
   }
 
   selectionChange(event: any): void {
@@ -203,6 +208,12 @@ export class ListEntityComponent
       }
 
     }
+
+  customSort(event: SortEvent) {
+    if ((event.field!=null) && (event.data!=null)) {
+      this.modelMgr.sortValues (event.data, event.order, event.field);
+    }
+  }
 }
 
 class PrimeColumn {
