@@ -7,15 +7,18 @@ import {
   DontCodePreviewManager,
   DontCodeStoreManager,
   DontCodeStoreProvider,
+  RepositorySchema,
 } from '@dontcode/core';
 import {IndexedDbStorageService} from '../../shared/storage/services/indexed-db-storage.service';
 import {ChangeListenerService} from '../../shared/change/services/change-listener.service';
 import {ChangeProviderService} from '../../shared/command/services/change-provider.service';
-import {EMPTY, Subscription} from 'rxjs';
+import {EMPTY, Subscription, firstValueFrom} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {GlobalPluginLoader} from '../../shared/plugins/global-plugin-loader';
 import {ComponentLoaderService, DONT_CODE_CORE} from "@dontcode/plugin-common";
 import {RemotePluginLoaderService} from "../../shared/plugins/remote-plugin-loader.service";
+import { HttpClient } from '@angular/common/http';
+import { CommonConfigService } from '@dontcode/plugin-common';
 
 @Component({
   template: '',
@@ -36,6 +39,8 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
     protected globalPluginLoader:GlobalPluginLoader,
     protected loaderService:ComponentLoaderService,
     protected changeProviderService: ChangeProviderService,
+    protected configService: CommonConfigService,
+    protected httpClient: HttpClient,
     protected injector: Injector,
     @Inject(DONT_CODE_CORE)
     protected dontCodeCore: Core,
@@ -46,23 +51,33 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const repoUrl = this.runtimeConfig.repositoryUrl;
-    this.pluginsLoaded=this.pluginLoader.loadPluginsFromRepository(repoUrl, 'assets/repositories/default.json').catch (
-      reason => {
-        if (this.runtimeConfig.forceRepositoryLoading)
-          return Promise.reject(reason);
-        else
-          return Promise.resolve(null);
-      }
-    ).then(value => {
-      this.dontCodeCore.initPlugins();
+    // First load the repository 
+    let repoUrl = this.runtimeConfig.repositoryUrl;
+    if( repoUrl==null) repoUrl='assets/repositories/default.json';
 
-        // Apply updates from repository
-      const repoUpdates = this.pluginLoader.listAllRepositoryConfigUpdates();
-      repoUpdates.forEach(update => {
-        const chg = this.modelMgr.convertToChange(update);
-        this.changeProviderService.pushChange(chg);
-      });
+      firstValueFrom (this.httpClient.get<RepositorySchema>(repoUrl, {observe:'body', responseType:'json'})
+      ).then((config:RepositorySchema) => {
+        if( config.documentUrl!=null) this.configService.updateConfig('documentUrl', config.documentUrl);
+        if( config.storeUrl!=null) this.configService.updateConfig('storeUrl',config.storeUrl);
+        if( config.webSocketUrl!=null) this.configService.updateConfig('webSocketUrl',config.webSocketUrl);
+        if( config.projectUrl!=null) this.configService.updateConfig('projectUrl',config.projectUrl);
+
+        this.pluginsLoaded=this.pluginLoader.loadPluginsFromRepository(config, repoUrl).catch (
+        reason => {
+          if (this.runtimeConfig.forceRepositoryLoading)
+            return Promise.reject(reason);
+          else
+            return Promise.resolve(null);
+        }).then(value => {
+          this.dontCodeCore.initPlugins();
+
+            // Apply updates from repository
+          const repoUpdates = this.pluginLoader.listAllRepositoryConfigUpdates();
+          repoUpdates.forEach(update => {
+            const chg = this.modelMgr.convertToChange(update);
+            this.changeProviderService.pushChange(chg);
+          });
+        });
       // eslint-disable-next-line no-restricted-syntax
       console.info('Dynamic Plugins inited');
       // Manage the global plugins

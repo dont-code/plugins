@@ -6,11 +6,11 @@ import {
   StoreProviderHelper,
   UploadedDocumentInfo
 } from "@dontcode/core";
-import {lastValueFrom, Observable, throwError} from "rxjs";
+import {lastValueFrom, Observable, Subscription, throwError} from "rxjs";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {Inject, Injectable, Optional} from "@angular/core";
+import {Inject, Injectable, OnDestroy, Optional} from "@angular/core";
 import {map, mergeAll} from "rxjs/operators";
-import {DONT_CODE_DOC_API_URL, DONT_CODE_STORE_API_URL} from "@dontcode/plugin-common";
+import {DONT_CODE_COMMON_CONFIG, CommonConfigService, CommonLibConfig, DONT_CODE_DOC_API_URL, DONT_CODE_STORE_API_URL} from "@dontcode/plugin-common";
 
 /**
  * A Store Provider that uses the DontCode API to store / read application data
@@ -18,30 +18,38 @@ import {DONT_CODE_DOC_API_URL, DONT_CODE_STORE_API_URL} from "@dontcode/plugin-c
 @Injectable({
   providedIn: 'root'
 })
-export class DontCodeApiStoreProvider<T=never> extends AbstractDontCodeStoreProvider<T> {
+export class DontCodeApiStoreProvider<T=never> extends AbstractDontCodeStoreProvider<T> implements OnDestroy {
 
   apiUrl: string;
   docUrl: string;
+  subscriptions = new Subscription();
 
-  constructor(protected http: HttpClient, @Optional() protected override modelMgr: DontCodeModelManager, @Optional() @Inject(DONT_CODE_STORE_API_URL) apiUrl?: string, @Optional() @Inject(DONT_CODE_DOC_API_URL) docUrl?: string) {
+  constructor(protected http: HttpClient, @Optional() protected override modelMgr: DontCodeModelManager, protected configService: CommonConfigService) {
     super();
-    if (apiUrl)
-      this.apiUrl = apiUrl;
-    else {
-      this.apiUrl = 'https://test.dont-code.net/data';
-      console.log('DONTCODE_STORE_API_URL token not provided, hence using default test.dont-code.net/data url.');
-    }
-    if (docUrl)
-      this.docUrl = docUrl;
-    else {
-      this.docUrl = 'https://test.dont-code.net/documents';
-      console.log('DONTCODE_STORE_DOC_URL token not provided, hence using default test.dont-code.net/documents url.');
-    }
+    this.apiUrl = 'https://test.dont-code.net/data';
+    this.docUrl = 'https://test.dont-code.net/documents';
+
+    this.updateConfig (this.configService.getConfig());
+    this.subscriptions.add (this.configService.getUpdates ().pipe (map ((updatedConfig) => {
+      this.updateConfig (updatedConfig);
+    })).subscribe());
+
       // Hack for when DI cannot provide the ModelManager due to some weird stuff
     if (this.modelMgr==null) {
       this.modelMgr = dtcde.getModelManager();
       console.warn("DontCodeModelManager not found by Angular's DI");
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  updateConfig(newConfig: Readonly<CommonLibConfig>) {
+    if (newConfig.storeUrl!=null)
+      this.apiUrl = newConfig.storeUrl;
+    if (newConfig.documentUrl!=null)
+      this.docUrl = newConfig.documentUrl;
   }
 
   storeEntity(position: string, data: T): Promise<T> {

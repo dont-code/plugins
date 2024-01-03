@@ -2,7 +2,7 @@ import {Inject, Injectable, Optional} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {catchError, map} from "rxjs/operators";
 import {Observable, of} from "rxjs";
-import {SANDBOX_CONFIG, SandboxLibConfig} from "../../config/sandbox-lib-config";
+import {DONT_CODE_COMMON_CONFIG, CommonLibConfig} from "@dontcode/plugin-common";
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ export class DevTemplateManagerService {
 
   protected templates:DevTemplate[]=[];
 
-  constructor(protected http:HttpClient, @Optional() @Inject(SANDBOX_CONFIG) protected config?:SandboxLibConfig) { }
+  constructor(protected http:HttpClient, @Optional() @Inject(DONT_CODE_COMMON_CONFIG) protected config?:CommonLibConfig) { }
 
   getTemplates () : Observable<DevTemplate[]> {
     if (this.templates.length>0)

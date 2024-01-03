@@ -2,7 +2,7 @@ import {ModuleWithProviders, NgModule} from '@angular/core';
 import {SharedModule} from "./shared/shared.module";
 import {LayoutModule} from "./layout/layout.module";
 import {RoutesModule} from "./routes/routes.module";
-import {SANDBOX_CONFIG, SandboxLibConfig} from "./shared/config/sandbox-lib-config";
+import {DONT_CODE_COMMON_CONFIG, CommonLibConfig} from "@dontcode/plugin-common";
 import {RouterModule, Routes} from "@angular/router";
 import {HomeComponent} from "./routes/home/home.component";
 import {DebugPageComponent} from "./routes/debug/debug-page/debug-page.component";
@@ -25,12 +25,12 @@ const sandboxRoutes: Routes = [
   ]
 })
 export class SandboxModule {
-  static forRoot(config: SandboxLibConfig): ModuleWithProviders<SandboxModule> {
+  static forRoot(config: CommonLibConfig): ModuleWithProviders<SandboxModule> {
     return {
       ngModule: SandboxModule,
       providers: [
         {
-          provide: SANDBOX_CONFIG,
+          provide: DONT_CODE_COMMON_CONFIG,
           useValue: config
         },
         {

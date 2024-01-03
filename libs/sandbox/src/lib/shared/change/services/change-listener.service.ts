@@ -6,9 +6,9 @@ import { webSocket } from 'rxjs/webSocket';
 import { BroadcastChannel } from 'broadcast-channel';
 import {
   CHANNEL_CHANGE_NAME,
-  SANDBOX_CONFIG,
-  SandboxLibConfig,
-} from '../../config/sandbox-lib-config';
+  DONT_CODE_COMMON_CONFIG,
+  CommonLibConfig,
+} from '@dontcode/plugin-common';
 import { HttpClient } from '@angular/common/http';
 import { IdeProject } from './IdeProject';
 
@@ -36,7 +36,7 @@ export class ChangeListenerService {
 
   constructor(
     protected http: HttpClient,
-    @Optional() @Inject(SANDBOX_CONFIG) private config?: SandboxLibConfig
+    @Optional() @Inject(DONT_CODE_COMMON_CONFIG) private config?: CommonLibConfig
   ) {
     try {
       if (

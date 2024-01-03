@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Change} from "@dontcode/core";
 import {BroadcastChannel} from 'broadcast-channel';
 import {ChangeListenerService} from '../../change/services/change-listener.service';
-import {CHANNEL_CHANGE_NAME} from "../../config/sandbox-lib-config";
+import {CHANNEL_CHANGE_NAME} from "../../../../../../common/src/lib/common-config/common-lib-config";
 
 
 @Injectable({

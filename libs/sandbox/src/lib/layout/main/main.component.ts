@@ -12,7 +12,7 @@ import {map} from "rxjs/operators";
 import {ChangeProviderService} from "../../shared/command/services/change-provider.service";
 import {ChangeListenerService} from "../../shared/change/services/change-listener.service";
 import {DontCodeModel} from "@dontcode/core";
-import {SANDBOX_CONFIG, SandboxLibConfig} from "../../shared/config/sandbox-lib-config";
+import {DONT_CODE_COMMON_CONFIG, CommonLibConfig} from "@dontcode/plugin-common";
 
 @Component({
   selector: 'dontcode-sandbox-main',
@@ -38,7 +38,7 @@ export class MainComponent implements OnInit, OnDestroy {
     protected provider:ChangeProviderService,
     protected listenerService:ChangeListenerService,
     private ref: ChangeDetectorRef,
-    @Optional() @Inject(SANDBOX_CONFIG) private config?:SandboxLibConfig
+    @Optional() @Inject(DONT_CODE_COMMON_CONFIG) private config?:CommonLibConfig
   ) {
     this.sidePanelVisible = true;
   }

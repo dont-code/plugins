@@ -1,7 +1,7 @@
 import {Inject, InjectionToken, Optional} from "@angular/core";
 import {MenuItem} from "primeng/api";
 
-export interface SandboxLibConfig {
+export interface CommonLibConfig {
   webSocketUrl?: string;
   projectUrl?: string;
   storeUrl?:string;
@@ -12,15 +12,14 @@ export interface SandboxLibConfig {
   templateFileUrl?: string;
 }
 
-export const SANDBOX_CONFIG = new InjectionToken<SandboxLibConfig>('SandboxLibConfig');
 
-export const basicStoreApiUrlConfig = (config:SandboxLibConfig) => {
+/*export const basicStoreApiUrlConfig = (config:CommonLibConfig) => {
   return config.storeUrl;
 };
 
-export const basicDocumentApiUrlConfig = (config:SandboxLibConfig) => {
+export const basicDocumentApiUrlConfig = (config:CommonLibConfig) => {
   return config.documentUrl;
-};
+};*/
 
 export const CHANNEL_CHANGE_NAME='preview-ui-changes';
 

@@ -3,7 +3,7 @@ import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {MainComponent} from "./main.component";
 import {RouterTestingModule} from "@angular/router/testing";
 import {MenuComponent} from "../menu/menu.component";
-import {SANDBOX_CONFIG} from "../../shared/config/sandbox-lib-config";
+import {DONT_CODE_COMMON_CONFIG} from "@dontcode/plugin-common";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {ToolbarModule} from "primeng/toolbar";
 import {OverlayPanelModule} from "primeng/overlaypanel";
@@ -24,7 +24,7 @@ describe('MainComponent', () => {
         ToolbarModule, OverlayPanelModule, SidebarModule, MenuModule, PluginCommonModule.forRoot()
       ],
       providers: [{
-        provide:SANDBOX_CONFIG, useValue:{
+        provide:DONT_CODE_COMMON_CONFIG, useValue:{
           webSocketUrl:''
         }
       }]

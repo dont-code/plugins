@@ -28,6 +28,6 @@ export * from './dynamic/components/default-viewer.component';
 export * from './storage/services/indexed-db-storage.service';
 export * from './change/change.module';
 export * from './plugins/remote-plugin-loader.service';
-export * from './config/sandbox-lib-config';
+export * from '../../../../common/src/lib/common-config/common-lib-config';
 export * from './command/command.module';
 export * from './plugins/global-plugin-loader';

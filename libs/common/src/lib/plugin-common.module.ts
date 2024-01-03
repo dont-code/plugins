@@ -55,3 +55,5 @@ export * from './common-ui/pipes/beautifier.pipe';
 export * from './common-storage/entity-store.service';
 export * from './common-dynamic/component-loader.service';
 export * from './common-values/value.service';
+export * from './common-config/common-lib-config';
+export * from './common-config/common-config.service';

@@ -1,15 +1,18 @@
 import {TestBed} from '@angular/core/testing';
 
 import {RemotePluginLoaderService, RemotePluginModuleOptions} from './remote-plugin-loader.service';
-import {dtcde, PluginModuleInterface, RepositoryPluginEntry, RepositoryPluginInfo} from "@dontcode/core";
+import {dtcde, PluginModuleInterface, RepositoryPluginEntry, RepositoryPluginInfo, RepositorySchema} from "@dontcode/core";
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
 import {Injectable} from "@angular/core";
 import {PluginCommonModule} from "@dontcode/plugin-common";
 import {LoadRemoteModuleEsmOptions} from "@angular-architects/module-federation-runtime/lib/loader/dynamic-federation";
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 describe('RemotePluginLoaderService', () => {
   let service: RemotePluginLoaderService;
   let httpTestingController: HttpTestingController;
+  let httpClient: HttpClient;
 
   beforeEach(() => {
     TestBed.configureTestingModule({imports: [HttpClientTestingModule, PluginCommonModule.forRoot() ], providers: [
@@ -17,6 +20,7 @@ describe('RemotePluginLoaderService', () => {
       ]});
     service = TestBed.inject(RemotePluginLoaderService);
     httpTestingController = TestBed.inject(HttpTestingController);
+    httpClient = TestBed.inject(HttpClient);
 
   });
 
@@ -25,7 +29,11 @@ describe('RemotePluginLoaderService', () => {
   });
 
   it('should load default plugin config', (done) => {
-    service.loadPluginsFromRepository("assets/repositories/test.json","assets/repositories/default.json").then(value => {
+    firstValueFrom (httpClient.get<RepositorySchema>("assets/repositories/test.json", {observe:'body', responseType:'json'})
+    ).then((config:RepositorySchema) => {
+      return service.loadPluginsFromRepository(config, "assets/repositories/test.json");
+      }
+    ).then(value => {
       expect (value.plugins).toHaveLength(2);
       const configs=service.listAllRepositoryConfigUpdates();
       expect(configs).toHaveLength(1);
@@ -47,7 +55,10 @@ describe('RemotePluginLoaderService', () => {
 
   it('should load default plugin config', (done) => {
     TestRemotePluginLoaderService.listOfInfoToTest.length=0;
-    service.loadPluginsFromRepository("assets/repositories/test.json","assets/repositories/default.json").then(value => {
+    firstValueFrom (httpClient.get<RepositorySchema>("assets/repositories/test.json", {observe:'body', responseType:'json'})
+    ).then((config:RepositorySchema) => {
+      return service.loadPluginsFromRepository(config, "assets/repositories/test.json");
+    }).then(value => {
       expect (value.plugins).toHaveLength(2);
       const configs=service.listAllRepositoryConfigUpdates();
       expect(configs).toHaveLength(1);
@@ -68,7 +79,10 @@ describe('RemotePluginLoaderService', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     TestRemotePluginLoaderService.listOfInfoToTest.push(...TEST_OVERLOAD_JSON.plugins.map((val:RepositoryPluginEntry) => val.info));
-    service.loadPluginsFromRepository("assets/repositories/test-overload.json","assets/repositories/default.json").then(value => {
+    firstValueFrom (httpClient.get<RepositorySchema>("assets/repositories/test-overload.json", {observe:'body', responseType:'json'})
+    ).then((config:RepositorySchema) => {
+      return service.loadPluginsFromRepository(config, "assets/repositories/test-overload.json");
+    }).then(value => {
       expect (value.plugins).toHaveLength(2);
       const configs=service.listAllRepositoryConfigUpdates();
       expect(configs).toHaveLength(1);
