@@ -4,7 +4,7 @@ import {DontCodeApiStoreProvider} from "./dont-code-api-store-provider";
 import {HttpClient} from "@angular/common/http";
 import { dtcde, UploadedDocumentInfo } from '@dontcode/core';
 import {toArray} from "rxjs/operators";
-import {DONT_CODE_STORE_API_URL, DONT_CODE_DOC_API_URL, PluginCommonModule, DONT_CODE_COMMON_CONFIG} from "@dontcode/plugin-common";
+import { PluginCommonModule, DONT_CODE_COMMON_CONFIG} from "@dontcode/plugin-common";
 
 
 describe('DontCode Api Store Manager', () => {

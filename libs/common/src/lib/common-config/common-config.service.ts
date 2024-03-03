@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@angular/core";
+import { Inject, Injectable, Optional } from "@angular/core";
 import { CommonLibConfig } from "./common-lib-config";
 import { Observable, Subject } from "rxjs";
 import { DONT_CODE_COMMON_CONFIG } from "../common-global/globals";
@@ -14,7 +14,7 @@ import { DONT_CODE_COMMON_CONFIG } from "../common-global/globals";
       protected config: CommonLibConfig;
       protected updates = new Subject<Readonly<CommonLibConfig>> ();
 
-      constructor (@Inject(DONT_CODE_COMMON_CONFIG) config: CommonLibConfig) {
+      constructor (@Optional() @Inject(DONT_CODE_COMMON_CONFIG) config: CommonLibConfig) {
         this.config = config;
       }
 

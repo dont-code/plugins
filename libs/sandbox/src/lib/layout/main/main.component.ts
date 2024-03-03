@@ -2,17 +2,14 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  Inject,
   OnDestroy,
-  OnInit,
-  Optional
-} from "@angular/core";
+  OnInit} from "@angular/core";
 import {combineLatest, EMPTY, Observable, Subscription} from "rxjs";
 import {map} from "rxjs/operators";
 import {ChangeProviderService} from "../../shared/command/services/change-provider.service";
 import {ChangeListenerService} from "../../shared/change/services/change-listener.service";
 import {DontCodeModel} from "@dontcode/core";
-import {DONT_CODE_COMMON_CONFIG, CommonLibConfig} from "@dontcode/plugin-common";
+import {CommonLibConfig, CommonConfigService} from "@dontcode/plugin-common";
 
 @Component({
   selector: 'dontcode-sandbox-main',
@@ -33,22 +30,33 @@ export class MainComponent implements OnInit, OnDestroy {
 
   sidePanelVisible: boolean;
   serverUrl = '';
+  config: CommonLibConfig|null =null;
 
   constructor(
     protected provider:ChangeProviderService,
     protected listenerService:ChangeListenerService,
-    private ref: ChangeDetectorRef,
-    @Optional() @Inject(DONT_CODE_COMMON_CONFIG) private config?:CommonLibConfig
+    protected configService: CommonConfigService,
+    private ref: ChangeDetectorRef
   ) {
     this.sidePanelVisible = true;
   }
 
   ngOnInit() {
-    if (this.config?.applicationName)
-      this.appName = this.config?.applicationName;
+    this.subscriptions.add(this.configService.getUpdates().subscribe( (newConfig) => {
+      if ((newConfig.applicationName!=this.config?.applicationName)
+       && (newConfig.applicationName!=null)) {
+        this.appName = newConfig.applicationName;
+      }
 
-    if ((this.config)&&(this.config.webSocketUrl)&&(this.config.webSocketUrl.length>0))
-      this.serverUrl = this.config.webSocketUrl;
+      if ((newConfig.webSocketUrl!=this.config?.webSocketUrl)
+       && (newConfig.webSocketUrl!=null)
+      && (newConfig.webSocketUrl.length>0)) {
+        this.serverUrl=newConfig.webSocketUrl;
+      }
+      this.config=newConfig;
+
+    }));
+
     this.subscriptions.add(this.provider.receiveCommands (DontCodeModel.APP_NAME).subscribe(command => {
       if( command.value) {
         this.appName = this.generateApplicationName (command.value);

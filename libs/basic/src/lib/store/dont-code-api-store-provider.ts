@@ -8,9 +8,9 @@ import {
 } from "@dontcode/core";
 import {lastValueFrom, Observable, Subscription, throwError} from "rxjs";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {Inject, Injectable, OnDestroy, Optional} from "@angular/core";
+import {Injectable, OnDestroy, Optional} from "@angular/core";
 import {map, mergeAll} from "rxjs/operators";
-import {DONT_CODE_COMMON_CONFIG, CommonConfigService, CommonLibConfig, DONT_CODE_DOC_API_URL, DONT_CODE_STORE_API_URL} from "@dontcode/plugin-common";
+import {CommonConfigService, CommonLibConfig} from "@dontcode/plugin-common";
 
 /**
  * A Store Provider that uses the DontCode API to store / read application data

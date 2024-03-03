@@ -10,9 +10,9 @@ import {
 } from "@dontcode/core";
 import {from, map, Observable, Subscription} from "rxjs";
 import Dexie, {Table} from "dexie";
-import {Inject, Injectable, OnDestroy, Optional} from "@angular/core";
+import {Injectable, OnDestroy, Optional} from "@angular/core";
 import {CommonConfigService, ValueService} from "@dontcode/plugin-common";
-import {DONT_CODE_COMMON_CONFIG, CommonLibConfig} from "@dontcode/plugin-common";
+import {CommonLibConfig} from "@dontcode/plugin-common";
 
 @Injectable({
   providedIn: 'root'

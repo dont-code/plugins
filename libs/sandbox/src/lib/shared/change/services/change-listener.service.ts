@@ -1,13 +1,13 @@
-import { Inject, Injectable, Optional } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Change, ChangeType, Message, MessageType } from '@dontcode/core';
-import {firstValueFrom, map, Observable, ReplaySubject, Subject} from 'rxjs';
+import {firstValueFrom, map, Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
 import { WebSocketSubject } from 'rxjs/webSocket';
 import { webSocket } from 'rxjs/webSocket';
 import { BroadcastChannel } from 'broadcast-channel';
 import {
   CHANNEL_CHANGE_NAME,
-  DONT_CODE_COMMON_CONFIG,
   CommonLibConfig,
+  CommonConfigService,
 } from '@dontcode/plugin-common';
 import { HttpClient } from '@angular/common/http';
 import { IdeProject } from './IdeProject';
@@ -20,12 +20,12 @@ export class ChangeListenerService {
 
   //  protected listOfEntities: Map<string, string> = new Map();
 
-  previewServiceWebSocket?: WebSocketSubject<Message>;
+  previewServiceWebSocket: WebSocketSubject<Message> | null = null;
+  socketSubscription : Subscription|null=null;
   projectUrl?: string;
   protected changeEmitter = new Subject<Change>();
-  protected connectionStatus: ReplaySubject<string> = new ReplaySubject<string>(
-    1
-  );
+  protected connectionStatus: ReplaySubject<string> = new ReplaySubject<string>(1);
+  protected config: CommonLibConfig | null = null;
 
   protected sessionId: string | null = null;
   protected sessionIdSubject: ReplaySubject<string|undefined> = new ReplaySubject<string|undefined>(
@@ -36,58 +36,17 @@ export class ChangeListenerService {
 
   constructor(
     protected http: HttpClient,
-    @Optional() @Inject(DONT_CODE_COMMON_CONFIG) private config?: CommonLibConfig
+    protected configService: CommonConfigService
   ) {
     try {
-      if (
-        this.config &&
-        this.config.webSocketUrl &&
-        this.config.webSocketUrl.length > 0
-      ) {
-        this.previewServiceWebSocket = webSocket(this.config.webSocketUrl);
-        this.connectionStatus.next('connected');
-        this.previewServiceWebSocket.subscribe({
-            next: (msg) => {
-              //console.log('message received: ' + msg);
-              if (msg.type === MessageType.CHANGE) {
-                if (msg.change) {
-                  this.listOfChanges.push(msg.change);
-                  this.changeEmitter.next(msg.change);
-                } else {
-                  console.error('Received change message without a change...');
-                }
-              }
-            },
-            // Called whenever there is a message from the server
-            error: (err) => {
-              //console.log(err);
-              this.connectionStatus.next('ERROR:' + err);
-              this.sessionIdSubject.next(undefined);
-            },
-            // Called if WebSocket API signals some kind of error
-            complete: () => {
-              //console.log('complete');
-              this.connectionStatus.next('closed');
-              this.sessionIdSubject.next(undefined);
-            }
-          }
-          // Called when connection is closed (for whatever reason)
-        );
-      } else {
-        console.warn(
-          'No SANDBOX_CONFIG WebSocketUrl injected => Not listening to changes from servers'
-        );
-        this.connectionStatus.next('undefined');
-        this.sessionIdSubject.next(undefined);
-      }
 
-      if (
-        this.config &&
-        this.config.projectUrl &&
-        this.config.projectUrl.length > 0
-      ) {
-        this.projectUrl = this.config.projectUrl;
-      }
+      this.configService.getUpdates().subscribe((newConfig) => {
+        const socketChanged = newConfig.webSocketUrl!=this.config?.webSocketUrl;
+        this.config=newConfig;
+        if ((newConfig.projectUrl!=null) && (newConfig.projectUrl.length>0))
+          this.projectUrl=newConfig.projectUrl;
+        if (socketChanged) this.initializeSocket (newConfig.webSocketUrl);
+      });
 
       // Listens as well to broadcasted events
       // console.log("Listening to debug broadcasts")
@@ -103,6 +62,55 @@ export class ChangeListenerService {
     } catch ( err) {
       console.error("Error initializing ChangeListnerService", err);
     }
+  }
+
+  protected initializeSocket (webSocketUrl:string | undefined) {
+    if ( (this.previewServiceWebSocket!=null) && (this.socketSubscription != null)) {
+      this.socketSubscription.unsubscribe();
+      this.socketSubscription=null;
+      this.previewServiceWebSocket.complete();  // Close subscription
+      this.previewServiceWebSocket=null;
+      this.connectionStatus.next('closed');
+    }
+
+    if ((webSocketUrl!=null && (webSocketUrl.length>0))) {
+      this.previewServiceWebSocket = webSocket(webSocketUrl);
+      this.connectionStatus.next('connected');
+      this.socketSubscription= this.previewServiceWebSocket?.subscribe({
+          next: (msg) => {
+            //console.log('message received: ' + msg);
+            if (msg.type === MessageType.CHANGE) {
+              if (msg.change) {
+                this.listOfChanges.push(msg.change);
+                this.changeEmitter.next(msg.change);
+              } else {
+                console.error('Received change message without a change...');
+              }
+            }
+          },
+          // Called whenever there is a message from the server
+          error: (err) => {
+            //console.log(err);
+            this.connectionStatus.next('ERROR:' + err);
+            this.sessionIdSubject.next(undefined);
+          },
+          // Called if WebSocket API signals some kind of error
+          complete: () => {
+            //console.log('complete');
+            this.connectionStatus.next('closed');
+            this.sessionIdSubject.next(undefined);
+          }
+        }
+        // Called when connection is closed (for whatever reason)
+      );
+    } else {
+      console.warn(
+        'No SANDBOX_CONFIG WebSocketUrl injected => Not listening to changes from servers'
+      );
+      this.connectionStatus.next('undefined');
+      this.sessionIdSubject.next(undefined);
+    }
+
   }
 
   getListOfChanges(): Change[] {

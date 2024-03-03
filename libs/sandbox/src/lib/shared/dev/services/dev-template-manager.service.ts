@@ -1,8 +1,8 @@
-import {Inject, Injectable, Optional} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {catchError, map} from "rxjs/operators";
 import {Observable, of} from "rxjs";
-import {DONT_CODE_COMMON_CONFIG, CommonLibConfig} from "@dontcode/plugin-common";
+import {CommonConfigService} from "@dontcode/plugin-common";
 
 @Injectable({
   providedIn: 'root'
@@ -11,13 +11,13 @@ export class DevTemplateManagerService {
 
   protected templates:DevTemplate[]=[];
 
-  constructor(protected http:HttpClient, @Optional() @Inject(DONT_CODE_COMMON_CONFIG) protected config?:CommonLibConfig) { }
+  constructor(protected http:HttpClient, protected configService:CommonConfigService) { }
 
   getTemplates () : Observable<DevTemplate[]> {
     if (this.templates.length>0)
       return of(this.templates);
     else {
-      let templateUrl = this.config?.templateFileUrl;
+      let templateUrl = this.configService.getConfig()?.templateFileUrl;
       if (!templateUrl)
         templateUrl = 'assets/dev/default-templates.json';
       return this.http.get(templateUrl, { responseType: "json" }).pipe(

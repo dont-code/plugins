@@ -8,7 +8,7 @@ import {HomeComponent} from "./routes/home/home.component";
 import {DebugPageComponent} from "./routes/debug/debug-page/debug-page.component";
 import {ScreenComponent} from "./routes/screens/screen/screen.component";
 import {ChangeProviderService} from "./shared/command/services/change-provider.service";
-import {COMMAND_PROVIDER, DONT_CODE_DOC_API_URL, DONT_CODE_STORE_API_URL} from "@dontcode/plugin-common";
+import {COMMAND_PROVIDER} from "@dontcode/plugin-common";
 
 const sandboxRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -32,14 +32,6 @@ export class SandboxModule {
         {
           provide: DONT_CODE_COMMON_CONFIG,
           useValue: config
-        },
-        {
-          provide: DONT_CODE_STORE_API_URL,
-          useValue: config.storeUrl
-        },
-        {
-          provide: DONT_CODE_DOC_API_URL,
-          useValue: config.documentUrl
         }
       ]
     };
