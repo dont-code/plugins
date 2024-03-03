@@ -43,8 +43,8 @@ export class ChangeListenerService {
       this.configService.getUpdates().subscribe((newConfig) => {
         const socketChanged = newConfig.webSocketUrl!=this.config?.webSocketUrl;
         this.config=newConfig;
-        if ((newConfig.projectUrl!=null) && (newConfig.projectUrl.length>0))
-          this.projectUrl=newConfig.projectUrl;
+        if ((newConfig.projectApiUrl!=null) && (newConfig.projectApiUrl.length>0))
+          this.projectUrl=newConfig.projectApiUrl;
         if (socketChanged) this.initializeSocket (newConfig.webSocketUrl);
       });
 

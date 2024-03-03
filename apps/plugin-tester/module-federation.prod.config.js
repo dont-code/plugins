@@ -8,8 +8,7 @@ module.exports = {
     return {
       "@dontcode/core": {...config,singleton: true, strictVersion: false},
       "@dontcode/plugin-common": {...config,singleton: true, strictVersion: false},
-      "@dontcode/sandbox": {...config,singleton: true, strictVersion: false},
-      "broadcast-channel": {...config, requiredVersion:"0"}
+      "@dontcode/sandbox": {...config,singleton: true, strictVersion: false}
     }[name];
   }
 };

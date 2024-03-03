@@ -46,10 +46,10 @@ export class DontCodeApiStoreProvider<T=never> extends AbstractDontCodeStoreProv
   }
 
   updateConfig(newConfig: Readonly<CommonLibConfig>) {
-    if (newConfig.storeUrl!=null)
-      this.apiUrl = newConfig.storeUrl;
-    if (newConfig.documentUrl!=null)
-      this.docUrl = newConfig.documentUrl;
+    if (newConfig.storeApiUrl!=null)
+      this.apiUrl = newConfig.storeApiUrl;
+    if (newConfig.documentApiUrl!=null)
+      this.docUrl = newConfig.documentApiUrl;
   }
 
   storeEntity(position: string, data: T): Promise<T> {

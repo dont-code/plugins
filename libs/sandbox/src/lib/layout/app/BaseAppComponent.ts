@@ -15,10 +15,11 @@ import {ChangeProviderService} from '../../shared/command/services/change-provid
 import {EMPTY, Subscription, firstValueFrom} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {GlobalPluginLoader} from '../../shared/plugins/global-plugin-loader';
-import {ComponentLoaderService, DONT_CODE_CORE} from "@dontcode/plugin-common";
+import {CommonLibConfig, ComponentLoaderService, DONT_CODE_CORE} from "@dontcode/plugin-common";
 import {RemotePluginLoaderService} from "../../shared/plugins/remote-plugin-loader.service";
 import { HttpClient } from '@angular/common/http';
 import { CommonConfigService } from '@dontcode/plugin-common';
+import { SandboxRepositorySchema } from '../../shared/definitions';
 
 @Component({
   template: '',
@@ -56,11 +57,14 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
     if( repoUrl==null) repoUrl='assets/repositories/default.json';
 
       firstValueFrom (this.httpClient.get<RepositorySchema>(repoUrl, {observe:'body', responseType:'json'})
-      ).then((config:RepositorySchema) => {
-        if( config.documentUrl!=null) this.configService.updateConfig('documentUrl', config.documentUrl);
-        if( config.storeUrl!=null) this.configService.updateConfig('storeUrl',config.storeUrl);
-        if( config.webSocketUrl!=null) this.configService.updateConfig('webSocketUrl',config.webSocketUrl);
-        if( config.projectUrl!=null) this.configService.updateConfig('projectUrl',config.projectUrl);
+      ).then((config:SandboxRepositorySchema) => {
+        const updates: {[P in keyof CommonLibConfig]:any}={};
+        if( config.documentApiUrl!=null) updates.documentApiUrl=config.documentApiUrl;
+        if( config.storeApiUrl!=null) updates.storeApiUrl = config.storeApiUrl;
+        if( config.webSocketUrl!=null) updates.webSocketUrl = config.webSocketUrl;
+        if( config.projectApiUrl!=null) updates.projectApiUrl = config.projectApiUrl;
+
+        this.configService.batchUpdateConfig (updates);
 
         this.pluginsLoaded=this.pluginLoader.loadPluginsFromRepository(config, repoUrl).catch (
         reason => {

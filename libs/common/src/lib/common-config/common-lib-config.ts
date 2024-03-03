@@ -3,9 +3,9 @@ import {MenuItem} from "primeng/api";
 
 export interface CommonLibConfig {
   webSocketUrl?: string;
-  projectUrl?: string;
-  storeUrl?:string;
-  documentUrl?:string;
+  projectApiUrl?: string;
+  storeApiUrl?:string;
+  documentApiUrl?:string;
   indexedDbName?: string;
   applicationName?: string;
   theme?: string;
