@@ -14,7 +14,7 @@ import {Change, ChangeType, DontCodeModel, DontCodeModelPointer,} from '@dontcod
 import {Router} from '@angular/router';
 import {MenuItem} from 'primeng/api';
 import {ChangeProviderService} from '../../shared/command/services/change-provider.service';
-import {MenuUpdater, SANDBOX_MENUS} from "../../../../../common/src/lib/common-config/common-lib-config";
+import {MenuUpdater, SANDBOX_MENUS} from "@dontcode/plugin-common";
 
 @Component({
   selector: 'dontcode-sandbox-menu',
