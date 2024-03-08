@@ -4,7 +4,7 @@ import {DontCodeApiStoreProvider} from "./dont-code-api-store-provider";
 import {HttpClient} from "@angular/common/http";
 import { dtcde, UploadedDocumentInfo } from '@dontcode/core';
 import {toArray} from "rxjs/operators";
-import { PluginCommonModule, DONT_CODE_COMMON_CONFIG} from "@dontcode/plugin-common";
+import { PluginCommonModule, DONT_CODE_COMMON_CONFIG, CommonConfigService} from "@dontcode/plugin-common";
 
 
 describe('DontCode Api Store Manager', () => {
@@ -16,16 +16,16 @@ describe('DontCode Api Store Manager', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, PluginCommonModule.forRoot()],
-      providers: [ {provide: DONT_CODE_COMMON_CONFIG, useValue: {
-        storeUrl:'/testData',
-        documentUrl:'/testDocs'      
-      }}]
+      providers: []
     }).compileComponents();
 
     // Inject the http service and test controller for each test
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);
     storeProvider = TestBed.inject(DontCodeApiStoreProvider);
+    const configService = TestBed.inject( CommonConfigService);
+    // Reroute the API to our test 
+    configService.batchUpdateConfig ({storeApiUrl:'/testData', documentApiUrl:'/testDocs'});
   });
 
   it('should list item', (done) => {
