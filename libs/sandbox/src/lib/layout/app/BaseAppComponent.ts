@@ -1,4 +1,4 @@
-import {Component, Inject, Injector, OnDestroy, OnInit, Type,} from '@angular/core';
+import {ChangeDetectorRef, Component, Inject, Injector, OnDestroy, OnInit, Type,} from '@angular/core';
 import {
   ChangeType,
   Core,
@@ -28,7 +28,6 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
   protected subscription = new Subscription();
 
   sessionId: string | null = null;
-  protected pluginsLoaded?:Promise<any>;
 
   protected runtimeConfig = new DontCodeRuntimeConfig();
 
@@ -43,6 +42,7 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
     protected configService: CommonConfigService,
     protected httpClient: HttpClient,
     protected injector: Injector,
+    protected ref: ChangeDetectorRef,
     @Inject(DONT_CODE_CORE)
     protected dontCodeCore: Core,
     protected modelMgr:DontCodeModelManager,
@@ -56,8 +56,8 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
     let repoUrl = this.runtimeConfig.repositoryUrl;
     if( repoUrl==null) repoUrl='assets/repositories/default.json';
 
-      firstValueFrom (this.httpClient.get<RepositorySchema>(repoUrl, {observe:'body', responseType:'json'})
-      ).then((config:SandboxRepositorySchema) => {
+    firstValueFrom (this.httpClient.get<RepositorySchema>(repoUrl, {observe:'body', responseType:'json'}))
+      .then((config:SandboxRepositorySchema) => {
         const updates: {[P in keyof CommonLibConfig]:any}={};
         if( config.documentApiUrl!=null) updates.documentApiUrl=config.documentApiUrl;
         if( config.storeApiUrl!=null) updates.storeApiUrl = config.storeApiUrl;
@@ -66,13 +66,13 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
 
         this.configService.batchUpdateConfig (updates);
 
-        this.pluginsLoaded=this.pluginLoader.loadPluginsFromRepository(config, repoUrl).catch (
+        return this.pluginLoader.loadPluginsFromRepository(config, repoUrl).catch (
         reason => {
           if (this.runtimeConfig.forceRepositoryLoading)
             return Promise.reject(reason);
           else
             return Promise.resolve(null);
-        }).then(value => {
+        }).then(() => {
           this.dontCodeCore.initPlugins();
 
             // Apply updates from repository
@@ -81,58 +81,77 @@ export abstract class BaseAppComponent implements OnInit, OnDestroy {
             const chg = this.modelMgr.convertToChange(update);
             this.changeProviderService.pushChange(chg);
           });
-        });
-      // eslint-disable-next-line no-restricted-syntax
-      console.info('Dynamic Plugins inited');
-      // Manage the global plugins
-      this.globalPluginLoader.initLoading();
-      // Manage the store manager
-      this.storeMgr.setProvider(this.storage);
-      this.subscription.add(
-        this.provider
-          .receiveCommands(
-            DontCodeModel.APP_SHARING,
-            DontCodeModel.APP_SHARING_WITH_NODE
-          )
-          .pipe(
-            mergeMap((change) => {
-              if (change.type !== ChangeType.DELETE) {
-                if (change.value === 'No-one') {
-                  this.storeMgr.setProvider(this.storage);
-                  return EMPTY;
-                } else if (change.value) {
-                  return this.loadStoreManager(DontCodeModel.APP_SHARING_WITH);
-                } else {
-                  return EMPTY;
-                }
-              }
-              return EMPTY;
-            }),
-            map((storeProvider) => {
-              if (storeProvider!=null) {
-                const updatedInjector = Injector.create({
-                  providers: [storeProvider as any],
-                    parent: this.injector});
-                this.storeMgr
-                  .setProvider(updatedInjector.get(storeProvider));
-                // eslint-disable-next-line no-restricted-syntax
-                console.info("Set new provider to:", storeProvider);
-              }
-              return storeProvider;
-            })
-          )
-          .subscribe({
-            error(error) {
-              console.error('Cannot load StoreProvider due to', error);
-            },
-          })
-      );
+          // eslint-disable-next-line no-restricted-syntax
+          console.info('Dynamic Plugins inited');
+          // Manage the global plugins
+          this.globalPluginLoader.initLoading();
 
-      this.sessionId = this.runtimeConfig.sessionId??null;
-      // eslint-disable-next-line no-restricted-syntax
-      console.info('Browser opened with SessionId =', this.sessionId);
-      this.listener.setSessionId(this.sessionId);
+          this.initStoreProvider ();
+
+          this.sessionId = this.runtimeConfig.sessionId??null;
+          // eslint-disable-next-line no-restricted-syntax
+          console.info('Browser opened with SessionId =', this.sessionId);
+          this.listener.setSessionId(this.sessionId);
+      
+            // Once everything is finalized, let's give a chance to the caller to do something.
+          this.afterInitialization ();
+          this.ref.markForCheck();
+          this.ref.detectChanges();
+        });
+
     });
+
+}
+
+  /**
+   * This is called after all plugins are loaded and inited, and the store provider configured
+   */
+  protected afterInitialization (): void {
+    // Do nothing
+  }
+
+  initStoreProvider (): void {
+    // Manage the store manager
+    this.storeMgr.setProvider(this.storage);
+    this.subscription.add(
+      this.provider
+        .receiveCommands(
+          DontCodeModel.APP_SHARING,
+          DontCodeModel.APP_SHARING_WITH_NODE
+        )
+        .pipe(
+          mergeMap((change) => {
+            if (change.type !== ChangeType.DELETE) {
+              if (change.value === 'No-one') {
+                this.storeMgr.setProvider(this.storage);
+                return EMPTY;
+              } else if (change.value) {
+                return this.loadStoreManager(DontCodeModel.APP_SHARING_WITH);
+              } else {
+                return EMPTY;
+              }
+            }
+            return EMPTY;
+          }),
+          map((storeProvider) => {
+            if (storeProvider!=null) {
+              const updatedInjector = Injector.create({
+                providers: [storeProvider as any],
+                  parent: this.injector});
+              this.storeMgr
+                .setProvider(updatedInjector.get(storeProvider));
+              // eslint-disable-next-line no-restricted-syntax
+              console.info("Set new provider to:", storeProvider);
+            }
+            return storeProvider;
+          })
+        )
+        .subscribe({
+          error(error) {
+            console.error('Cannot load StoreProvider due to', error);
+          },
+        })
+    );
   }
 
   loadStoreManager(position: string): Promise<Type<DontCodeStoreProvider>> {

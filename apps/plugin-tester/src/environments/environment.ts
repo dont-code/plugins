@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+    // Urls are set here as helper but should be defined in the repository file
   webSocketUrl:'',
   storeApiUrl: 'http://localhost:8084/data',
   documentApiUrl: 'http://localhost:8084/documents'
