@@ -2,6 +2,9 @@
   "extends": "./tsconfig.lib.json",
   "compilerOptions": {
     "declarationMap": false,
+    "inlineSources": false,
+    "sourceMap": false,
+
     "target": "ES2022",
     "useDefineForClassFields": false
   },

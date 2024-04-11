@@ -21,3 +21,4 @@ export class LayoutModule { }
 
 export * from "./main/main.component";
 export * from "./app/BaseAppComponent";
+export * from "./app/LightAppComponent";

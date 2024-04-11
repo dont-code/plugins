@@ -3,6 +3,7 @@ import {MenuItem} from "primeng/api";
 
 export interface CommonLibConfig {
   webSocketUrl?: string;
+  ideWebSocketUrl?: string;
   projectApiUrl?: string;
   storeApiUrl?:string;
   documentApiUrl?:string;
