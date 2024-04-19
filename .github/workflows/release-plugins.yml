@@ -117,7 +117,7 @@ jobs:
           name: cypress-${{matrix.browser}}-videos
           path: plugins/dist/cypress/apps/plugin-tester-e2e/videos
       - name: Deploy all plugins
-        run: nx run plugin-tester:build:production --output-path="dist/apps/plugin-tester/${{env.stage}}" --base-href "https://dont-code.net/plugins/${{env.stage}}/"
+        run: nx run plugin-tester:build:production --output-path="dist/apps/plugin-tester/${{env.stage}}" --base-href "https://run.dont-code.net/plugins/${{env.stage}}/"
         working-directory: 'plugins'
       - if: ${{ success()  && ( matrix.browser == 'chromium' ) && ( inputs.deploy == true) }}
         uses: gcollin/ghaction-github-pages@main

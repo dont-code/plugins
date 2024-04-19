@@ -107,7 +107,7 @@ jobs:
           name: cypress-${{matrix.browser}}-videos
           path: plugins/dist/cypress/apps/plugin-tester-e2e/videos
       - name: Building all plugins
-        run: nx run plugin-tester:build:production --base-href "https://dont-code.net/plugins/"
+        run: nx run plugin-tester:build:production --base-href "https://run.dont-code.net/plugins/"
         working-directory: 'plugins'
       - name: Publish libraries ${{env.stage}}
         if: ${{ success() && ( matrix.browser == 'chromium' ) }}
