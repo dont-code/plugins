@@ -15,13 +15,13 @@ import {
 } from '@dontcode/core';
 import { NgModule } from '@angular/core';
 import { ChangeProviderService } from '../command/services/change-provider.service';
-import { asyncScheduler, Subject, Subscriber } from 'rxjs';
+import { asyncScheduler, Subject, Subscription } from 'rxjs';
 import {PluginCommonModule, PluginHandlerHelper} from '@dontcode/plugin-common';
 
 export class GlobalTestHandler implements PreviewHandler {
   public static initCalls = new Subject<DontCodeModelPointer>();
   public static handleChanges = new Subject<Change>();
-  public static subscribers = new Subscriber();
+  public static subscribers = new Subscription ();
 
   protected static pluginHelper = new PluginHandlerHelper();
 
@@ -49,7 +49,6 @@ export class GlobalTestHandler implements PreviewHandler {
 }
 
 @NgModule({
-  exports: [GlobalTestHandler],
   providers: [GlobalTestHandler],
   id: 'dontcode-plugin/global-test-module',
 })

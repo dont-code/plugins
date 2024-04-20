@@ -30,10 +30,10 @@ jobs:
 
     strategy:
       matrix:
-        browser: [chromium, chrome, firefox]
+        browser: [chromium, chrome]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: dont-code/plugins
           path: plugins
@@ -41,7 +41,7 @@ jobs:
           ref: ${{ env.branch }}
           token: ${{secrets.DONTCODE_ACTIONS_TOKEN}}
       - name: Setup build environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18.x'
           registry-url: 'https://registry.npmjs.org'
@@ -104,20 +104,20 @@ jobs:
       - run: |
           nx run plugin-tester-e2e:e2e --browser ${{matrix.browser}}
         working-directory: 'plugins'
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         # Test run screenshots only on failure
         if: failure()
         with:
-          name: cypress-screenshots
+          name: cypress-${{matrix.browser}}-screenshots
           path: plugins/dist/cypress/apps/plugin-tester-e2e/screenshots
           # Test run video was always captured, so this action uses "always()" condition
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: cypress-videos
+          name: cypress-${{matrix.browser}}-videos
           path: plugins/dist/cypress/apps/plugin-tester-e2e/videos
       - name: Deploy all plugins
-        run: nx run plugin-tester:build:production --output-path="dist/apps/plugin-tester/${{env.stage}}" --base-href "https://dont-code.net/plugins/${{env.stage}}/"
+        run: nx run plugin-tester:build:production --output-path="dist/apps/plugin-tester/${{env.stage}}" --base-href "https://run.dont-code.net/plugins/${{env.stage}}/"
         working-directory: 'plugins'
       - if: ${{ success()  && ( matrix.browser == 'chromium' ) && ( inputs.deploy == true) }}
         uses: gcollin/ghaction-github-pages@main

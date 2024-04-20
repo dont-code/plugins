@@ -2,13 +2,13 @@ import {ModuleWithProviders, NgModule} from '@angular/core';
 import {SharedModule} from "./shared/shared.module";
 import {LayoutModule} from "./layout/layout.module";
 import {RoutesModule} from "./routes/routes.module";
-import {SANDBOX_CONFIG, SandboxLibConfig} from "./shared/config/sandbox-lib-config";
+import {DONT_CODE_COMMON_CONFIG, CommonLibConfig} from "@dontcode/plugin-common";
 import {RouterModule, Routes} from "@angular/router";
 import {HomeComponent} from "./routes/home/home.component";
 import {DebugPageComponent} from "./routes/debug/debug-page/debug-page.component";
 import {ScreenComponent} from "./routes/screens/screen/screen.component";
 import {ChangeProviderService} from "./shared/command/services/change-provider.service";
-import {COMMAND_PROVIDER, DONT_CODE_DOC_API_URL, DONT_CODE_STORE_API_URL} from "@dontcode/plugin-common";
+import {COMMAND_PROVIDER} from "@dontcode/plugin-common";
 
 const sandboxRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -25,21 +25,13 @@ const sandboxRoutes: Routes = [
   ]
 })
 export class SandboxModule {
-  static forRoot(config: SandboxLibConfig): ModuleWithProviders<SandboxModule> {
+  static forRoot(config: CommonLibConfig): ModuleWithProviders<SandboxModule> {
     return {
       ngModule: SandboxModule,
       providers: [
         {
-          provide: SANDBOX_CONFIG,
+          provide: DONT_CODE_COMMON_CONFIG,
           useValue: config
-        },
-        {
-          provide: DONT_CODE_STORE_API_URL,
-          useValue: config.storeUrl
-        },
-        {
-          provide: DONT_CODE_DOC_API_URL,
-          useValue: config.documentUrl
         }
       ]
     };

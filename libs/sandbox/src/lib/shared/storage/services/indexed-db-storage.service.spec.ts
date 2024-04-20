@@ -1,6 +1,6 @@
 import {TestBed} from '@angular/core/testing';
 import {IndexedDbStorageService} from "./indexed-db-storage.service";
-import {PluginCommonModule, ValueService} from "@dontcode/plugin-common";
+import {DONT_CODE_COMMON_CONFIG, PluginCommonModule, ValueService} from "@dontcode/plugin-common";
 import {map} from "rxjs/operators";
 import {lastValueFrom} from "rxjs";
 
@@ -10,7 +10,8 @@ describe('DevTemplateManagerService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ PluginCommonModule.forRoot()]
+      imports: [ PluginCommonModule.forRoot()],
+      providers: [{provide: DONT_CODE_COMMON_CONFIG, useValue: {}}]
     });
     service = TestBed.inject<IndexedDbStorageService<{_id:number,code:string}>>(IndexedDbStorageService<{_id:number,code:string}>);
     valueService = TestBed.inject(ValueService);

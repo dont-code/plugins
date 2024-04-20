@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 
 import {MenuComponent} from "./menu.component";
 import {RouterTestingModule} from "@angular/router/testing";
-import {SANDBOX_CONFIG} from "../../shared/config/sandbox-lib-config";
+import {DONT_CODE_COMMON_CONFIG} from "@dontcode/plugin-common";
 import {MenuModule} from "primeng/menu";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -17,7 +17,7 @@ describe('MenuComponent', () => {
       declarations: [ MenuComponent ],
       imports: [BrowserAnimationsModule, RouterTestingModule, HttpClientTestingModule, MenuModule, PluginCommonModule.forRoot()],
       providers: [{
-          provide:SANDBOX_CONFIG, useValue:{
+          provide:DONT_CODE_COMMON_CONFIG, useValue:{
           webSocketUrl:''
         }
       }]

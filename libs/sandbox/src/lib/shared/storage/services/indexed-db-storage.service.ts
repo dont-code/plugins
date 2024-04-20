@@ -3,15 +3,16 @@
  */
 import {
   AbstractDontCodeStoreProvider,
+  DontCodeModelManager,
   DontCodeStoreCriteria,
   StoreProviderHelper,
   UploadedDocumentInfo
 } from "@dontcode/core";
-import {from, Observable} from "rxjs";
+import {from, map, Observable, Subscription} from "rxjs";
 import Dexie, {Table} from "dexie";
-import {Inject, Injectable, OnDestroy, Optional} from "@angular/core";
-import {ValueService} from "@dontcode/plugin-common";
-import {SANDBOX_CONFIG, SandboxLibConfig} from "../../config/sandbox-lib-config";
+import {Injectable, OnDestroy, Optional} from "@angular/core";
+import {CommonConfigService, ValueService} from "@dontcode/plugin-common";
+import {CommonLibConfig} from "@dontcode/plugin-common";
 
 @Injectable({
   providedIn: 'root'
@@ -22,32 +23,47 @@ export class IndexedDbStorageService<T=never> extends AbstractDontCodeStoreProvi
 
   protected db: Dexie|null=null;
 
+  protected dbName = "Dont-code Sandbox Lib";
+
+  protected subscriptions = new Subscription ();
+
   /**
    * Enable test code to close a database between tests
    */
   public static forceCloseDatabase () {
-    console.log("IndexedDB: In forceCloseDatabase");
+    // eslint-disable-next-line no-restricted-syntax
+    console.debug("IndexedDB: In forceCloseDatabase");
     if (this.globalDb!=null) {
-      console.log("IndexedDB: GlobalDB Exist");
+      // eslint-disable-next-line no-restricted-syntax
+      console.debug("IndexedDB: GlobalDB Exist");
       if (this.globalDb.isOpen()) {
-        console.log("IndexedDB: Closing GlobalDB");
+        // eslint-disable-next-line no-restricted-syntax
+        console.debug("IndexedDB: Closing GlobalDB");
         this.globalDb.close();
-        console.log("IndexedDB: GlobalDB is closed");
+        // eslint-disable-next-line no-restricted-syntax
+        console.debug("IndexedDB: GlobalDB is closed");
       }
     }
   }
 
   public static forceDeleteDatabase (dbName:string):Promise<void> {
-    console.log("IndexedDB: In forceDeleteDatabase");
+    // eslint-disable-next-line no-restricted-syntax
+    console.debug("IndexedDB: In forceDeleteDatabase");
     return Dexie.delete(dbName).then(() => {
-      console.log("IndexedDB: Database "+dbName+" deleted");
+      // eslint-disable-next-line no-restricted-syntax
+      console.debug("IndexedDB: Database "+dbName+" deleted");
     });
   }
 
   constructor(protected values: ValueService,
-              @Optional() @Inject(SANDBOX_CONFIG) private config?: SandboxLibConfig
+    protected configService: CommonConfigService,
+    @Optional () modelMgr?:DontCodeModelManager
   ) {
-    super();
+    super(modelMgr);
+    this.updateConfig (configService.getConfig());
+    this.subscriptions.add (configService.getUpdates().pipe (map ((newConfig) => {
+      this.updateConfig(newConfig);
+    })).subscribe());
       // Let unit tests close or delete the database between tests if needed
     if ((self as any)._indexedDbStorageServiceForceClose == null) {
       (self as any)._indexedDbStorageServiceForceClose = () => IndexedDbStorageService.forceCloseDatabase();
@@ -223,16 +239,26 @@ export class IndexedDbStorageService<T=never> extends AbstractDontCodeStoreProvi
     });
   }
 
+  updateConfig (newConfig:CommonLibConfig) {
+    if ((newConfig.indexedDbName!=null) && (newConfig.indexedDbName.length > 0)) {
+      if( newConfig.indexedDbName!=this.dbName) {
+        this.dbName=newConfig.indexedDbName;
+        if (this.db?.isOpen ()) {
+          console.warn ("Changing the name of an Open IndexedDB database to "+newConfig.indexedDbName);
+          this.db.close();
+          this.db = null; // Force reopen of db next time
+        }
+        IndexedDbStorageService.forceCloseDatabase(); 
+      }
+    }
+  }
+
   withDatabase (): Promise<Dexie> {
     if (this.db==null) {
 
-      let dbName = "Dont-code Sandbox Lib";
-      if( (this.config)&&(this.config.indexedDbName)&&(this.config.indexedDbName.length>0))
-        dbName=this.config.indexedDbName;
-
       //console.log("IndexedDB: Checking GlobalDB "+dbName);
       if(IndexedDbStorageService.globalDb==null) {
-        IndexedDbStorageService.globalDb = new Dexie(dbName, {allowEmptyDB:true, autoOpen:false});
+        IndexedDbStorageService.globalDb = new Dexie(this.dbName, {allowEmptyDB:true, autoOpen:false});
       //  console.log("IndexedDB: GlobalDB "+dbName+" created");
       }
       this.db=IndexedDbStorageService.globalDb;
@@ -249,6 +275,7 @@ export class IndexedDbStorageService<T=never> extends AbstractDontCodeStoreProvi
 
   ngOnDestroy () {
 //    console.log("IndexedDB: ngOnDestroy called");
+    this.subscriptions.unsubscribe();
     IndexedDbStorageService.forceCloseDatabase();
   }
 

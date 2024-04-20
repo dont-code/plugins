@@ -26,8 +26,8 @@ import {PluginCommonModule} from "@dontcode/plugin-common";
     PluginCommonModule.forRoot(),
     SandboxModule.forRoot({
       webSocketUrl: environment.webSocketUrl,
-      documentUrl: environment.documentApiUrl,
-      storeUrl: environment.storeApiUrl,
+      documentApiUrl: environment.documentApiUrl,
+      storeApiUrl: environment.storeApiUrl,
       indexedDbName: 'Dont-code Plugin Tester',
       applicationName: 'Plugin Tester',
       theme:'orange',

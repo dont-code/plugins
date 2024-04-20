@@ -1,8 +1,8 @@
-import {Inject, Injectable, Optional} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {catchError, map} from "rxjs/operators";
 import {Observable, of} from "rxjs";
-import {SANDBOX_CONFIG, SandboxLibConfig} from "../../config/sandbox-lib-config";
+import {CommonConfigService} from "@dontcode/plugin-common";
 
 @Injectable({
   providedIn: 'root'
@@ -11,22 +11,22 @@ export class DevTemplateManagerService {
 
   protected templates:DevTemplate[]=[];
 
-  constructor(protected http:HttpClient, @Optional() @Inject(SANDBOX_CONFIG) protected config?:SandboxLibConfig) { }
+  constructor(protected http:HttpClient, protected configService:CommonConfigService) { }
 
   getTemplates () : Observable<DevTemplate[]> {
     if (this.templates.length>0)
       return of(this.templates);
     else {
-      let templateUrl = this.config?.templateFileUrl;
+      let templateUrl = this.configService.getConfig()?.templateFileUrl;
       if (!templateUrl)
         templateUrl = 'assets/dev/default-templates.json';
       return this.http.get(templateUrl, { responseType: "json" }).pipe(
         map(value => {
           this.templates = new Array<DevTemplate>();
           const src = value as Array<any>;
-          src.forEach(tmpl => {
+          for (const tmpl of src){
             this.templates.push(new DevTemplate(tmpl));
-          });
+          };
           return this.templates;
         }),
         catchError(err => {

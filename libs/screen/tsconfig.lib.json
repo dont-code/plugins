@@ -5,6 +5,7 @@
     "declaration": true,
     "declarationMap": true,
     "inlineSources": true,
+    "sourceMap": true,
     "types": [],
     "target": "ES2022",
     "useDefineForClassFields": false

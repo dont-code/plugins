@@ -1,7 +1,8 @@
 <dtcde-dynamic></dtcde-dynamic>
 <p-table [columns]="cols" [value]="getStoreEntities()"
          styleClass="p-datatable-striped" responsiveLayout="scroll"
-         selectionMode="single" [(selection)]="selectedItem" (selectionChange)="selectionChange($event)" >
+         selectionMode="single" [(selection)]="selectedItem" (selectionChange)="selectionChange($event)"
+         (sortFunction)="customSort($event)" [customSort]="true">
   <ng-template pTemplate="header" let-columns>
     <tr>
       <th id="header-{{col.header}}" *ngFor="let col of columns" [pSortableColumn]="col.field">

@@ -25,44 +25,39 @@ export class RemotePluginLoaderService {
    * Loads the configuration file of the plugin repository, then loads and configure all plugins in it
    * @param repoUrl: the url to load the repository config from. If undefined, nothing gets loaded, if null, the defaultRepoUrl will be used instead
    */
-  loadPluginsFromRepository (repoUrl:string|undefined|null, defaultRepoUrl:string) : Promise<RepositorySchema>{
-    if (repoUrl===undefined) return Promise.resolve({name:"No Repository", plugins:[]});
-    if( repoUrl==null) repoUrl=defaultRepoUrl;
+  loadPluginsFromRepository (repository?:RepositorySchema, repoUrl?:string) : Promise<RepositorySchema>{
+    if (repository===undefined) return Promise.resolve({name:"No Repository", plugins:[]});
     // eslint-disable-next-line no-restricted-syntax
-    console.info("Loading plugins from repository url", repoUrl);
-    return firstValueFrom(
-      this.httpClient.get<RepositorySchema>(repoUrl, {observe:'body', responseType:'json'})
-      ).then((config:RepositorySchema) => {
-        this.repository = config;
-        if (config.plugins != null) {
+    console.debug("Loading plugins");
+    return new Promise ( (resolve, reject) => {
+      try {
+        this.repository = repository;
+        if (this.repository?.plugins != null) {
           const toLoad=new Array<RemotePluginModuleOptions>();
-          config.plugins.forEach(value => {
-            toLoad.push(this.createRemotePluginConfig (value, defaultRepoUrl));
-          });
+          for (const value of this.repository.plugins) {
+            toLoad.push(this.createRemotePluginConfig (value, repoUrl));
+          }
           // eslint-disable-next-line no-restricted-syntax
-          console.debug("Loading following plugins", config.plugins);
-          return this.loadMultipleModules(toLoad);
+          console.debug("Loading following plugins", this.repository.plugins);
+          this.loadMultipleModules(toLoad).then ( () => {
+            if( this.repository!=null)
+            resolve (this.repository);
+            else {
+              reject("No repository loaded");
+            }
+      
+          }).catch (reason => {
+            reject(reason);
+          });
         }
-        return Promise.resolve([]);
-    }).then (() => {
-      if( this.repository!=null)
-        return this.repository;
-      else {
-        return Promise.reject("No repository loaded");
-      }
-    })
-      .catch((reason)=> {
-      console.error("Cannot load repository config from "+repoUrl+" due to error ", reason);
-      if( repoUrl===defaultRepoUrl)
-        return Promise.reject(reason);
-      else {
-        // Try again with the default Url
-        return this.loadPluginsFromRepository(null, defaultRepoUrl);
-      }
-    })
+      } catch(reason) {
+          console.error("Cannot load repository config from "+repoUrl+" due to error ", reason);
+          return reject(reason);
+        }
+      });
   }
 
-  protected createRemotePluginConfig(value: RepositoryPluginEntry, defaultRepoUrl:string): RemotePluginModuleOptions {
+  protected createRemotePluginConfig(value: RepositoryPluginEntry, defaultRepoUrl?:string): RemotePluginModuleOptions {
     let ret:RemotePluginModuleOptions;
     const upperId = value.id.substring(0,1).toUpperCase()+value.id.substring(1);
 
