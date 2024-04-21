@@ -11,8 +11,6 @@ on:
         required: true
         type: string
 
-  pull_request:
-
   push:
     paths:
       - '*'
