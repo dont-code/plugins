@@ -1,6 +1,8 @@
 ![image](https://dont-code.net/assets/logo-shadow-squared.png)
-## What is it for ?
+## Important !
+This repository is now deprecated. All developments for Dont-code are now happening in the [Monorepo repository](https://github.com/dont-code/monorepo)
 
+## What was it for ?
 This repository contains several plugins that are used by default.
 It provides as well some common behavior for Angular based plugins in a distinct library.
 They can as well be used as example of plugin developments.

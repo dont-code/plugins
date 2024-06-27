@@ -10,7 +10,6 @@ on:
         description: Branch name to re-build ?
         required: true
         type: string
-  pull_request:
   push:
     paths:
       - '*'
